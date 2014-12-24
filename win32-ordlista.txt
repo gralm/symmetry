@@ -1,0 +1,45 @@
+
+
+HINSTANCE hInstance = GetModuleHandle(NULL);
+GetModuleFileName(hInstance, szFileName, MAX_PATH);
+MessageBox(hwnd, szFileName, "This program is:", MB_OK | MB_ICONEXCLAMATION);
+
+switch(msg) {
+	WM_CLOSE, WM_DESTROY,
+	WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN, 
+}
+
+
+		// Message:
+Msg.message, Msg.pt.x, Msg.pt.y
+
+GetDlgItem() 				// hämtar handle till kontrollen via ID, skicka sen med SendMessage
+SendDlgItemMessage()		// gör båda ovanstående sakerna.
+GetMessage(&Msg, NULL, 0, 0)
+	TranslateMessage(&Msg);
+	DispatchMessage(&Msg);
+	PostMessage();			// postar meddelandet direkt
+	SendMessage();			// väntar till meddelandet är mottaget
+	PostQuitMessage(0);
+
+
+
+		// manuell skap av resource
+	//meny
+HMENU hMenu = CreateMenu();
+HMENU hSubMenu = CreatePopupMenu();
+AppendMenu(hSubMenu, MF_STRING, ID_FILE_EXIT, "E&xit");
+AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT)hSubMenu, "&File");
+
+
+GetMenu() and DestroyMenu().
+
+
+	// ladda ikoner:
+hIcon = LoadImage(NULL, "menu_two.ico", IMAGE_ICON, 32, 32, LR_LOADFROMFILE);
+if(hIcon)	SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+
+	
+	// debugging
+int GetLastError(void); gerenerar en felkod
+http://msdn.microsoft.com/en-us/library/windows/desktop/ms681385(v=vs.85).aspx
