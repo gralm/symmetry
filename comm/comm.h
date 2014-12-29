@@ -5,24 +5,21 @@
 #include <list>
 #include <iostream>
 
-	// för structarna
-#define COMM_THREAD_GLUT		4	
+	// för thread-id
 #define COMM_THREAD_MAIN		3
+#define COMM_THREAD_GLUT		4	
 
+	// Message typ
 #define COMM_MSGTYP_EXIT		0
 #define COMM_MSGTYP_PAUSE		1
 
 	// return values messages (msg)
-#define COMM_ID_CREATED			11
-#define COMM_ID_OVERWRITTEN		12
-#define COMM_ID_MISSING			13
-#define COMM_ERROR_				14
-#define COMM_ID_OK				15
-#define COMM_EXIT				16
+#define COMM_RET_ID_CREATED			11
+#define COMM_RET_ID_OVERWRITTEN		12
+#define COMM_RET_ID_MISSING			13
+#define COMM_RET_ERROR				14
+#define COMM_RET_ID_OK				15
 
-	// avsändare och mottagare (frto)
-#define COMM_GLUT_TO_GUI		1
-#define COMM_GUI_TO_GLUT		2
 
 extern pthread_mutex_t mtxThread;
 
@@ -31,8 +28,8 @@ struct CommMsg {
 	int fromId;		// från vilken thread som meddelande sänds från
 	int toId;		// till vilken thread som meddelandet är ämnat för
 	int msgTyp;		// vilken typ av meddelande som sänds
-	int time;		// millisecond value när den är meddelande sparat
-	int dataSiz;
+	int time;		// millisecond value när den är meddelande sparat, används inte i nuläget
+	int dataSiz;	// storlek på det minne som ska kopieras
 	char *data;
 
 	CommMsg() {}
@@ -51,12 +48,9 @@ struct CommMsg {
 	void destroy()	{if (dataSiz && data) 	delete[] data;}
 };
 
-int commSendMessage(int siz, int id, const void *mem);
-int commGetMessage(int id, int &siz, void *mem);
-int commDestroyMessages();
-
 int commSendMsg(const CommMsg*);
 int commGetMsg(int toThreadId, CommMsg*);
 int commPrintMsg();
+int commDestroyMsg();
 
 #endif

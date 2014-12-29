@@ -46,7 +46,7 @@ void joinThreads(pthread_t *thread)
         default:
             cout << "Ett fel blev det here: " << val << endl;
     }
-    commDestroyMessages();
+    commDestroyMsg();
 }
 
 // Step 4: the Window Procedure
@@ -120,8 +120,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 switch(LOWORD(wParam))
                 {
                     case IDC_MAIN_BUTTON: {
-                        char hej[] = "Mattias Alm heter jag";
-                        commSendMessage(sizeof(hej), 13, hej);
+                        
                         break;
                     }
                     default:
@@ -131,12 +130,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 break;    
             }
 
-        case WM_TIMER: {
+        /*case WM_TIMER: {
             //cout << "|" << endl;
 
             //SetTimer(hwnd, 0, UI_UPDATE_TIME, 0);
             }
-            break;
+            break;*/
 
         case WM_CLOSE:
             DestroyWindow(hwnd);
@@ -159,7 +158,7 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
 
     switch(val)
     {
-        case COMM_ID_OK: { 
+        case COMM_RET_ID_OK: { 
             cout << "MAIN - it was ok" << endl;
             switch(msg.msgTyp)
             {
@@ -177,7 +176,7 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
             }
             break;
         }
-        case COMM_ID_MISSING:
+        case COMM_RET_ID_MISSING:
             // om det inte finns några inkomna meddelanden
             //cout << "MAIN - *" << endl;
             break;

@@ -6,7 +6,7 @@ using namespace std;
 pthread_mutex_t mtxThread = PTHREAD_MUTEX_INITIALIZER;
 
 list<CommMsg> msgList;
-
+/*
 struct Message {
 	int siz;
 	int id;
@@ -43,7 +43,7 @@ int commSendMessage(int siz, int id, const void *mem)
     if (ret != 0) {
     	cout << "error i commSendMessage" << endl;
     	pthread_mutex_unlock(&mtxThread);
-    	return COMM_ERROR_;
+    	return COMM_RET_ERROR;
     }
 
     for (list<Message*>::iterator itL = memList.begin(); itL != memList.end(); itL++)
@@ -90,7 +90,7 @@ int commGetMessage(int id, int &siz, void *mem)
     		memList.erase(itL);
 			pthread_mutex_unlock(&mtxThread);
 			//if (printar)		cout << "commGet Gettat: " << id << endl;
-			return COMM_ID_OK;
+			return COMM_RET_ID_OK;
     	}
     }
     siz = 0;
@@ -110,7 +110,7 @@ void printMessages()
 {
 	int ret = pthread_mutex_lock(&mtxThread);
     pthread_mutex_unlock(&mtxThread);
-}
+}*/
 
 ////////////////////////////////////////////
 ////// För struktarna ////////
@@ -122,7 +122,7 @@ int commSendMsg(const CommMsg *msg)
     if (ret != 0) {
         cout << "error" << endl;
         pthread_mutex_unlock(&mtxThread);
-        return COMM_ERROR_;
+        return COMM_RET_ERROR;
     }
 
     char *data_ = new char[msg->dataSiz];
@@ -133,7 +133,7 @@ int commSendMsg(const CommMsg *msg)
     //if (printar)      cout << "commSend pushbackar" << endl;
     pthread_mutex_unlock(&mtxThread);
     //if (printar)      cout << "commSend mutex over" << endl;
-    return COMM_ID_OK;
+    return COMM_RET_ID_OK;
 
 }
 
@@ -144,7 +144,7 @@ int commGetMsg(int toThreadId, CommMsg *msg)
     if (ret != 0) {
         cout << "error" << endl;
         pthread_mutex_unlock(&mtxThread);
-        return COMM_ERROR_;
+        return COMM_RET_ERROR;
     }
         // när man hämtar meddelande så hämtar man med minnet på samma minnesplats, ingen kopiering
     for (list<CommMsg>::iterator itL = msgList.begin(); itL != msgList.end(); itL++)
@@ -161,12 +161,12 @@ int commGetMsg(int toThreadId, CommMsg *msg)
             msgList.erase(itL);
 
             pthread_mutex_unlock(&mtxThread);
-            return COMM_ID_OK;
+            return COMM_RET_ID_OK;
         }
     }
     
     pthread_mutex_unlock(&mtxThread);
-    return COMM_ID_MISSING;
+    return COMM_RET_ID_MISSING;
 }
 
 int commPrintMsg()
@@ -175,7 +175,20 @@ int commPrintMsg()
     if (ret != 0) {
         cout << "error" << endl;
         pthread_mutex_unlock(&mtxThread);
-        return COMM_ERROR_;
+        return COMM_RET_ERROR;
     }
-    return COMM_ID_OK;
+    return COMM_RET_ID_OK;
+}
+
+int commDestroyMsg()
+{
+
+    list<CommMsg>::iterator itL = msgList.begin();
+    while (itL != msgList.end())
+    {
+        itL->destroy();
+        itL = msgList.erase(itL);
+    }
+
+    return COMM_RET_ID_OK;
 }
