@@ -21,6 +21,13 @@ $(OBJPATH)comm.o: comm/comm.cpp
 $(OBJPATH)glutThread.o: glutThread.cpp
 	$(CC) $(OBJFLAGS) $(OBJPATH)glutThread.o glutThread.cpp -I $(INC_DIR)
 
+$(OBJPATH)glutThread2.o: glutThread2.cpp
+	$(CC) $(OBJFLAGS) $(OBJPATH)glutThread2.o glutThread2.cpp -I $(INC_DIR)
+
+
+onlyglut:
+	make -s $(OBJPATH)glutThread2.o
+	$(CC) -DONLYGLUT -o onlyglut2.exe $(OBJPATH)glutThread2.o -L "C:\MinGW\freeglut\lib" -l freeglut -lopengl32 -lglu32
 
 clean: 
 	rm -f $(OBJPATH)*.o $(EXEFILE).exe

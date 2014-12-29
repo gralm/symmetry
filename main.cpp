@@ -182,6 +182,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     else 
         printf("Det gick ok att kloosa mutexen\n");
     cout << "nu is it slut " << endl;
-
+    Sleep(1500);
     return Msg.wParam;
 }
