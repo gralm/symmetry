@@ -11,6 +11,8 @@
 #define IDC_MAIN_BUTTON 102
 #define IDC_TEXT        103
 
+#define UI_UPDATE_TIME  100
+
 using namespace std;
 
 const char g_szClassName[] = "myWindowClass";
@@ -22,6 +24,29 @@ void printFunc(const char *str, long tid)
     printf("Skriver nedan on egen hand, ret = %d\n", ret);
     printf(str, tid);
     pthread_mutex_unlock(&mtxThread);
+}
+
+void joinThreads(pthread_t *thread)
+{
+    //int pthread_join(pthread_t thread, void **value_ptr);
+    cout << "trying to joina threaddarna" << endl;
+
+    int commSendMessage(int siz, int id, const void *mem);
+    CommMsg exitMsg(COMM_THREAD_MAIN, COMM_THREAD_GLUT, COMM_MSGTYP_EXIT, 0, 0, 0);
+    cout << "sending avslut" << endl;
+    commSendMsg(&exitMsg);
+    cout << "trying to joina threaddarna" << endl;
+    int val = pthread_join(*thread, 0);
+    cout << "joinat threaddar" << endl;
+    switch(val)
+    {
+        case 0:
+            cout << "det gick bra att joina threadsen" << endl;
+            break;
+        default:
+            cout << "Ett fel blev det here: " << val << endl;
+    }
+    commDestroyMessages();
 }
 
 // Step 4: the Window Procedure
@@ -65,7 +90,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 SendMessage(hWndButton, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE,0));
 
 
-
                 HWND hWndText = CreateWindowEx(WS_EX_CLIENTEDGE, "EDIT", "OK", 
                     WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
                     0, 120, 50, 24, hwnd, (HMENU)IDC_TEXT, GetModuleHandle(NULL), NULL);
@@ -107,8 +131,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 break;    
             }
 
-        case WM_TIMER:
-            {
+        case WM_TIMER: {
+            //cout << "|" << endl;
+
+            //SetTimer(hwnd, 0, UI_UPDATE_TIME, 0);
             }
             break;
 
@@ -124,13 +150,52 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
+void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
+{
+    //cout << "|" << endl;
+    bool quitAfter = false;
+    static CommMsg msg;
+    int val = commGetMsg(COMM_THREAD_MAIN, &msg);
+
+    switch(val)
+    {
+        case COMM_ID_OK: { 
+            cout << "MAIN - it was ok" << endl;
+            switch(msg.msgTyp)
+            {
+                case COMM_MSGTYP_EXIT:
+                    cout << "MAIN - nu ska mainThreaden dödas" << endl;
+                    quitAfter = true;
+                    PostQuitMessage(0);
+                    break;
+                case COMM_MSGTYP_PAUSE:
+                    cout << "MAIN - nu ska mainThreaden pausas" << endl;
+                    break;
+                default:
+                    cout << "MAIN - nu ska mainThreaden göra något annat" << endl;
+                    break;
+            }
+            break;
+        }
+        case COMM_ID_MISSING:
+            // om det inte finns några inkomna meddelanden
+            //cout << "MAIN - *" << endl;
+            break;
+        default:
+            cout << "MAIN - det blev no annat: " << val << endl;
+            break;
+    }
+    if (quitAfter) 
+        cout << "kommer man hit?" << endl;
+    else 
+        SetTimer(hwnd, 0, UI_UPDATE_TIME, checkMainThreads);
+}
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    pthread_t threads;
+    pthread_t glutThread;
     long t;
-    int rc = pthread_create(&threads, NULL, waitar2, (void *)t);;
-
+    int rc = pthread_create(&glutThread, NULL, glutThreadFunc, (void *)t);
 
     WNDCLASSEX wc;
     HWND hwnd;
@@ -166,6 +231,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         return 0;
     }
 
+    
+    SetTimer(hwnd, 0, UI_UPDATE_TIME, checkMainThreads);
+
     ShowWindow(hwnd, nCmdShow);
     UpdateWindow(hwnd);
 
@@ -176,12 +244,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         DispatchMessage(&Msg);
     }
 
+    joinThreads(&glutThread);
+
+    cout << "will destroyya mutexen " << endl;
     int err = pthread_mutex_destroy(&mtxThread);
     if (err)
         printf("Gick snett when destroyya mutexen, err = %d\n", err);
     else 
         printf("Det gick ok att kloosa mutexen\n");
-    cout << "nu is it slut " << endl;
-    Sleep(1500);
+
     return Msg.wParam;
 }

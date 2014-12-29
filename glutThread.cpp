@@ -1,7 +1,5 @@
 #include "glutThread.h"
-#ifndef ONLYGLUT
-    #include "comm/comm.h"
-#endif
+#include "comm/comm.h"
 
 using namespace std;
 
@@ -62,12 +60,46 @@ void init(void)
     pthread_exit(NULL);
 }*/
 
+void checkThreads()
+{
+    static CommMsg msg;
+    //int val = 0;//commGetMsg(&msg);
+    int val = commGetMsg(COMM_THREAD_GLUT, &msg);
+
+    switch(val)
+    {
+        case COMM_ID_OK:
+            cout << "it was ok" << endl;
+            break;
+        case COMM_ID_MISSING:   // inget meddelande har anlänt.
+            return;
+        default:
+            cout << "det blev no annat: " << val << endl;
+            return;
+    }
+
+    switch(msg.msgTyp)
+    {
+        case COMM_MSGTYP_EXIT:
+            cout << "nu ska glutThreaden dödas" << endl;
+            glutLeaveMainLoop();
+            break;
+        case COMM_MSGTYP_PAUSE:
+            cout << "nu ska glutThreaden pausas" << endl;
+            break;
+        default:
+            cout << "nu ska glutThreaden göra något annat" << endl;
+            break;
+    }
+
+}
+
 void display(void)
 {
     /* clear all pixels */
     //glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    cout << ">";
+    //cout << ">";
     /* draw white polygon (rectangle) with corners at
     * (0.25, 0.25, 0.0) and (0.75, 0.75, 0.0)
     */
@@ -153,12 +185,13 @@ void idleFunc()
     static int time_graph = time;
     static int time_phys = time;
     static int time_print = time;
+    static int time_thread = time;
 
     if (time > time_graph + UPD_GRAPH) {
         //Controller::update();
         glutPostRedisplay();
         time_graph += UPD_GRAPH;
-        cout << "-";
+        //cout << "-";
         if (var&1){
             cout << "too high graph-update" << endl;
             time_graph = time;
@@ -171,7 +204,7 @@ void idleFunc()
     if (time > time_phys + UPD_PHYS) {
         time_phys += UPD_PHYS;
         //Graphic::Update(UPD_PHYS * .001);
-        cout << ":";
+        //cout << ":";
         if (var&2){
             cout << "too high phys-update" << endl;
             time_phys = time;
@@ -183,7 +216,7 @@ void idleFunc()
 
     if ((time > time_print + UPD_PRINT) && UPD_PRINT) {
         time_print += UPD_PRINT;
-        cout << ";";
+       // cout << ";";
         //Group::Skriv();
 
         if (var&4){
@@ -193,6 +226,22 @@ void idleFunc()
         var |= 4;
     } else
         var &= ~4;
+
+
+
+    if ((time > time_print + UPD_THREAD) && UPD_THREAD) {
+        time_print += UPD_THREAD;
+        //cout << "?";
+        checkThreads();
+        //Group::Skriv();
+
+        if (var&8){
+            cout << "too high print-update" << endl;
+            time_print = time;
+        }
+        var |= 8;
+    } else
+        var &= ~8;
 
     //glutPostRedisplay();
 }
@@ -206,7 +255,7 @@ void closeGlut()
 
 //void *waitar2(void *threadid)
 
-void *waitar2(void *threadid)
+void *glutThreadFunc(void *threadid)
 {
     int argc = 1;
     char **argv = 0;
@@ -229,7 +278,13 @@ void *waitar2(void *threadid)
     cout << "before main loop" << endl;
     glutMainLoop();
     cout << "den lyckades avsluta glutMainLoop()" << endl;
-    //pthread_exit(NULL);
-    return 0;
+
+    CommMsg msg(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_EXIT, 0, 0, 0);
+    commSendMsg(&msg);
+    
+    pthread_exit(NULL);
+
+    cout << "threadden är avslutad nu" << endl;
+    //return 0;
 }
 

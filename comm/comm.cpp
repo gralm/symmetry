@@ -5,6 +5,8 @@ using namespace std;
 
 pthread_mutex_t mtxThread = PTHREAD_MUTEX_INITIALIZER;
 
+list<CommMsg> msgList;
+
 struct Message {
 	int siz;
 	int id;
@@ -39,9 +41,9 @@ int commSendMessage(int siz, int id, const void *mem)
     int ret = pthread_mutex_lock(&mtxThread);
 
     if (ret != 0) {
-    	cout << "error" << endl;
+    	cout << "error i commSendMessage" << endl;
     	pthread_mutex_unlock(&mtxThread);
-    	return COMM_ERROR;
+    	return COMM_ERROR_;
     }
 
     for (list<Message*>::iterator itL = memList.begin(); itL != memList.end(); itL++)
@@ -100,6 +102,7 @@ int commDestroyMessages()
 {
     int ret = pthread_mutex_lock(&mtxThread);
 	memList.clear();
+        // fixa detta sen
     pthread_mutex_unlock(&mtxThread);
 }
 
@@ -107,4 +110,72 @@ void printMessages()
 {
 	int ret = pthread_mutex_lock(&mtxThread);
     pthread_mutex_unlock(&mtxThread);
+}
+
+////////////////////////////////////////////
+////// För struktarna ////////
+//////////////////////////////////////////
+
+int commSendMsg(const CommMsg *msg)
+{
+    int ret = pthread_mutex_lock(&mtxThread);
+    if (ret != 0) {
+        cout << "error" << endl;
+        pthread_mutex_unlock(&mtxThread);
+        return COMM_ERROR_;
+    }
+
+    char *data_ = new char[msg->dataSiz];
+    memcpy(data_, msg->data, msg->dataSiz);
+    CommMsg nyttMsg(msg->fromId, msg->toId, msg->msgTyp, msg->time, msg->dataSiz, data_);
+    
+    msgList.push_back(nyttMsg);
+    //if (printar)      cout << "commSend pushbackar" << endl;
+    pthread_mutex_unlock(&mtxThread);
+    //if (printar)      cout << "commSend mutex over" << endl;
+    return COMM_ID_OK;
+
+}
+
+
+int commGetMsg(int toThreadId, CommMsg *msg)
+{
+    int ret = pthread_mutex_lock(&mtxThread);
+    if (ret != 0) {
+        cout << "error" << endl;
+        pthread_mutex_unlock(&mtxThread);
+        return COMM_ERROR_;
+    }
+        // när man hämtar meddelande så hämtar man med minnet på samma minnesplats, ingen kopiering
+    for (list<CommMsg>::iterator itL = msgList.begin(); itL != msgList.end(); itL++)
+    {
+        if (itL->toId == toThreadId)
+        {
+            msg->fromId = itL->fromId;
+            msg->toId = itL->toId;
+            msg->msgTyp = itL->msgTyp;
+            msg->time = itL->time;
+            msg->dataSiz = itL->dataSiz;
+            msg->data = itL->data;
+
+            msgList.erase(itL);
+
+            pthread_mutex_unlock(&mtxThread);
+            return COMM_ID_OK;
+        }
+    }
+    
+    pthread_mutex_unlock(&mtxThread);
+    return COMM_ID_MISSING;
+}
+
+int commPrintMsg()
+{
+    int ret = pthread_mutex_lock(&mtxThread);
+    if (ret != 0) {
+        cout << "error" << endl;
+        pthread_mutex_unlock(&mtxThread);
+        return COMM_ERROR_;
+    }
+    return COMM_ID_OK;
 }
