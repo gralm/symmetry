@@ -1,5 +1,6 @@
 #include "glutThread.h"
 #include "comm/comm.h"
+#include "graph/graph2d.h"
 
 using namespace std;
 
@@ -209,6 +210,9 @@ void *glutThreadFunc(void *threadid)
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(300, 300);
+    Graph2D::scrWidth = 300;
+    Graph2D::scrHeight = 300;
+
     glutInitWindowPosition(300, 100);
     glutCreateWindow("Hej");
 

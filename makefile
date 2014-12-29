@@ -7,6 +7,7 @@ OBJFLAGS = -c -pthread -o
 EXEFILE = symmetry
 
 bygg: 
+	make -s $(OBJPATH)graph2d.o
 	make -s $(OBJPATH)main.o
 	make -s $(OBJPATH)comm.o
 	make -s $(OBJPATH)glutThread.o
@@ -23,6 +24,10 @@ $(OBJPATH)glutThread.o: glutThread.cpp
 
 $(OBJPATH)glutThread2.o: glutThread2.cpp
 	$(CC) $(OBJFLAGS) $(OBJPATH)glutThread2.o glutThread2.cpp -I $(INC_DIR)
+
+$(OBJPATH)graph2d.o: graph/graph2d.cpp
+	$(CC) $(OBJFLAGS) $(OBJPATH)graph2d.o graph/graph2d.cpp -I $(INC_DIR)
+
 
 
 onlyglut:
