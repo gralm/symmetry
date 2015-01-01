@@ -18,7 +18,16 @@ void init(void)
     /* initialize viewing values */
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+    //void glOrtho(left,right,bottom,top,nearVal,farVal);
+
+    Graph2D::xMin = -.5;
+    Graph2D::xMax = 1.0;
+    Graph2D::yMin = -.5;
+    Graph2D::yMax = 1.;
+
+    glOrtho(Graph2D::xMin, Graph2D::xMax, 
+            Graph2D::yMin, Graph2D::yMax, -1.0, 1.0);
+
     cout << "void init()" << endl;
 }
 
@@ -55,83 +64,7 @@ void checkThreads()
 
 }
 
-void display(void)
-{
-    /* clear all pixels */
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    static double t = 0.0;
-    t += 0.01;
-
-    double c = cos(t);
-    double s = sin(t);
-
-    glColor3f (1.0, 0.0, 1.0);
-    glBegin(GL_POLYGON);
-        glVertex3f(0.5 - .25*c, 0.25, .25*s);
-        glVertex3f(0.5 + .25*c, 0.25, .25*s);
-        glVertex3f(0.5 + .25*c, 0.75, -.25*s);
-        glVertex3f(0.5 - .25*c, 0.75, -.25*s);
-    glEnd();
-
-    glutSwapBuffers();
-}
-
-
-
-void mouseFunc(int button, int state, int x, int y)
-{
-    switch (button) {
-        case GLUT_LEFT_BUTTON:
-            cout << "Left button \t";
-            break;
-
-        case GLUT_MIDDLE_BUTTON:
-            cout << "Middle button \t";
-            break;
-
-        case GLUT_RIGHT_BUTTON:
-            cout << "Right button \t";
-            break;
-    }
-
-    switch (state) {
-        case GLUT_UP:
-            cout << "Up";
-            break;
-        case GLUT_DOWN:
-            cout << "Down";
-            break;
-    }
-
-    cout << "\t at [" << x << ", " << y << "]" << endl;
-}
-
-
-void keyboardFunc(unsigned char key, int x, int y)
-{
-    switch (key) {
-        case 27:
-        case 'q':
-            //exit(0);
-            glutLeaveMainLoop();
-            break;
-        case GLUT_KEY_LEFT:
-        case GLUT_KEY_DOWN:
-        case GLUT_KEY_PAGE_DOWN:
-            cout << "down" << endl;
-            break;
-        case GLUT_KEY_RIGHT:
-        case GLUT_KEY_PAGE_UP:
-        case GLUT_KEY_UP:
-            cout << "up" << endl;
-            break;
-        break;
-            default:
-        break;
-    }
-    cout << "key: " << key << endl;
-}
 
 void idleFunc()
 {
@@ -193,12 +126,82 @@ void idleFunc()
         var &= ~8;
 }
 
-/* void closeGlut()
-{
-    cout << "den lyckades avsluta glutMainLoop() here instead" << endl;
-    pthread_exit(NULL);
-}*/
 
+void mouseMotionFunc(int x, int y)
+{
+    Graph2D::mouseX = x;
+    Graph2D::mouseY = y;
+}
+
+void mousePassiveMotionFunc(int x, int y)
+{
+    Graph2D::mouseX = x;
+    Graph2D::mouseY = y;
+}
+
+
+void mouseFunc(int button, int state, int x, int y)
+{
+    switch (button) {
+        case GLUT_LEFT_BUTTON:
+
+            Graph2D::printDirection(x, y);
+            cout << "Left button \t";
+            break;
+
+        case GLUT_MIDDLE_BUTTON:
+            cout << "Middle button \t";
+            break;
+
+        case GLUT_RIGHT_BUTTON:
+            cout << "Right button \t";
+            break;
+    }
+
+    switch (state) {
+        case GLUT_UP:
+            cout << "Up";
+            break;
+        case GLUT_DOWN:
+            cout << "Down";
+            break;
+    }
+
+    cout << "\t at [" << x << ", " << y << "]" << endl;
+}
+
+
+void keyboardFunc(unsigned char key, int x, int y)
+{
+    switch (key) {
+        case 27:
+        case 'q':
+            //exit(0);
+            glutLeaveMainLoop();
+            break;
+        case GLUT_KEY_LEFT:
+        case GLUT_KEY_DOWN:
+        case GLUT_KEY_PAGE_DOWN:
+            cout << "down" << endl;
+            break;
+        case GLUT_KEY_RIGHT:
+        case GLUT_KEY_PAGE_UP:
+        case GLUT_KEY_UP:
+            cout << "up" << endl;
+            break;
+        break;
+            default:
+        break;
+    }
+    cout << "key: " << key << endl;
+}
+
+void reshapeFunc(int width, int height)
+{
+    Graph2D::scrWidth = width;
+    Graph2D::scrHeight = height;
+    glViewport(0,0,width,height);
+}
 
 void *glutThreadFunc(void *threadid)
 {
@@ -220,9 +223,17 @@ void *glutThreadFunc(void *threadid)
     //glutCloseFunc(closeGlut);
     glutKeyboardFunc(keyboardFunc);
     glutMouseFunc(mouseFunc);
+    glutReshapeFunc(reshapeFunc);
+
+    //void mouseMotionFunc(int x, int y);
+    //void mousePassiveMotionFunc(int x, int y);
+    glutMotionFunc(mouseMotionFunc);
+    glutPassiveMotionFunc(mousePassiveMotionFunc);
+
     init();
     glutIdleFunc(idleFunc);
-    glutDisplayFunc(display);
+    //glutDisplayFunc(display);
+    glutDisplayFunc(Graph2D::display);
     cout << "before main loop" << endl;
     glutMainLoop();
     cout << "den lyckades avsluta glutMainLoop()" << endl;

@@ -10,7 +10,7 @@
 //#include <GL/glew.h>
 
 //#define UPD_update	t	   // each t miliseconds UPD_update is updated
-#define UPD_GRAPH       50
+#define UPD_GRAPH       25
 #define UPD_PHYS        100
 #define UPD_PRINT       1000
 #define UPD_THREAD      100
