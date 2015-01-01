@@ -209,14 +209,32 @@ namespace Graph2D {
 		int sect;
 
 		TYP dist[3];
+
+		for (int i=0; i<3; i++)
+		{
+			dist[i] = (p_.x-d_.Rx)*(p_.x-d_.Rx) + (p_.y-d_.Ry)*(p_.y-d_.Ry);
+			if ((p_.x-d_.Rx)*(d_.Sx-d_.Rx) + (p_.y-d_.Ry)*(d_.Sy-d_.Ry) > 0.5)
+				return point(-100, -100);
+
+			if (i != 2)
+				d_.rotate(SP);
+		}
+		/*
 		dist[0] = p_.x*p_.x + p_.y*p_.y;
+		if ((p_.x-d_.Rx)*(d_.Sx-d_.Rx) + (p_.y-d_.Ry)*(d_.Sy-d_.Ry) > 0.5)
+			cout << ":";
 
 		d_.rotate(SP);
 		dist[1] = (p_.x-d_.Rx)*(p_.x-d_.Rx) + (p_.y-d_.Ry)*(p_.y-d_.Ry);
+		if ((p_.x-d_.Rx)*(d_.Sx-d_.Rx) + (p_.y-d_.Ry)*(d_.Sy-d_.Ry) > 0.5)
+			cout << ":";
+
 
 		d_.rotate(SP);
 		dist[2] = (p_.x-d_.Rx)*(p_.x-d_.Rx) + (p_.y-d_.Ry)*(p_.y-d_.Ry);
-
+		if ((p_.x-d_.Rx)*(d_.Sx-d_.Rx) + (p_.y-d_.Ry)*(d_.Sy-d_.Ry) > 0.5)
+			cout << ":";
+*/
 		if (dist[0] < dist[1])
 			sect = (dist[0]<dist[2] ?0 :2);
 		else
@@ -279,7 +297,6 @@ namespace Graph2D {
 
 	void drawPoint(point _P)
 	{
-		glColor3f(1, 0, 0);
 		int siz_ = 10;	// 10 pixlar hög och 10 pixlar bred punkt
 		TYP delta_ = siz_ *(xMax - xMin)*0.5/scrWidth;
 
@@ -328,18 +345,25 @@ namespace Graph2D {
 	    //drawPoint(coords_);
 
     	coords_ = getRootPoint(coords_);
-		//drawPoint(coords_);
+    	glColor3f(1, 1, 1);
+    	drawPoint(coords_);
 
-    	direction d_;
-    	coords_ = d_.rotate(RP, coords_);
-    	for (int tri = 0; tri<3; tri++)
+    	glColor3f(.41, .41, .41);
+    	
+    	if (coords_.y > -100)
     	{
-    		for (int sect = 0; sect < 3; sect++)
-    		{
-    			coords_ = d_.rotate(SP, coords_);
-    			drawPoint(coords_);
-    		}
-			coords_ = d_.rotate(RN, coords_);
+	    	direction d_;
+	    	coords_ = d_.rotate(RP, coords_);
+	    	for (int tri = 0; tri<3; tri++)
+	    	{
+	    		for (int sect = 0; sect < 3; sect++)
+	    		{
+	    			coords_ = d_.rotate(SP, coords_);
+	    			if (tri!=1 || sect!=2)
+	    				drawPoint(coords_);
+	    		}
+				coords_ = d_.rotate(RN, coords_);
+	    	}
     	}
 	    
 
