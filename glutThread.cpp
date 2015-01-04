@@ -57,6 +57,12 @@ void checkThreads()
         case COMM_MSGTYP_PAUSE:
             cout << "nu ska glutThreaden pausas" << endl;
             break;
+        case COMM_MSGTYP_CHOOSE_VERTEX:{
+            int *val = (int*)(msg.data);
+            cout << "nu ska en vertex choooosas: " << *val << endl;
+            Graph2D::vertexChosen = *val;
+            delete[] val;
+            break;}
         default:
             cout << "nu ska glutThreaden göra något annat" << endl;
             break;
@@ -113,13 +119,13 @@ void idleFunc()
 
 
 
-    if ((time > time_print + UPD_THREAD) && UPD_THREAD) {
-        time_print += UPD_THREAD;
+    if ((time > time_thread + UPD_THREAD) && UPD_THREAD) {
+        time_thread += UPD_THREAD;
         checkThreads();
 
         if (var&8){
             cout << "too high print-update" << endl;
-            time_print = time;
+            time_thread = time;
         }
         var |= 8;
     } else
@@ -144,8 +150,9 @@ void mouseFunc(int button, int state, int x, int y)
 {
     switch (button) {
         case GLUT_LEFT_BUTTON:
-
-            Graph2D::printDirection(x, y);
+            if (state == GLUT_UP){
+                Graph2D::insertVertex(x, y);
+            }
             cout << "Left button \t";
             break;
 

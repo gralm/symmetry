@@ -4,6 +4,9 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+#include "../comm/comm.h"
+#include <string>
+#include <sstream>
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -17,7 +20,7 @@
 #define COS60			0.5
 #define SIN60			0.86602540378444
 #define COS120			(-0.5)
-#define SIN120			COS30
+#define SIN120			0.86602540378444
 
 
 namespace Graph2D {
@@ -28,7 +31,9 @@ namespace Graph2D {
 	extern const unsigned char 	RN;		// negativ rotation tlil föregående triangel
 
 	extern bool facePointActive;
+	extern bool edgePointActive;
 	extern bool vertexPointActive;
+
 
 	extern int scrWidth;
 	extern int scrHeight;
@@ -41,6 +46,8 @@ namespace Graph2D {
 
 	extern int mouseX;
 	extern int mouseY;
+
+	extern int vertexChosen;
 
 	struct prefix;
 	struct point;
@@ -55,5 +62,7 @@ namespace Graph2D {
 	void display();
 	point getRootPoint(point);
 	void printDirection(int x, int y);
+	void insertVertex(int x, int y);
+	void getAllFromRoots(const point vRoot_, point *vAll_);
 }
 #endif

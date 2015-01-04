@@ -10,6 +10,7 @@
 #define IDC_MAIN_EDIT   101
 #define IDC_MAIN_BUTTON 102
 #define IDC_TEXT        103
+#define IDC_LISTBOX     104
 
 #define UI_UPDATE_TIME  100
 
@@ -49,6 +50,85 @@ void joinThreads(pthread_t *thread)
     commDestroyMsg();
 }
 
+
+    // http://msdn.microsoft.com/en-us/library/windows/desktop/ms633574(v=vs.85).aspx#system
+void createButton(HWND hwnd, const char* text, int left, int width, int top, int height, int id)
+{
+    // typ = "BUTTON", "EDIT", 
+
+    HFONT hfDefault = NULL;
+    if (hfDefault == NULL)
+        hfDefault = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+
+    HWND hwndOject = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", text, 
+        WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+        left, top, width, height, hwnd, (HMENU)id, GetModuleHandle(NULL), NULL);
+    if(hwndOject == NULL)
+        MessageBox(hwnd, "Could not create button.", "Error", MB_OK | MB_ICONERROR);
+
+    SendMessage(hwndOject, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE,0));
+}
+
+void createMultiEdit(HWND hwnd, const char* text, int left, int width, int top, int height, int id)
+{
+    HFONT hfDefault = NULL;
+    if (hfDefault == NULL)
+        hfDefault = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+
+    HWND hwndOject  = CreateWindowEx(WS_EX_CLIENTEDGE, "EDIT", text, 
+        WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL, 
+        left, top, width, height, hwnd, (HMENU)id, GetModuleHandle(NULL), NULL);
+
+    if(hwndOject == NULL)
+        MessageBox(hwnd, "Could not create edit box.", "Error", MB_OK | MB_ICONERROR);
+
+    hfDefault = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+    SendMessage(hwndOject, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE, 0));
+}
+
+void createEdit(HWND hwnd, const char* text, int left, int width, int top, int height, int id)
+{
+    HFONT hfDefault = NULL;
+    if (hfDefault == NULL)
+        hfDefault = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+
+    HWND hwndOject = CreateWindowEx(WS_EX_CLIENTEDGE, "Edit", text, 
+        WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+        left, top, width, height, hwnd, (HMENU)id, GetModuleHandle(NULL), NULL);
+    if(hwndOject == NULL)
+        MessageBox(hwnd, "Could not create text field 2.", "Error", MB_OK | MB_ICONERROR);
+
+    SendMessage(hwndOject, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE,0));
+}
+
+
+    // http://www.winprog.org/tutorial/controls.html
+    // http://msdn.microsoft.com/en-us/library/windows/desktop/bb775146(v=vs.85).aspx
+void createListbox(HWND hwnd, const char* text, int left, int width, int top, int height, int id)
+{
+    HFONT hfDefault = NULL;
+    if (hfDefault == NULL)
+        hfDefault = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+
+    HWND hwndOject = CreateWindowEx(WS_EX_CLIENTEDGE, "ListBox", text, 
+        WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+        left, top, width, height, hwnd, (HMENU)id, GetModuleHandle(NULL), NULL);
+    if(hwndOject == NULL)
+        MessageBox(hwnd, "Could not create text field 2.", "Error", MB_OK | MB_ICONERROR);
+
+    SendMessage(hwndOject, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE,0));
+
+    //SetDlgItemText(hwnd, id, "This is a string");
+    /*int index = SendDlgItemMessage(hwnd, id, LB_ADDSTRING, 0, (LPARAM)"Hi B!");
+    cout << "aderat index 1: " << index << endl;
+    index = SendDlgItemMessage(hwnd, id, LB_ADDSTRING, 2, (LPARAM)"Hi A!");
+    cout << "aderat index 2: " << index << endl;
+    index = SendDlgItemMessage(hwnd, id, LB_ADDSTRING, 4, (LPARAM)"Hi C!");
+    cout << "aderat index 3: " << index << endl;*/
+    //ListBox
+}
+
+
 // Step 4: the Window Procedure
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -65,40 +145,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             }
             break; 
         case WM_CREATE: {
-                HFONT hfDefault;
-                HWND hEdit;
-
-                hEdit = CreateWindowEx(WS_EX_CLIENTEDGE, "EDIT", "", 
-                    WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL, 
-                    0, 0, 100, 100, hwnd, (HMENU)IDC_MAIN_EDIT, GetModuleHandle(NULL), NULL);
-
-
-                if(hEdit == NULL)
-                    MessageBox(hwnd, "Could not create edit box.", "Error", MB_OK | MB_ICONERROR);
-
-                hfDefault = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
-                SendMessage(hEdit, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE, 0));
-
-
-
-                HWND hWndButton = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "OK", 
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-                    50, 120, 50, 24, hwnd, (HMENU)IDC_MAIN_BUTTON, GetModuleHandle(NULL), NULL);
-                if(hWndButton == NULL)
-                    MessageBox(hwnd, "Could not create button.", "Error", MB_OK | MB_ICONERROR);
-
-                SendMessage(hWndButton, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE,0));
-
-
-                HWND hWndText = CreateWindowEx(WS_EX_CLIENTEDGE, "EDIT", "OK", 
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-                    0, 120, 50, 24, hwnd, (HMENU)IDC_TEXT, GetModuleHandle(NULL), NULL);
-                if(hWndText == NULL)
-                    MessageBox(hwnd, "Could not create text field 2.", "Error", MB_OK | MB_ICONERROR);
-
-                SendMessage(hWndText, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE,0));
-
-
+                createMultiEdit(hwnd, "comesing", 0, 100, 0, 100, IDC_MAIN_EDIT);
+                createEdit(hwnd, "tjej", 0, 50, 120, 24, IDC_TEXT);
+                createButton(hwnd, "hej", 50, 50, 120, 24, IDC_MAIN_BUTTON);
+                createListbox(hwnd, "gay", 0, 100, 150, 100, IDC_LISTBOX);
             }
             break;
         case WM_SIZE:
@@ -116,13 +166,32 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             break;
         case WM_COMMAND:
             {
-                cout << "command: " << LOWORD(wParam) << endl;
+                //cout << "command: " << LOWORD(wParam) << endl;
+                cout << "msg: " << msg << "\twParam: {" << LOWORD(wParam) << ", " << HIWORD(wParam) << "}\tlParam: " << lParam << endl;
+
                 switch(LOWORD(wParam))
                 {
                     case IDC_MAIN_BUTTON: {
-                        
+                        cout << "nu ska det printas here:" << endl;
+                        commPrintMsg();
                         break;
                     }
+                    case IDC_LISTBOX:{
+                        int hiwParam = HIWORD(wParam);
+                        // hiwParam = 1 om man väljer ett nytt element
+                        // hiwParam = 4 om listboxen blir aktiv
+                        // hiwParam = 5 om listboxen bli inaktiv 
+                        if (hiwParam != 1)
+                        {
+                            cout << "nu hände någonting annat än ett val i listboxen: " << hiwParam << endl;
+                            break;
+                        }
+
+                        int chosenIndex = SendDlgItemMessage(hwnd,IDC_LISTBOX,LB_GETCURSEL,0,0);
+                        cout << "chosen index i listboxen: " << chosenIndex << endl;
+                        CommMsg Chosen(COMM_THREAD_MAIN, COMM_THREAD_GLUT, COMM_MSGTYP_CHOOSE_VERTEX, 0, sizeof(int), (char*) &chosenIndex);
+                        commSendMsg(&Chosen);
+                       break;}
                     default:
                         cout << "icke main button " << endl;
                         break;
@@ -149,6 +218,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
+
+
 void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
     //cout << "|" << endl;
@@ -169,6 +240,16 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
                     break;
                 case COMM_MSGTYP_PAUSE:
                     cout << "MAIN - nu ska mainThreaden pausas" << endl;
+                    break;
+                case COMM_MSGTYP_CHOOSE_VERTEX:
+                    cout << "MAIN - nu choosas en vertex" << endl;
+                    msg.destroy();
+                    break;
+                case COMM_MSGTYP_ADD_VERTEX:
+                    cout << "MAIN - nu addas en vertex med index: " << endl;
+                    cout << "sen blir arrayen: " << msg.data << endl;
+                    SendDlgItemMessage(hwnd, IDC_LISTBOX, LB_ADDSTRING, 0, (LPARAM)msg.data);
+                    msg.destroy();
                     break;
                 default:
                     cout << "MAIN - nu ska mainThreaden göra något annat" << endl;
@@ -222,7 +303,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     // Step 2: Creating the Window
     hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, "The title of my window",
-        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 150, 200, NULL, NULL, hInstance, NULL);
+        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 150, 300, NULL, NULL, hInstance, NULL);
 
     if(hwnd == NULL)
     {

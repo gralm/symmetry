@@ -17,7 +17,9 @@ namespace Graph2D {
 	TYP yMax = 0;
 	int scrWidth = 0;
 	int scrHeight = 0;
+	
 	bool facePointActive = false;
+	bool edgePointActive = false;
 	bool vertexPointActive = false;
 
 	int mouseX = -100;
@@ -26,7 +28,10 @@ namespace Graph2D {
 	std::vector<point> V;
 	std::vector<edge> E;
 
-		// face-centered point = -2
+	int vertexChosen = -1;
+
+		// face-centered point = -3
+		// edge-centered point = -2
 		// vertex-centered point = -1
 	struct point {
 		TYP x;
@@ -293,7 +298,30 @@ namespace Graph2D {
 		*ABy = scrHeight*(XY.y + 1.0)*COS30;
 	}
 
+	void insertVertex(int x, int y)
+	{
+		point coord_(fromABtoXY(x, y));
+    	coord_ = getRootPoint(coord_);
+    	int index_ = V.size();
+		V.push_back(coord_);
+		ostringstream os;
+		os.precision(3);
+		os << std::fixed <<  index_ << ": [" << coord_.x << ", " << coord_.y << "]" << '\0';
+		cout << "String is: " << os.str() << endl;
+		cout << "String length: " << os.str().size() << endl;
+		CommMsg messToSend(COMM_THREAD_GLUT, COMM_THREAD_MAIN, 
+			COMM_MSGTYP_ADD_VERTEX, 0, os.str().size(), os.str().c_str());
+		commSendMsg(&messToSend);
+		messToSend.destroy();
+	}
 
+	void insertLine(int x, int y)
+	{
+		static edge e_[10];
+		static int numOfEdges_ = 0;
+		point coord_(fromABtoXY(x, y));
+    	coord_ = getRootPoint(coord_);
+	}
 
 	void drawPoint(point _P)
 	{
@@ -330,6 +358,33 @@ namespace Graph2D {
 		glEnd();	
 	}
 
+	void getAllFromRoots(const point vRoot_, point *vAll_)
+	{
+		if (vRoot_.y <= -100)
+		{
+			for (int i=0; i<9; i++)
+				vAll_[i] = vRoot_;
+			return;
+		}
+
+    	direction d_;
+    	int n = 1;
+    	point nyItv(d_.rotate(RP, vRoot_));
+    	for (int tri = 0; tri<3; tri++)
+    	{
+    		for (int sect = 0; sect < 3; sect++)
+    		{
+    			nyItv = d_.rotate(SP, nyItv);
+    			vAll_[(tri!=1 || sect!=2)? n++: 0] = nyItv;
+    			/*if (tri!=1 || sect!=2)
+    				vAll_[n++] = nyItv;
+    			else
+    				vAll_[0] = nyItv;*/
+    		}
+			nyItv = d_.rotate(RN, nyItv);
+    	}
+	}	
+
 	void display()
 	{
 			    /* clear all pixels */
@@ -339,8 +394,8 @@ namespace Graph2D {
 	    drawBrade();
 
 	    	// rita en mus
-    	TYP mx = xMin + mouseX*(xMax - xMin)/scrWidth;
-    	TYP my = yMax - mouseY*(yMax - yMin)/scrHeight;
+    	//TYP mx = xMin + mouseX*(xMax - xMin)/scrWidth;
+    	//TYP my = yMax - mouseY*(yMax - yMin)/scrHeight;
     	point coords_(fromABtoXY(mouseX, mouseY));
 	    //drawPoint(coords_);
 
@@ -365,7 +420,25 @@ namespace Graph2D {
 				coords_ = d_.rotate(RN, coords_);
 	    	}
     	}
-	    
+
+
+    	glColor3f(.61, 0, .21);
+    	for (int v = 0; v < V.size(); v++)
+    	{
+    		point vAll_[9];
+    		getAllFromRoots(V[v], vAll_);
+    		if (vertexChosen == v)
+    			glColor3f(1.0, 1.0, 1.0);
+    		else
+    			glColor3f(1.0, 0.5, 0.5);
+    		drawPoint(vAll_[0]);
+			if (vertexChosen == v)
+				glColor3f(0.3, 0.3, 0.3);
+			else
+				glColor3f(0.3, 0.15, 0.15);
+    		for (int i=1; i<9; i++)
+    			drawPoint(vAll_[i]);	
+    	}
 
 	    glutSwapBuffers();
 	}
