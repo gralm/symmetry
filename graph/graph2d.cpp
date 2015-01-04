@@ -29,6 +29,7 @@ namespace Graph2D {
 	std::vector<edge> E;
 
 	int vertexChosen = -1;
+	int vertexMouseOver = -1;
 
 		// face-centered point = -3
 		// edge-centered point = -2
@@ -44,7 +45,7 @@ namespace Graph2D {
 		{
 			std::cout << "[" << x << ", " << y << "]" << std::endl;
 		}
-	};	
+	};
 
 		// hänvisar till objekt i relation till sig själv
 	struct prefix {
@@ -224,22 +225,7 @@ namespace Graph2D {
 			if (i != 2)
 				d_.rotate(SP);
 		}
-		/*
-		dist[0] = p_.x*p_.x + p_.y*p_.y;
-		if ((p_.x-d_.Rx)*(d_.Sx-d_.Rx) + (p_.y-d_.Ry)*(d_.Sy-d_.Ry) > 0.5)
-			cout << ":";
 
-		d_.rotate(SP);
-		dist[1] = (p_.x-d_.Rx)*(p_.x-d_.Rx) + (p_.y-d_.Ry)*(p_.y-d_.Ry);
-		if ((p_.x-d_.Rx)*(d_.Sx-d_.Rx) + (p_.y-d_.Ry)*(d_.Sy-d_.Ry) > 0.5)
-			cout << ":";
-
-
-		d_.rotate(SP);
-		dist[2] = (p_.x-d_.Rx)*(p_.x-d_.Rx) + (p_.y-d_.Ry)*(p_.y-d_.Ry);
-		if ((p_.x-d_.Rx)*(d_.Sx-d_.Rx) + (p_.y-d_.Ry)*(d_.Sy-d_.Ry) > 0.5)
-			cout << ":";
-*/
 		if (dist[0] < dist[1])
 			sect = (dist[0]<dist[2] ?0 :2);
 		else
@@ -298,10 +284,46 @@ namespace Graph2D {
 		*ABy = scrHeight*(XY.y + 1.0)*COS30;
 	}
 
-	void insertVertex(int x, int y)
+		// returns -1 if over none, radius = pixel-radius
+	int mouseOverVertex(int x, int y)
+	{
+		point coord_(getRootPoint(fromABtoXY(x, y)));
+		TYP radius2 = 20.0 / (scrHeight + scrHeight);
+		radius2 *= radius2;
+
+		for (int v = 0; v<V.size(); v++)
+		{
+			if ((coord_.x-V[v].x)*(coord_.x-V[v].x) + (coord_.y-V[v].y)*(coord_.y-V[v].y) < radius2)
+				return v;
+		}
+		return -1;
+	}
+
+	void setMousePosition(int x, int y)
+	{
+		mouseX = x;
+		mouseY = y;
+		vertexMouseOver = mouseOverVertex(x, y);
+	}
+
+	void mouseClick(int x, int y)
 	{
 		point coord_(fromABtoXY(x, y));
     	coord_ = getRootPoint(coord_);
+
+    	vertexMouseOver = mouseOverVertex(x, y);
+    	if (vertexMouseOver < 0)
+			insertVertex(coord_);
+		else {
+			vertexChosen = vertexMouseOver;
+			CommMsg nyttMess(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_CHOOSE_VERTEX, 0, sizeof(int), (char*)&vertexChosen);
+			commSendMsg(&nyttMess);
+			nyttMess.destroy();
+		}
+	}
+
+	void insertVertex(point coord_)
+	{
     	int index_ = V.size();
 		V.push_back(coord_);
 		ostringstream os;
@@ -387,6 +409,8 @@ namespace Graph2D {
 
 	void display()
 	{
+		point vAll_[9];
+
 			    /* clear all pixels */
 	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -394,46 +418,36 @@ namespace Graph2D {
 	    drawBrade();
 
 	    	// rita en mus
-    	//TYP mx = xMin + mouseX*(xMax - xMin)/scrWidth;
-    	//TYP my = yMax - mouseY*(yMax - yMin)/scrHeight;
     	point coords_(fromABtoXY(mouseX, mouseY));
-	    //drawPoint(coords_);
+		
+		if (vertexMouseOver < 0) {
+	    	coords_ = getRootPoint(coords_);
+	    	glColor3f(1, 1, 1);
+	    	drawPoint(coords_);
 
-    	coords_ = getRootPoint(coords_);
-    	glColor3f(1, 1, 1);
-    	drawPoint(coords_);
-
-    	glColor3f(.41, .41, .41);
-    	
-    	if (coords_.y > -100)
-    	{
-	    	direction d_;
-	    	coords_ = d_.rotate(RP, coords_);
-	    	for (int tri = 0; tri<3; tri++)
-	    	{
-	    		for (int sect = 0; sect < 3; sect++)
-	    		{
-	    			coords_ = d_.rotate(SP, coords_);
-	    			if (tri!=1 || sect!=2)
-	    				drawPoint(coords_);
-	    		}
-				coords_ = d_.rotate(RN, coords_);
-	    	}
+	    	glColor3f(.41, .41, .41);
+	    	getAllFromRoots(coords_, vAll_);
+	    	for (int i=1; i<9; i++)
+	    		drawPoint(vAll_[i]);
     	}
-
 
     	glColor3f(.61, 0, .21);
     	for (int v = 0; v < V.size(); v++)
     	{
-    		point vAll_[9];
+    		
     		getAllFromRoots(V[v], vAll_);
     		if (vertexChosen == v)
     			glColor3f(1.0, 1.0, 1.0);
-    		else
+    		else if (vertexMouseOver == v)
+    			glColor3f(0.5, 1.0, 1.0);
+    		else 
     			glColor3f(1.0, 0.5, 0.5);
+
     		drawPoint(vAll_[0]);
 			if (vertexChosen == v)
 				glColor3f(0.3, 0.3, 0.3);
+			else if (vertexMouseOver == v)
+				glColor3f(0.15, 0.3, 0.3);
 			else
 				glColor3f(0.3, 0.15, 0.15);
     		for (int i=1; i<9; i++)

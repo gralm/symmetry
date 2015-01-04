@@ -174,6 +174,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                     case IDC_MAIN_BUTTON: {
                         cout << "nu ska det printas here:" << endl;
                         commPrintMsg();
+
+                        //int chosenIndex = SendDlgItemMessage(hwnd,IDC_LISTBOX,LB_SETCURSEL,1,0);
+                        //cout << "chosenIndex: " << chosenIndex << endl;
+                     
                         break;
                     }
                     case IDC_LISTBOX:{
@@ -234,17 +238,21 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
             switch(msg.msgTyp)
             {
                 case COMM_MSGTYP_EXIT:
-                    cout << "MAIN - nu ska mainThreaden dödas" << endl;
+                    //cout << "MAIN - nu ska mainThreaden dödas" << endl;
                     quitAfter = true;
                     PostQuitMessage(0);
                     break;
                 case COMM_MSGTYP_PAUSE:
                     cout << "MAIN - nu ska mainThreaden pausas" << endl;
                     break;
-                case COMM_MSGTYP_CHOOSE_VERTEX:
+                case COMM_MSGTYP_CHOOSE_VERTEX:{
                     cout << "MAIN - nu choosas en vertex" << endl;
+                    int *index_;
+                    index_ = (int*) msg.data;
+
+                    SendDlgItemMessage(hwnd, IDC_LISTBOX, LB_SETCURSEL, *index_, 0);
                     msg.destroy();
-                    break;
+                    break;}
                 case COMM_MSGTYP_ADD_VERTEX:
                     cout << "MAIN - nu addas en vertex med index: " << endl;
                     cout << "sen blir arrayen: " << msg.data << endl;

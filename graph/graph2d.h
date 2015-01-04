@@ -62,7 +62,9 @@ namespace Graph2D {
 	void display();
 	point getRootPoint(point);
 	void printDirection(int x, int y);
-	void insertVertex(int x, int y);
+	void mouseClick(int x, int y);
+	void insertVertex(point);
+	void setMousePosition(int x, int y);
 	void getAllFromRoots(const point vRoot_, point *vAll_);
 }
 #endif
