@@ -19,6 +19,7 @@
 #define IDC_CHECK_BOX_3         107
 #define IDC_NEXT_BUTTON         180
 #define IDC_PREV_BUTTON         181
+#define IDC_DEL_BUTTON          182
 
 using namespace std;
 
@@ -190,8 +191,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 createCheckbox(hwnd, "edge-centered", 0, 200, 180, 30, IDC_CHECK_BOX_2);
                 createCheckbox(hwnd, "face-centered", 0, 200, 210, 30, IDC_CHECK_BOX_3);
                 createListbox(hwnd, "gay", 0, 200, 240, 100, IDC_LISTBOX);
-                createButton(hwnd, "<< Prev", 0, 100, 350, 24, IDC_PREV_BUTTON);
-                createButton(hwnd, "Next >>", 100, 100, 350, 24, IDC_NEXT_BUTTON);
+                createButton(hwnd, "taka awayness", 0, 100, 350, 24, IDC_DEL_BUTTON);
+                
+                createButton(hwnd, "<< Prev", 0, 100, 374, 24, IDC_PREV_BUTTON);
+                createButton(hwnd, "Next >>", 100, 100, 374, 24, IDC_NEXT_BUTTON);
             }
             break;
         case WM_SIZE:
@@ -380,6 +383,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     }
 
     // Step 2: Creating the Window
+    /*hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, "The title of my window",
+        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 450, NULL, NULL, hInstance, NULL);*/
     hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, "The title of my window",
         WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 450, NULL, NULL, hInstance, NULL);
 
@@ -388,7 +393,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         MessageBox(NULL, "Window Creation Failed!", "Error!", MB_ICONEXCLAMATION | MB_OK);
         return 0;
     }
-
+    SetWindowPos(hwnd, NULL, 100, 100, 250, 450, SWP_NOACTIVATE);
     
     SetTimer(hwnd, 0, UI_UPDATE_TIME, checkMainThreads);
 

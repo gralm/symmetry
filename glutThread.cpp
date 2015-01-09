@@ -218,11 +218,11 @@ void *glutThreadFunc(void *threadid)
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(300, 300);
+    glutInitWindowSize(600, 600);
     Graph2D::scrWidth = 300;
     Graph2D::scrHeight = 300;
 
-    glutInitWindowPosition(300, 100);
+    glutInitWindowPosition(350, 100);
     glutCreateWindow("Hej");
 
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);

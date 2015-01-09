@@ -14,7 +14,6 @@ namespace Graph2D {
 	const int EDGE_CENTERED = -3;
 	const int FACE_CENTERED = -4;
 
-
 	TYP xMin = 0;
 	TYP xMax = 0;
 	TYP yMin = 0;
