@@ -7,12 +7,18 @@
 #include "comm/comm.h"
 #include "glutThread.h"
 
-#define IDC_MAIN_EDIT   101
-#define IDC_MAIN_BUTTON 102
-#define IDC_TEXT        103
-#define IDC_LISTBOX     104
+#define UI_UPDATE_TIME          100
 
-#define UI_UPDATE_TIME  100
+
+#define IDC_MAIN_EDIT           101
+#define IDC_MAIN_BUTTON         102
+#define IDC_TEXT                103
+#define IDC_LISTBOX             104
+#define IDC_CHECK_BOX_1         105
+#define IDC_CHECK_BOX_2         106
+#define IDC_CHECK_BOX_3         107
+#define IDC_NEXT_BUTTON         180
+#define IDC_PREV_BUTTON         181
 
 using namespace std;
 
@@ -128,12 +134,44 @@ void createListbox(HWND hwnd, const char* text, int left, int width, int top, in
     //ListBox
 }
 
+void createCheckbox(HWND hwnd, const char* text, int left, int width, int top, int height, int id) {
+    HFONT hfDefault = NULL;
+    if (hfDefault == NULL)
+        hfDefault = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+/*      HWND hWndCheckBox = CreateWindowEx(
+            0, "Button", "CheckBox",
+            WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX,
+            200, 200, 100, 20,
+            hWndParent, NULL, hInstance, NULL
+            );*/
+
+    HWND hWndCheckBox = CreateWindowEx(
+            WS_EX_CLIENTEDGE, "Button", text,
+            WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX,
+            left, top, width, height,
+            hwnd, (HMENU) id, GetModuleHandle(NULL), NULL);
+    if(hWndCheckBox == NULL)
+        MessageBox(hwnd, "Could not create checkbox", "Error", MB_OK | MB_ICONERROR);
+
+    SendMessage(hWndCheckBox, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE,0));
+
+}
+
 
 // Step 4: the Window Procedure
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch(msg)
     {      
+        case WM_KEYDOWN: {
+            cout << "Key pressed: " << LOWORD(wParam) << ", "
+                << HIWORD(wParam) << ", " << LOWORD(lParam) << 
+                ", " << HIWORD(lParam) << endl;
+                if (LOWORD(wParam) == VK_ESCAPE)   // ESCAPE-key
+                    PostQuitMessage(0);
+
+                break;
+        }
         case WM_LBUTTONDOWN: {
                 cout << "L";
                 char szFileName[MAX_PATH];
@@ -148,7 +186,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 createMultiEdit(hwnd, "comesing", 0, 200, 0, 100, IDC_MAIN_EDIT);
                 createEdit(hwnd, "tjej", 0, 100, 120, 24, IDC_TEXT);
                 createButton(hwnd, "hej", 100, 100, 120, 24, IDC_MAIN_BUTTON);
-                createListbox(hwnd, "gay", 0, 200, 150, 100, IDC_LISTBOX);
+                createCheckbox(hwnd, "vertex-centered", 0, 200, 150, 30, IDC_CHECK_BOX_1);
+                createCheckbox(hwnd, "edge-centered", 0, 200, 180, 30, IDC_CHECK_BOX_2);
+                createCheckbox(hwnd, "face-centered", 0, 200, 210, 30, IDC_CHECK_BOX_3);
+                createListbox(hwnd, "gay", 0, 200, 240, 100, IDC_LISTBOX);
+                createButton(hwnd, "<< Prev", 0, 100, 350, 24, IDC_PREV_BUTTON);
+                createButton(hwnd, "Next >>", 100, 100, 350, 24, IDC_NEXT_BUTTON);
             }
             break;
         case WM_SIZE:
@@ -259,6 +302,33 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
                     SendDlgItemMessage(hwnd, IDC_LISTBOX, LB_ADDSTRING, 0, (LPARAM)msg.data);
                     msg.destroy();
                     break;
+
+                case COMM_MSGTYP_ADD_CENTERED_VERTEX:{
+                    cout << "Nu addades en centered vertex" << endl;
+                    int *val = (int*) msg.data;
+
+                    switch(*val)
+                    {
+                        case -2:
+                            cout << " * blev en vertex-centered vertex" << endl;
+                            CheckDlgButton(hwnd, IDC_CHECK_BOX_1, BST_CHECKED);
+                            //BST_UNCHECKED
+                            break;
+                        case -3:
+                            cout << " * blev en edge-centered vertex" << endl;
+                            CheckDlgButton(hwnd, IDC_CHECK_BOX_2, BST_CHECKED);
+                            break;
+                        case -4:
+                            cout << " * blev en face-centered vertex" << endl;
+                            CheckDlgButton(hwnd, IDC_CHECK_BOX_3, BST_CHECKED);
+                            break;
+                        default:
+                            cout << " * blev en vetickevaddetis-centered vertex" << endl;
+                            break;
+                    }
+                    delete msg.data;
+                    break;
+                    }
                 default:
                     cout << "MAIN - nu ska mainThreaden göra något annat" << endl;
                     break;
@@ -311,7 +381,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     // Step 2: Creating the Window
     hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, "The title of my window",
-        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 300, NULL, NULL, hInstance, NULL);
+        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 450, NULL, NULL, hInstance, NULL);
 
     if(hwnd == NULL)
     {

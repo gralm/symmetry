@@ -15,7 +15,6 @@ namespace Graph2D {
 	const int FACE_CENTERED = -4;
 
 
-
 	TYP xMin = 0;
 	TYP xMax = 0;
 	TYP yMin = 0;
@@ -334,26 +333,48 @@ namespace Graph2D {
     	coord_ = getRootPoint(coord_);
 
     	vertexMouseOver = mouseOverVertex(x, y);
-    	if (vertexMouseOver == -1) {
-			insertVertex(coord_);
-    	} else if (vertexMouseOver == VERTEX_CENTERED) {
-			vertexChosen = VERTEX_CENTERED;
-			vertexPointActive = true;
-		} else if (vertexMouseOver == EDGE_CENTERED) {
-			vertexChosen = EDGE_CENTERED;
-			edgePointActive = true;
-		} else if (vertexMouseOver == FACE_CENTERED) {
-			vertexChosen = FACE_CENTERED;
-			facePointActive = true;
+    	cout << "mouseklick: " << endl;
+    	if (vertexMouseOver < 0) {
+    		vertexChosen = vertexMouseOver;
+
+
+
+    		if (vertexMouseOver == -1) {
+				vertexChosen = vertexMouseOver = insertVertex(coord_);
+	    	} else if (vertexMouseOver == VERTEX_CENTERED) {
+	    		//vertexChosen = VERTEX_CENTERED;
+				int msgtyp = vertexPointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
+				vertexPointActive = true;
+				CommMsg wakeV(COMM_THREAD_GLUT, COMM_THREAD_MAIN, 
+					msgtyp, 0, sizeof(int), (char*)&VERTEX_CENTERED);
+				commSendMsg(&wakeV);
+
+			} else if (vertexMouseOver == EDGE_CENTERED) {
+				//vertexChosen = EDGE_CENTERED;
+				int msgtyp = edgePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
+				edgePointActive = true;
+				CommMsg wakeV(COMM_THREAD_GLUT, COMM_THREAD_MAIN, 
+					msgtyp, 0, sizeof(int), (char*)&EDGE_CENTERED);
+				commSendMsg(&wakeV);
+
+			} else if (vertexMouseOver == FACE_CENTERED) {
+				//vertexChosen = FACE_CENTERED;
+				int msgtyp = facePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
+				facePointActive = true;
+				CommMsg wakeV(COMM_THREAD_GLUT, COMM_THREAD_MAIN, 
+					msgtyp, 0, sizeof(int), (char*)&FACE_CENTERED);
+				commSendMsg(&wakeV);
+			}
 		} else {
-			vertexChosen = vertexMouseOver;
-			CommMsg nyttMess(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_CHOOSE_VERTEX, 0, sizeof(int), (char*)&vertexChosen);
-			commSendMsg(&nyttMess);
-			nyttMess.destroy();
+				vertexChosen = vertexMouseOver;
+				CommMsg nyttMess(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_CHOOSE_VERTEX, 0, sizeof(int), (char*)&vertexChosen);
+				commSendMsg(&nyttMess);
+				nyttMess.destroy();
 		}
+
 	}
 
-	void insertVertex(point coord_)
+	int insertVertex(point coord_)
 	{
 		int index_ = V.size();
 		V.push_back(coord_);
@@ -365,6 +386,7 @@ namespace Graph2D {
 		CommMsg messToSend(COMM_THREAD_GLUT, COMM_THREAD_MAIN, 
 			COMM_MSGTYP_ADD_VERTEX, 0, strlen(os) + 1, os);
 		commSendMsg(&messToSend);
+		return index_;
 		// behöver inte förstöra messToSend
 	}
 
@@ -399,20 +421,16 @@ namespace Graph2D {
 		TYP delta_ = siz_ *(xMax - xMin)*0.5/scrWidth;
 
 		glBegin(filled? GL_POLYGON: GL_LINE_STRIP);
-			glVertex3f(_P.x + 1.0*delta_, 	_P.y + 0.0*delta_, 0.0);
-			glVertex3f(_P.x + COS30*delta_, _P.y + SIN30*delta_, 0.0);
-			glVertex3f(_P.x + COS60*delta_, _P.y + SIN60*delta_, 0.0);
-			glVertex3f(_P.x + 0.0*delta_, 	_P.y + 1.0*delta_, 0.0);
-			glVertex3f(_P.x - COS60*delta_, _P.y + SIN60*delta_, 0.0);
-			glVertex3f(_P.x - COS30*delta_, _P.y + SIN30*delta_, 0.0);
-
-			glVertex3f(_P.x - 1.0*delta_, 	_P.y - 0.0*delta_, 0.0);
-			glVertex3f(_P.x - COS30*delta_, _P.y - SIN30*delta_, 0.0);
-			glVertex3f(_P.x - COS60*delta_, _P.y - SIN60*delta_, 0.0);
-			glVertex3f(_P.x - 0.0*delta_, 	_P.y - 1.0*delta_, 0.0);
-			glVertex3f(_P.x + COS60*delta_, _P.y - SIN60*delta_, 0.0);
-			glVertex3f(_P.x + COS30*delta_, _P.y - SIN30*delta_, 0.0);
-
+			for (int i=0; i<2; i++)
+			{
+				glVertex3f(_P.x + 1.0*delta_, 	_P.y + 0.0*delta_, 0.0);
+				glVertex3f(_P.x + COS30*delta_, _P.y + SIN30*delta_, 0.0);
+				glVertex3f(_P.x + COS60*delta_, _P.y + SIN60*delta_, 0.0);
+				glVertex3f(_P.x + 0.0*delta_, 	_P.y + 1.0*delta_, 0.0);
+				glVertex3f(_P.x - COS60*delta_, _P.y + SIN60*delta_, 0.0);
+				glVertex3f(_P.x - COS30*delta_, _P.y + SIN30*delta_, 0.0);
+				delta_ *= -1;
+			}
 			glVertex3f(_P.x + 1.0*delta_, 	_P.y + 0.0*delta_, 0.0);
 		glEnd();
 	}
