@@ -7,6 +7,7 @@
 #include "../comm/comm.h"
 #include <string>
 #include <sstream>
+#include <stdio.h>
 
 #include <GL/gl.h>
 #include <GL/glu.h>

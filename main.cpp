@@ -145,10 +145,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             }
             break; 
         case WM_CREATE: {
-                createMultiEdit(hwnd, "comesing", 0, 100, 0, 100, IDC_MAIN_EDIT);
-                createEdit(hwnd, "tjej", 0, 50, 120, 24, IDC_TEXT);
-                createButton(hwnd, "hej", 50, 50, 120, 24, IDC_MAIN_BUTTON);
-                createListbox(hwnd, "gay", 0, 100, 150, 100, IDC_LISTBOX);
+                createMultiEdit(hwnd, "comesing", 0, 200, 0, 100, IDC_MAIN_EDIT);
+                createEdit(hwnd, "tjej", 0, 100, 120, 24, IDC_TEXT);
+                createButton(hwnd, "hej", 100, 100, 120, 24, IDC_MAIN_BUTTON);
+                createListbox(hwnd, "gay", 0, 200, 150, 100, IDC_LISTBOX);
             }
             break;
         case WM_SIZE:
@@ -311,7 +311,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     // Step 2: Creating the Window
     hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, "The title of my window",
-        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 150, 300, NULL, NULL, hInstance, NULL);
+        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 300, NULL, NULL, hInstance, NULL);
 
     if(hwnd == NULL)
     {

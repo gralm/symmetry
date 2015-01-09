@@ -19,6 +19,14 @@ int commSendMsg(const CommMsg *msg)
 
     char *data_ = new char[msg->dataSiz];
     memcpy(data_, msg->data, msg->dataSiz);
+
+    cout << "commSendMsg, before send: ";
+    /*for (const char *c = msg->data; c < msg->data + msg->dataSiz; c++)
+        cout << "[" << *c << ", " << ((int) (*c)) << "], ";
+    cout << endl;*/
+    for (const char *c = msg->data; c < msg->data + msg->dataSiz; c++)
+        cout << *c;
+    cout << endl;
     CommMsg nyttMsg(msg->fromId, msg->toId, msg->msgTyp, msg->time, msg->dataSiz, data_);
     
     msgList.push_back(nyttMsg);

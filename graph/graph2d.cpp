@@ -10,6 +10,11 @@ namespace Graph2D {
 	const unsigned char RP = 4;		// positiv rotation till nästa triangel
 	const unsigned char RN = 8;		// negativ rotation tlil föregående triangel
 
+	const int VERTEX_CENTERED = -2;
+	const int EDGE_CENTERED = -3;
+	const int FACE_CENTERED = -4;
+
+
 
 	TYP xMin = 0;
 	TYP xMax = 0;
@@ -46,6 +51,12 @@ namespace Graph2D {
 			std::cout << "[" << x << ", " << y << "]" << std::endl;
 		}
 	};
+
+
+	const point vertexCenteredPoint(.0, .0);
+	const point edgeCenteredPoint(.25, SIN60*.5);
+	const point faceCenteredPoint(.5, .25/COS30);
+
 
 		// hänvisar till objekt i relation till sig själv
 	struct prefix {
@@ -287,13 +298,23 @@ namespace Graph2D {
 		// returns -1 if over none, radius = pixel-radius
 	int mouseOverVertex(int x, int y)
 	{
-		point coord_(getRootPoint(fromABtoXY(x, y)));
+		point co_(getRootPoint(fromABtoXY(x, y)));
 		TYP radius2 = 20.0 / (scrHeight + scrHeight);
 		radius2 *= radius2;
 
+		if (co_.x*co_.x + co_.y*co_.y < radius2)
+			return VERTEX_CENTERED;
+
+		if ((co_.x-.5)*(co_.x-.5) + co_.y*co_.y < radius2 || 
+			(co_.x-.25)*(co_.x-.25) + (co_.y-SIN60*.5)*(co_.y-SIN60*.5) < radius2)
+			return EDGE_CENTERED;
+
+		if ((co_.x-.5)*(co_.x-.5) + (co_.y-.25/COS30)*(co_.y-.25/COS30) < radius2)
+			return FACE_CENTERED;
+
 		for (int v = 0; v<V.size(); v++)
 		{
-			if ((coord_.x-V[v].x)*(coord_.x-V[v].x) + (coord_.y-V[v].y)*(coord_.y-V[v].y) < radius2)
+			if ((co_.x-V[v].x)*(co_.x-V[v].x) + (co_.y-V[v].y)*(co_.y-V[v].y) < radius2)
 				return v;
 		}
 		return -1;
@@ -304,6 +325,7 @@ namespace Graph2D {
 		mouseX = x;
 		mouseY = y;
 		vertexMouseOver = mouseOverVertex(x, y);
+		//cout << vertexMouseOver;
 	}
 
 	void mouseClick(int x, int y)
@@ -312,9 +334,18 @@ namespace Graph2D {
     	coord_ = getRootPoint(coord_);
 
     	vertexMouseOver = mouseOverVertex(x, y);
-    	if (vertexMouseOver < 0)
+    	if (vertexMouseOver == -1) {
 			insertVertex(coord_);
-		else {
+    	} else if (vertexMouseOver == VERTEX_CENTERED) {
+			vertexChosen = VERTEX_CENTERED;
+			vertexPointActive = true;
+		} else if (vertexMouseOver == EDGE_CENTERED) {
+			vertexChosen = EDGE_CENTERED;
+			edgePointActive = true;
+		} else if (vertexMouseOver == FACE_CENTERED) {
+			vertexChosen = FACE_CENTERED;
+			facePointActive = true;
+		} else {
 			vertexChosen = vertexMouseOver;
 			CommMsg nyttMess(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_CHOOSE_VERTEX, 0, sizeof(int), (char*)&vertexChosen);
 			commSendMsg(&nyttMess);
@@ -324,17 +355,17 @@ namespace Graph2D {
 
 	void insertVertex(point coord_)
 	{
-    	int index_ = V.size();
+		int index_ = V.size();
 		V.push_back(coord_);
-		ostringstream os;
-		os.precision(3);
-		os << std::fixed <<  index_ << ": [" << coord_.x << ", " << coord_.y << "]" << '\0';
-		cout << "String is: " << os.str() << endl;
-		cout << "String length: " << os.str().size() << endl;
+				// c:s strängmetoder ligger ljusår före c++:s hantering av stärngar
+				// c++ har sitt jädra stringstream::stream::string::hittepå som inte
+				// effektiviserar för någon någonsin. 
+		char os[40];
+		snprintf(os, 40, "%d: [%.3f, %.3f]", index_, coord_.x, coord_.y);
 		CommMsg messToSend(COMM_THREAD_GLUT, COMM_THREAD_MAIN, 
-			COMM_MSGTYP_ADD_VERTEX, 0, os.str().size(), os.str().c_str());
+			COMM_MSGTYP_ADD_VERTEX, 0, strlen(os) + 1, os);
 		commSendMsg(&messToSend);
-		messToSend.destroy();
+		// behöver inte förstöra messToSend
 	}
 
 	void insertLine(int x, int y)
@@ -359,6 +390,30 @@ namespace Graph2D {
 		glBegin(GL_LINES);
 			glVertex3f(_P.x, _P.y-delta_, 0.0);
 			glVertex3f(_P.x, _P.y+delta_, 0.0);
+		glEnd();
+	}
+
+	void drawCircle(point _P, bool filled)
+	{
+		int siz_ = 10;	// 10 pixlar hög och 10 pixlar bred punkt
+		TYP delta_ = siz_ *(xMax - xMin)*0.5/scrWidth;
+
+		glBegin(filled? GL_POLYGON: GL_LINE_STRIP);
+			glVertex3f(_P.x + 1.0*delta_, 	_P.y + 0.0*delta_, 0.0);
+			glVertex3f(_P.x + COS30*delta_, _P.y + SIN30*delta_, 0.0);
+			glVertex3f(_P.x + COS60*delta_, _P.y + SIN60*delta_, 0.0);
+			glVertex3f(_P.x + 0.0*delta_, 	_P.y + 1.0*delta_, 0.0);
+			glVertex3f(_P.x - COS60*delta_, _P.y + SIN60*delta_, 0.0);
+			glVertex3f(_P.x - COS30*delta_, _P.y + SIN30*delta_, 0.0);
+
+			glVertex3f(_P.x - 1.0*delta_, 	_P.y - 0.0*delta_, 0.0);
+			glVertex3f(_P.x - COS30*delta_, _P.y - SIN30*delta_, 0.0);
+			glVertex3f(_P.x - COS60*delta_, _P.y - SIN60*delta_, 0.0);
+			glVertex3f(_P.x - 0.0*delta_, 	_P.y - 1.0*delta_, 0.0);
+			glVertex3f(_P.x + COS60*delta_, _P.y - SIN60*delta_, 0.0);
+			glVertex3f(_P.x + COS30*delta_, _P.y - SIN30*delta_, 0.0);
+
+			glVertex3f(_P.x + 1.0*delta_, 	_P.y + 0.0*delta_, 0.0);
 		glEnd();
 	}
 
@@ -398,58 +453,88 @@ namespace Graph2D {
     		{
     			nyItv = d_.rotate(SP, nyItv);
     			vAll_[(tri!=1 || sect!=2)? n++: 0] = nyItv;
-    			/*if (tri!=1 || sect!=2)
-    				vAll_[n++] = nyItv;
-    			else
-    				vAll_[0] = nyItv;*/
     		}
 			nyItv = d_.rotate(RN, nyItv);
     	}
 	}	
 
+	void setColorOfVertex(int vert_, TYP str_)
+	{
+		    // vald, över eller inte = vit
+		    // över, men icke vald = turkos
+		    // icke vald och icke över = rosa
+		if (vertexChosen == vert_)
+			glColor3f(1.0*str_, 1.0*str_, 1.0*str_);
+		else if (vertexMouseOver == vert_)
+			glColor3f(0.5*str_, 1.0*str_, 1.0*str_);
+		else 
+			glColor3f(1.0*str_, 0.5*str_, 0.5*str_);
+
+	}
+
 	void display()
 	{
 		point vAll_[9];
 
-			    /* clear all pixels */
+			// clear all pixels
 	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	    	// rita bräde:
 	    drawBrade();
 
-	    	// rita en mus
-    	point coords_(fromABtoXY(mouseX, mouseY));
+		setColorOfVertex(VERTEX_CENTERED, 1.0);
+		getAllFromRoots(vertexCenteredPoint, vAll_);
+		if (vertexPointActive || vertexMouseOver == VERTEX_CENTERED)
+    		for (int i=1; i<9; i++)
+    			drawCircle(vAll_[i], vertexPointActive);
+
+    		// EDGE
+  	  	setColorOfVertex(EDGE_CENTERED, 1.0);
+  	  	getAllFromRoots(edgeCenteredPoint, vAll_);
+  	  	if (edgePointActive || vertexMouseOver == EDGE_CENTERED)
+	    	for (int i=1; i<9; i++)
+	    		drawCircle(vAll_[i], edgePointActive);
+
+    		// FACE
+    	setColorOfVertex(FACE_CENTERED, 1.0);
+		getAllFromRoots(faceCenteredPoint, vAll_);
+		if (facePointActive || vertexMouseOver == FACE_CENTERED)
+	    	for (int i=1; i<9; i++)
+	    		drawCircle(vAll_[i], facePointActive);
+
+
+
+	    	// rita musem p, om inte mouseOver
+    	point coords_ = fromABtoXY(mouseX, mouseY);
 		
-		if (vertexMouseOver < 0) {
-	    	coords_ = getRootPoint(coords_);
-	    	glColor3f(1, 1, 1);
-	    	drawPoint(coords_);
+		if (vertexMouseOver == -1) {
+			coords_ = getRootPoint(coords_);
 
 	    	glColor3f(.41, .41, .41);
 	    	getAllFromRoots(coords_, vAll_);
 	    	for (int i=1; i<9; i++)
 	    		drawPoint(vAll_[i]);
-    	}
 
+	    	glColor3f(1, 1, 1);
+	    	drawPoint(coords_);
+  	  	}
+
+
+
+
+    		// rita alla vertices även om musen är över den:
     	glColor3f(.61, 0, .21);
     	for (int v = 0; v < V.size(); v++)
     	{
     		
     		getAllFromRoots(V[v], vAll_);
-    		if (vertexChosen == v)
-    			glColor3f(1.0, 1.0, 1.0);
-    		else if (vertexMouseOver == v)
-    			glColor3f(0.5, 1.0, 1.0);
-    		else 
-    			glColor3f(1.0, 0.5, 0.5);
 
+    			// rita i rot-triangeln lite starkare:
+			setColorOfVertex(v, 1.0);
     		drawPoint(vAll_[0]);
-			if (vertexChosen == v)
-				glColor3f(0.3, 0.3, 0.3);
-			else if (vertexMouseOver == v)
-				glColor3f(0.15, 0.3, 0.3);
-			else
-				glColor3f(0.3, 0.15, 0.15);
+
+    			// rita de övriga lite skuggade:
+			setColorOfVertex(v, 0.5);
     		for (int i=1; i<9; i++)
     			drawPoint(vAll_[i]);	
     	}

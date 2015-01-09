@@ -10,10 +10,11 @@
 #define COMM_THREAD_GLUT		4	
 
 	// Message typ
-#define COMM_MSGTYP_EXIT			0
-#define COMM_MSGTYP_PAUSE			1
-#define COMM_MSGTYP_CHOOSE_VERTEX	2
-#define COMM_MSGTYP_ADD_VERTEX		3
+#define COMM_MSGTYP_EXIT					0
+#define COMM_MSGTYP_PAUSE					1
+#define COMM_MSGTYP_CHOOSE_VERTEX			2
+#define COMM_MSGTYP_ADD_VERTEX				3
+#define COMM_MSGTYP_ADD_CENTERED_VERTEX		4
 
 	// return values messages (msg)
 #define COMM_RET_ID_CREATED			11
