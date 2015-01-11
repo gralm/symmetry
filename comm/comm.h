@@ -15,6 +15,7 @@
 #define COMM_MSGTYP_CHOOSE_VERTEX			2
 #define COMM_MSGTYP_ADD_VERTEX				3
 #define COMM_MSGTYP_ADD_CENTERED_VERTEX		4
+#define COMM_MSGTYP_SET_MODE				5
 
 	// return values messages (msg)
 #define COMM_RET_ID_CREATED			11

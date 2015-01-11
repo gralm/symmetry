@@ -25,6 +25,8 @@ using namespace std;
 
 const char g_szClassName[] = "myWindowClass";
 
+int mode = 0;
+
 
 void printFunc(const char *str, long tid)
 {
@@ -242,6 +244,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                         CommMsg Chosen(COMM_THREAD_MAIN, COMM_THREAD_GLUT, COMM_MSGTYP_CHOOSE_VERTEX, 0, sizeof(int), (char*) &chosenIndex);
                         commSendMsg(&Chosen);
                        break;}
+
+                    case IDC_NEXT_BUTTON: {
+                        cout << "Det klickas på next" << endl;
+                        mode++;
+                        CommMsg ChangeMode(COMM_THREAD_MAIN, COMM_THREAD_GLUT, COMM_MSGTYP_SET_MODE, 0, sizeof(int), (char*) &mode);
+                        commSendMsg(&ChangeMode);
+                        
+                        break;
+                    }
+                    case IDC_PREV_BUTTON:{
+                        cout << "Det klickas på prev" << endl;
+                        mode--;
+                        CommMsg ChangeMode(COMM_THREAD_MAIN, COMM_THREAD_GLUT, COMM_MSGTYP_SET_MODE, 0, sizeof(int), (char*) &mode);
+                        commSendMsg(&ChangeMode);
+                        break;
+                    }
                     default:
                         cout << "icke main button " << endl;
                         break;
@@ -329,7 +347,8 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
                             cout << " * blev en vetickevaddetis-centered vertex" << endl;
                             break;
                     }
-                    delete msg.data;
+                    msg.destroy();
+                    //delete msg.data;
                     break;
                     }
                 default:
@@ -343,7 +362,9 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
             //cout << "MAIN - *" << endl;
             break;
         default:
-            cout << "MAIN - det blev no annat: " << val << endl;
+            cout << "ERR: MAIN - det blev no annat: " << val << endl;
+            cout << "ERR: try anyway att killa msg" << endl;
+            msg.destroy();
             break;
     }
     if (quitAfter) 
@@ -354,6 +375,22 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+    int g[8], h;
+    h = 0;
+    g[0] = 477 + 484;
+    g[1] = 283 + 481 + 486;
+    g[2] = 170 + 286 + 481 + 283;
+    g[3] = 241 + 238;
+    g[4] = 242 + 282 + 240 + 171 + 190 + 240;
+    g[5] = 240 + 283 + 251 + 285;
+    g[6] = 492 + 350;
+    g[7] = 284;
+    for (int i=0; i<8; i++){
+        cout << i << ": " << g[i] << endl;
+        h += g[i];
+    }
+    cout << "sum: " << h << endl;
+
     pthread_t glutThread;
     long t;
     int rc = pthread_create(&glutThread, NULL, glutThreadFunc, (void *)t);

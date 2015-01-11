@@ -22,6 +22,8 @@
 #define SIN60			0.86602540378444
 #define COS120			(-0.5)
 #define SIN120			0.86602540378444
+#define TAN30			0.57735026918962
+#define TAN60			1.73205080756887
 
 
 namespace Graph2D {
@@ -49,6 +51,16 @@ namespace Graph2D {
 	extern int mouseY;
 
 	extern int vertexChosen;
+
+		// mode = 0:	Skapa Vertex
+		// mode = 1:	Skapa Edges -> Faces
+		// mode = 2:	Val av symmetri
+		// mode = 3:	Välj energinivåer för relax 1.
+		// mode = 4:	Kör relax 1.
+		// mode = 5:	Välj energinivåer för relax 2.
+		// mode = 6:	Kör relax 2.
+		// mode = 7:	Resultat och Spara.
+	extern int mode;
 
 	struct prefix;
 	struct point;

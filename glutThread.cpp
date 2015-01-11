@@ -63,10 +63,18 @@ void checkThreads()
             Graph2D::vertexChosen = *val;
             delete[] val;
             break;}
+        case COMM_MSGTYP_SET_MODE: {
+            int *val = (int*)(msg.data);
+            cout << "nu choooosas ett nytt val i glutThread.cpp: " << *val << endl;
+            Graph2D::mode = *val;
+            delete val;
+            break;
+        }
         default:
             cout << "nu ska glutThreaden göra något annat" << endl;
             break;
     }
+    msg.destroy();
 
 }
 
