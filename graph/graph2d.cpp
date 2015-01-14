@@ -36,23 +36,33 @@ namespace Graph2D {
 	
 	int vertexChosen = -1;
 	int vertexMouseOver = -1;
+	struct direction;
+	//point direction::rotate(int dir_, point p_);
 
 		// face-centered point = -3
 		// edge-centered point = -2
 		// vertex-centered point = -1
-	struct point {
-		TYP x;
-		TYP y;
 
-		point() 				{x = y = 0;}
-		point(TYP x_, TYP y_) 	{x = x_; 	y = y_;}
-		point(const point &A_) 	{x = A_.x;	y = A_.y;}
-		void print()
-		{
-			std::cout << "[" << x << ", " << y << "]" << std::endl;
-		}
-	};
+	point::point() 				
+	{
+		x = y = 0;
+	}
+	point::point(TYP x_, TYP y_) 	
+	{
+		x = x_; 	
+		y = y_;
+	}
+	point::point(const point &A_) 	
+	{
+		x = A_.x;	
+		y = A_.y;
+	}
+	void point::print()
+	{
+		std::cout << "[" << x << ", " << y << "]" << std::endl;
+	}
 
+	//point point::getpoint(Point p_);
 
 	const point vertexCenteredPoint(.0, .0);
 	const point edgeCenteredPoint(.25, SIN60*.5);
@@ -60,90 +70,206 @@ namespace Graph2D {
 
 
 		// hänvisar till objekt i relation till sig själv
-	struct prefix {
-		unsigned char r[10];
 
-		prefix() {
-			for (int i=0; i<10; i++)
-				r[i] = (unsigned char) 0;
-		}
 
-		void update()
+	prefix::prefix() {
+		for (int i=0; i<10; i++)
+			r[i] = (unsigned char) 0;
+	}
+
+	void prefix::update()
+	{
+
+	}
+
+	void prefix::print()
+	{
+		cout << "[";
+		
+		for (int i=0; i<10 && r[i]; i++)
 		{
+			if (i)
+				cout << ", ";
 
-		}
-
-		point getPoint(int v)
-		{
-			return point(V[v].x, V[v].y)	;
-		}
-
-		void print()
-		{
-			cout << "[";
-			
-			for (int i=0; i<10 && r[i]; i++)
-			{
-				if (i)
-					cout << ", ";
-
-				switch(r[i]) {
-					case SP:
-						cout << "SP";
-						break;
-					case RP:
-						cout << "RP";
-						break;
-					case SN:
-						cout << "SN";
-						break;
-					case RN:
-						cout << "RN";
-						break;
-					default:
-						cout << "XX";
-						break;
-				}
+			switch(r[i]) {
+				case SP:
+					cout << "SP";
+					break;
+				case RP:
+					cout << "RP";
+					break;
+				case SN:
+					cout << "SN";
+					break;
+				case RN:
+					cout << "RN";
+					break;
+				default:
+					cout << "XX";
+					break;
 			}
-			cout << "]";
 		}
-	};
+		cout << "]";
+	}
 
 	prefix preE_ToBe;
 	vector<edge> E_ToBe;
 
 
 
-	struct Point {
-		prefix P;
-		int v;
-
-		point getPoint()
-		{
-			point X_ = V[v];
+	point Point::getpoint()
+	{
+		//point X_ = V[v];
+		//cout << "kom in i getpoint()" << endl;
+		point tjena_;
+		//cout << "v = " << v << endl;
+		if (v < 0) {
+			switch (v)
+			{
+				case VERTEX_CENTERED:
+					tjena_ = vertexCenteredPoint;
+					break;
+				case EDGE_CENTERED:
+					tjena_ = edgeCenteredPoint;
+					break;
+				case FACE_CENTERED:
+					tjena_ = faceCenteredPoint;
+					break;
+				default:
+					cout << "it became default o det ska det inte" << endl;
+					tjena_ = point(-100, -100);
+					break;
+			}
+		} else if (v >= V.size()) {
+			cout << "hit skulle den ju inte komma ju ju ju " << endl;
+			return point(-100, -100);
+		} else {
+			tjena_ = V[v];
 		}
-
-		void print()
+		direction dir_;
+		for (int i=0; i<10 && P.r[i]; i++)
 		{
-			cout << "(" << v << "), ";
-			P.print();
+			//cout << "i: " << i << endl;
+			tjena_ = dir_.rotate(P.r[i], tjena_);
 		}
-	};
+		
+		return tjena_;
+	}
 
-	struct Edge {
-		prefix P;
-		int e;
-	};
+	void Point::print()
+	{
+		cout << "(" << v << "), ";
+		P.print();
+		cout << ", ";
+		this->getpoint().print();
+		//getpoint(*this).print();
+	}
 
-	struct edge {
-		Point fr;
-		Point to;
 
-		Edge next;
-		Edge prev;
-		Edge oppo;
-	};
+	void edge::print()
+	{
+		cout << "\tPoint fr = ";
+		fr.print();
+		cout << endl << "\tPoint to = ";
+		to.print();
+		cout << endl;
+		cout << "\tEdge next = " << 0 << endl;
+		cout << "\tEdge prev = " << 0 << endl;
+		cout << "\tEdge oppo = " << 0 << endl;
+	}
 
+
+	direction::direction() {
+		Rx = Ry = 0;
+		Sx = 0.5;
+		Sy = COS30/3;
+	}
+
+	void direction::rotate(int dir_)
+	{
+		rotate(dir_, point(0,0));
+		return;
+		switch (dir_)
+		{
+			case SP:{
+				TYP Rx_ = Sx + (Rx-Sx)*COS120 - (Ry-Sy)*SIN120;
+				Ry = Sy + (Rx-Sx)*SIN120 + (Ry-Sy)*COS120;
+				Rx = Rx_;
+				break;
+				}
+			case SN:{
+				TYP Rx_ = Sx + (Rx-Sx)*COS120 + (Ry-Sy)*SIN120;
+				Ry = Sy - (Rx-Sx)*SIN120 + (Ry-Sy)*COS120;
+				Rx = Rx_;
+				break;
+				}
+			case RP:{
+				TYP Sx_ = Rx + (Sx-Rx)*COS60 - (Sy-Ry)*SIN60;
+				Sy = Ry + (Sx-Rx)*SIN60 + (Sy-Ry)*COS60;
+				Sx = Sx_;
+				break;}
+			case RN:{
+				TYP Sx_ = Rx + (Sx-Rx)*COS60 + (Sy-Ry)*SIN60;
+				Sy = Ry - (Sx-Rx)*SIN60 + (Sy-Ry)*COS60;
+				Sx = Sx_;
+				break;
+				}
+		}
+	}
+
+	point direction::rotate(int dir_, point p_)
+	{
+		TYP x_;
+		switch (dir_)
+		{
+			case SP:
+				x_ = Sx + (Rx-Sx)*COS120 - (Ry-Sy)*SIN120;
+				Ry = Sy + (Rx-Sx)*SIN120 + (Ry-Sy)*COS120;
+				Rx = x_;
+				
+				x_ = Sx + (p_.x-Sx)*COS120 - (p_.y-Sy)*SIN120;
+				p_.y = Sy + (p_.x-Sx)*SIN120 + (p_.y-Sy)*COS120;
+				p_.x = x_;					
+				break;
+				
+			case SN:
+				x_ = Sx + (Rx-Sx)*COS120 + (Ry-Sy)*SIN120;
+				Ry = Sy - (Rx-Sx)*SIN120 + (Ry-Sy)*COS120;
+				Rx = x_;
+				x_ = Sx + (p_.x-Sx)*COS120 + (p_.y-Sy)*SIN120;
+				p_.y = Sy - (p_.x-Sx)*SIN120 + (p_.y-Sy)*COS120;
+				p_.x = x_;
+				break;
+				
+			case RP:
+				x_ = Rx + (Sx-Rx)*COS60 - (Sy-Ry)*SIN60;
+				Sy = Ry + (Sx-Rx)*SIN60 + (Sy-Ry)*COS60;
+				Sx = x_;
+				x_ = Rx + (p_.x-Rx)*COS60 - (p_.y-Ry)*SIN60;
+				p_.y = Ry + (p_.x-Rx)*SIN60 + (p_.y-Ry)*COS60;
+				p_.x = x_;
+				break;
+			case RN:
+				x_ = Rx + (Sx-Rx)*COS60 + (Sy-Ry)*SIN60;
+				Sy = Ry - (Sx-Rx)*SIN60 + (Sy-Ry)*COS60;
+				Sx = x_;
+				x_ = Rx + (p_.x-Rx)*COS60 + (p_.y-Ry)*SIN60;
+				p_.y = Ry - (p_.x-Rx)*SIN60 + (p_.y-Ry)*COS60;
+				p_.x = x_;
+				break;
+				
+		}
+		return p_;
+	}
+
+
+	void direction::print()
+	{
+		std::cout << "R: " << Rx << ", " << Ry << std::endl;
+		std::cout << "S: " << Sx << ", " << Sy << std::endl;
+	}
+
+/*
 	struct direction {
 		TYP Rx, Ry;
 		TYP Sx, Sy;
@@ -238,7 +364,7 @@ namespace Graph2D {
 			std::cout << "S: " << Sx << ", " << Sy << std::endl;
 		}
 
-	};
+	};*/
 
 
 
@@ -257,8 +383,38 @@ namespace Graph2D {
 	{
 		Point retPoint;
 		point rootCrd_ = getRootPoint(crd_);
+	}
 
-
+	point getpoint(Point p_)
+	{
+		
+		point tjena;
+		if (p_.v < 0) {
+			switch (p_.v)
+			{
+				case VERTEX_CENTERED:
+					tjena = vertexCenteredPoint;
+					break;
+				case EDGE_CENTERED:
+					tjena = edgeCenteredPoint;
+					break;
+				case FACE_CENTERED:
+					tjena = faceCenteredPoint;
+					break;
+				default:
+					tjena = point(-100, -100);
+					break;
+			}
+		} else 
+			tjena = V[p_.v];
+		//cout << "getpoint" << endl;
+		direction dir_;
+		for (int i=0; i<10 && p_.P.r[i]; i++)
+		{
+			tjena = dir_.rotate(p_.P.r[i], tjena);
+		}
+		
+		return tjena;
 	}
 
 	point getRootPoint(point p_)
@@ -541,25 +697,52 @@ namespace Graph2D {
 			}
 		} else if (mode == 1 && vertexMouseOver != -1) {
 
-			Point coord2_ = mouseOverVertex2(x, y);
+			Point nyPunkt = mouseOverVertex2(x, y);
 	
     		//point coord_(fromABtoXY(x, y));
-    		//Point coord2_ = getRootPoint2(coord_);
+    		//Point nyPunkt = getRootPoint2(coord_);
 
-    		//vertexMouseOver = mouseOverVertex(V[coord2_.v].x, V[coord2_.v].y);
+    		//vertexMouseOver = mouseOverVertex(V[nyPunkt.v].x, V[nyPunkt.v].y);
     		cout << "mode = 1, mouseklick: [";// << coord_.x << ", " << coord_.y << "] = " << vertexMouseOver << endl;
 
 
     		cout << "Point: ";
-    		coord2_.print();
+    		nyPunkt.print();
+    		cout << endl;
 
 			cout << "nu startar man ritande over vertex" << endl;
 			int len = E_ToBe.size();
-			mouseOverVertex2(x, y);
+			edge e_;
+			if (len == 0) {
+				e_.fr = nyPunkt;
+			} else {
+				E_ToBe[len-1].to = e_.fr = nyPunkt;
+			}
+			E_ToBe.push_back(e_);
+			len = E_ToBe.size();
+			for (int i=0; i<len; i++)
+			{
+
+				cout << "Edge[" << i << "]" << endl;
+				E_ToBe[i].print();
+				cout << endl;
+			}
+
+
 /*
 		Point {
-		prefix P;
-		int v;
+			prefix P;
+			int v;
+		}
+
+		edge {
+			Point fr;
+			Point to;
+
+			Edge next;
+			Edge prev;
+			Edge oppo;
+		}
 */
 
 		}
@@ -732,10 +915,21 @@ namespace Graph2D {
 	  	  	}
 		} else if (mode == 1) {
 			//scout << "nu is sizen on E_ToBe.size() = " << E_ToBe.size() << endl;
-			if (E_ToBe.size() == 0)
+
+			int len = E_ToBe.size();
+			//coords_
+			glColor3f(1, 0, 0);
+			glBegin(GL_LINE_STRIP);
+			for (int i=0; i<len; i++)
 			{
-				//edge
+				cout << "i: " << i << "\t";
+				cout << "to: " << E_ToBe[i].fr.v << endl;
+				point p_ = E_ToBe[i].fr.getpoint();
+				glVertex3f(p_.x, p_.y, 0.0);
 			}
+			cout << ":";
+			glVertex3f(coords_.x, coords_.y, 0.0);
+			glEnd();
 			//if (vertexMouseOver == -1) {
 
 			//} else {

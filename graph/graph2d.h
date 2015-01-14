@@ -62,12 +62,63 @@ namespace Graph2D {
 		// mode = 7:	Resultat och Spara.
 	extern int mode;
 
-	struct prefix;
-	struct point;
-	struct Point;
-	struct edge;
-	struct Edge;
-	struct direction;
+	//struct prefix;
+
+	struct prefix {
+		unsigned char r[10];
+		prefix();
+		void update();
+		void print();
+	};
+
+	struct point {
+		TYP x;
+		TYP y;
+
+		point();
+		point(TYP x_, TYP y_);
+		point(const point &A_);
+		void print();
+	};
+
+	//struct Point;
+	struct Point {
+		prefix P;
+		int v;
+
+		point getpoint();
+		void print();
+	};
+
+	//struct edge;
+	struct Edge {
+		prefix P;
+		int e;
+	};
+
+	struct edge {
+		Point fr;
+		Point to;
+
+		Edge next;
+		Edge prev;
+		Edge oppo;
+
+		void print();
+	};
+
+	struct direction {
+		TYP Rx, Ry;
+		TYP Sx, Sy;
+
+		direction();
+
+		void rotate(int dir_);
+		point rotate(int dir_, point p_);
+		void print();
+
+	};
+
 
 		//XY är transformerade koordinater, edgelängden = 1.0
 	void fromXYtoAB(point XY, int *ABx, int *ABy);
