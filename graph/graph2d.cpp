@@ -33,6 +33,10 @@ namespace Graph2D {
 	std::vector<point> V;
 	std::vector<edge> E;
 
+
+	prefix preE_ToBe;
+	vector<edge> E_ToBe;
+
 	
 	int vertexChosen = -1;
 	int vertexMouseOver = -1;
@@ -112,8 +116,6 @@ namespace Graph2D {
 		cout << "]";
 	}
 
-	prefix preE_ToBe;
-	vector<edge> E_ToBe;
 
 
 
@@ -164,6 +166,49 @@ namespace Graph2D {
 		this->getpoint().print();
 		//getpoint(*this).print();
 	}
+
+	
+	point point::operator+(point &A)
+	{
+		return point(x + A.x, y + A.y);
+	}
+	void point::operator+=(point &A)
+	{
+		x += A.x;
+		y += A.y;
+	}
+
+	point point::operator-(point &A)
+	{
+		return point(x - A.x, y - A.y);
+	}
+	void point::operator-=(point &A)
+	{
+		x -= A.x;
+		y -= A.y;
+	}
+
+	point point::operator*(TYP a)
+	{
+		return point(x*a, y*a);
+	}
+
+	void point::operator*=(TYP a)
+	{
+		x *= a;
+		y *= a;
+	}
+
+	TYP point::operator&(point &A)
+	{
+		return x*A.y - y*A.x;
+	}
+
+
+		
+
+
+
 
 
 	void edge::print()
@@ -269,153 +314,6 @@ namespace Graph2D {
 		std::cout << "S: " << Sx << ", " << Sy << std::endl;
 	}
 
-/*
-	struct direction {
-		TYP Rx, Ry;
-		TYP Sx, Sy;
-
-		direction() {
-			Rx = Ry = 0;
-			Sx = 0.5;
-			Sy = COS30/3;
-		}
-
-		void rotate(int dir_)
-		{
-			rotate(dir_, point(0,0));
-			return;
-			switch (dir_)
-			{
-				case SP:{
-					TYP Rx_ = Sx + (Rx-Sx)*COS120 - (Ry-Sy)*SIN120;
-					Ry = Sy + (Rx-Sx)*SIN120 + (Ry-Sy)*COS120;
-					Rx = Rx_;
-					break;
-					}
-				case SN:{
-					TYP Rx_ = Sx + (Rx-Sx)*COS120 + (Ry-Sy)*SIN120;
-					Ry = Sy - (Rx-Sx)*SIN120 + (Ry-Sy)*COS120;
-					Rx = Rx_;
-					break;
-					}
-				case RP:{
-					TYP Sx_ = Rx + (Sx-Rx)*COS60 - (Sy-Ry)*SIN60;
-					Sy = Ry + (Sx-Rx)*SIN60 + (Sy-Ry)*COS60;
-					Sx = Sx_;
-					break;}
-				case RN:{
-					TYP Sx_ = Rx + (Sx-Rx)*COS60 + (Sy-Ry)*SIN60;
-					Sy = Ry - (Sx-Rx)*SIN60 + (Sy-Ry)*COS60;
-					Sx = Sx_;
-					break;
-					}
-			}
-		}
-
-		point rotate(int dir_, point p_)
-		{
-			TYP x_;
-			switch (dir_)
-			{
-				case SP:
-					x_ = Sx + (Rx-Sx)*COS120 - (Ry-Sy)*SIN120;
-					Ry = Sy + (Rx-Sx)*SIN120 + (Ry-Sy)*COS120;
-					Rx = x_;
-					
-					x_ = Sx + (p_.x-Sx)*COS120 - (p_.y-Sy)*SIN120;
-					p_.y = Sy + (p_.x-Sx)*SIN120 + (p_.y-Sy)*COS120;
-					p_.x = x_;					
-					break;
-					
-				case SN:
-					x_ = Sx + (Rx-Sx)*COS120 + (Ry-Sy)*SIN120;
-					Ry = Sy - (Rx-Sx)*SIN120 + (Ry-Sy)*COS120;
-					Rx = x_;
-					x_ = Sx + (p_.x-Sx)*COS120 + (p_.y-Sy)*SIN120;
-					p_.y = Sy - (p_.x-Sx)*SIN120 + (p_.y-Sy)*COS120;
-					p_.x = x_;
-					break;
-					
-				case RP:
-					x_ = Rx + (Sx-Rx)*COS60 - (Sy-Ry)*SIN60;
-					Sy = Ry + (Sx-Rx)*SIN60 + (Sy-Ry)*COS60;
-					Sx = x_;
-					x_ = Rx + (p_.x-Rx)*COS60 - (p_.y-Ry)*SIN60;
-					p_.y = Ry + (p_.x-Rx)*SIN60 + (p_.y-Ry)*COS60;
-					p_.x = x_;
-					break;
-				case RN:
-					x_ = Rx + (Sx-Rx)*COS60 + (Sy-Ry)*SIN60;
-					Sy = Ry - (Sx-Rx)*SIN60 + (Sy-Ry)*COS60;
-					Sx = x_;
-					x_ = Rx + (p_.x-Rx)*COS60 + (p_.y-Ry)*SIN60;
-					p_.y = Ry - (p_.x-Rx)*SIN60 + (p_.y-Ry)*COS60;
-					p_.x = x_;
-					break;
-					
-			}
-			return p_;
-		}
-
-
-		void print()
-		{
-			std::cout << "R: " << Rx << ", " << Ry << std::endl;
-			std::cout << "S: " << Sx << ", " << Sy << std::endl;
-		}
-
-	};*/
-
-
-
-	void printDirection(int x, int y)
-	{
-	}
-
-
-/*		prefix P;
-		int v;
-		point getPoint()
-		{
-			point X_ = V[v];
-		}*/
-	Point getPoint(point crd_)
-	{
-		Point retPoint;
-		point rootCrd_ = getRootPoint(crd_);
-	}
-
-	point getpoint(Point p_)
-	{
-		
-		point tjena;
-		if (p_.v < 0) {
-			switch (p_.v)
-			{
-				case VERTEX_CENTERED:
-					tjena = vertexCenteredPoint;
-					break;
-				case EDGE_CENTERED:
-					tjena = edgeCenteredPoint;
-					break;
-				case FACE_CENTERED:
-					tjena = faceCenteredPoint;
-					break;
-				default:
-					tjena = point(-100, -100);
-					break;
-			}
-		} else 
-			tjena = V[p_.v];
-		//cout << "getpoint" << endl;
-		direction dir_;
-		for (int i=0; i<10 && p_.P.r[i]; i++)
-		{
-			tjena = dir_.rotate(p_.P.r[i], tjena);
-		}
-		
-		return tjena;
-	}
 
 	point getRootPoint(point p_)
 	{
@@ -508,6 +406,53 @@ namespace Graph2D {
 	{
 		*ABx = scrWidth*(XY.x + 0.5)*2.0/3.0;
 		*ABy = scrHeight*(XY.y + 1.0)*COS30;
+	}
+
+
+
+		// returnerar 
+		// 0 om det är felaktigt
+		// 1 om det är ok men icke sluten
+		// 2 om face är ok.
+	int checkE_ToBe()
+	{
+		if (E_ToBe.size() < 3)
+			return 1;
+
+			// kolla om den roterar i positiv z-riktning
+		point fr_ = E_ToBe[0].fr.getpoint();
+		point to_ = E_ToBe[0].to.getpoint();
+		point edge0_ = to_ - fr_;
+		point edge1_;
+		for (int i=1; i<E_ToBe.size()-1; i++)
+		{
+			cout << "i: " << endl;
+			fr_ = to_;
+			to_ = E_ToBe[i].to.getpoint();
+			edge1_ = to_ - fr_;
+
+			cout << "edge0: ";
+			edge0_.print();
+			cout << endl << "edge1_";
+			edge1_.print();
+			cout << endl;
+
+			if ((edge0_ & edge1_) < 0.0)
+			{
+				cout << "******** EDGES INVALID ********* " << endl;
+				cout << "edge0: ";
+				edge0_.print();
+				cout << "\t edge1: ";
+				edge1_.print();
+				cout << endl;
+				return 0;
+			}
+			edge0_ = edge1_;
+		}
+
+
+			// allt funkar.
+		return 2;
 	}
 
 
@@ -722,29 +667,12 @@ namespace Graph2D {
 			len = E_ToBe.size();
 			for (int i=0; i<len; i++)
 			{
-
 				cout << "Edge[" << i << "]" << endl;
 				E_ToBe[i].print();
 				cout << endl;
 			}
 
-
-/*
-		Point {
-			prefix P;
-			int v;
-		}
-
-		edge {
-			Point fr;
-			Point to;
-
-			Edge next;
-			Edge prev;
-			Edge oppo;
-		}
-*/
-
+			cout << "sluten: " << checkE_ToBe() << endl;
 		}
 
 	}
@@ -922,12 +850,12 @@ namespace Graph2D {
 			glBegin(GL_LINE_STRIP);
 			for (int i=0; i<len; i++)
 			{
-				cout << "i: " << i << "\t";
-				cout << "to: " << E_ToBe[i].fr.v << endl;
+				//cout << "i: " << i << "\t";
+				//cout << "to: " << E_ToBe[i].fr.v << endl;
 				point p_ = E_ToBe[i].fr.getpoint();
 				glVertex3f(p_.x, p_.y, 0.0);
 			}
-			cout << ":";
+			//cout << ":";
 			glVertex3f(coords_.x, coords_.y, 0.0);
 			glEnd();
 			//if (vertexMouseOver == -1) {

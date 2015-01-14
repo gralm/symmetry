@@ -18,6 +18,8 @@ git remote add origin https://github.com/gralm/NapalmBomber.git
 
 	Clone a repository into the current directory in terminal
 git clone https://github.com/gralm/NapalmBomber.git
+detta kan generera felmeddelande: "fatal: unable to access 'http://github/(gralm/symmetry.git/': Could not resolve host: github" av någon outgrundlig anledning och då är lösningen att skriva:
+git clone git@github.com:gralm/NapalmBomber.git kan skrivas av någon out
 
 	Ta sig ur jävla idiotskiten
 escape 
