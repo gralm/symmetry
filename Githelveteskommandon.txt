@@ -44,6 +44,10 @@ git push origin master
 	ibland frågar den efter user o pass, och vad man än skriver in så är det såklart jävla fel.
 	Använd då din "ssh-url"-hittepåadress som helt plötsligt är lite mer korrekt än din url-adress för 
 	överrasknings skull.
+	git config --get remote.origin.url:
+		http://www.github.com/gralm/symmetry.git
+	ändras med följande kommande:
+	git remote set-url origin git@github.com:gralm/symmetry.git
 
 git push -f origin branch
 
