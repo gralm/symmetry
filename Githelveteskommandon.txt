@@ -21,6 +21,7 @@ git clone https://github.com/gralm/NapalmBomber.git
 detta kan generera felmeddelande: "fatal: unable to access 'http://github/(gralm/symmetry.git/': Could not resolve host: github" av någon outgrundlig anledning och då är lösningen att skriva:
 git clone git@github.com:gralm/NapalmBomber.git kan skrivas av någon out
 
+	
 	Ta sig ur jävla idiotskiten
 escape 
 :q
@@ -40,6 +41,10 @@ git diff HEAD
 	Pusha remoten "origin"(som du har addat alla nya/uppdaterade filerna till och som du har committat) till branchen "master"
 git push origin master
 	om jag vill bara spara över skit utan att pulla:
+	ibland frågar den efter user o pass, och vad man än skriver in så är det såklart jävla fel.
+	Använd då din "ssh-url"-hittepåadress som helt plötsligt är lite mer korrekt än din url-adress för 
+	överrasknings skull.
+
 git push -f origin branch
 
 git status
