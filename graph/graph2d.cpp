@@ -1,5 +1,5 @@
 #include "graph2d.h"
-
+#include "orientation/point.h"
 
 using namespace std;
 
@@ -47,6 +47,7 @@ namespace Graph2D {
 		// edge-centered point = -2
 		// vertex-centered point = -1
 
+/*
 	point::point() 				
 	{
 		x = y = 0;
@@ -64,7 +65,7 @@ namespace Graph2D {
 	void point::print()
 	{
 		std::cout << "[" << x << ", " << y << "]" << std::endl;
-	}
+	}*/
 
 	//point point::getpoint(Point p_);
 
@@ -167,7 +168,8 @@ namespace Graph2D {
 		//getpoint(*this).print();
 	}
 
-	
+
+/*	
 	point point::operator+(point &A)
 	{
 		return point(x + A.x, y + A.y);
@@ -203,7 +205,7 @@ namespace Graph2D {
 	{
 		return x*A.y - y*A.x;
 	}
-
+*/
 
 		
 
@@ -437,7 +439,7 @@ namespace Graph2D {
 			edge1_.print();
 			cout << endl;
 
-			if ((edge0_ & edge1_) < 0.0)
+			if ((~edge0_ * edge1_) < 0.0)
 			{
 				cout << "******** EDGES INVALID ********* " << endl;
 				cout << "edge0: ";

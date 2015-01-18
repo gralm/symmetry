@@ -1,6 +1,8 @@
 #ifndef GRAPHIC_HPP
 #define GRAPHIC_HPP
 
+#include "./orientation/point.h"
+
 #include <cmath>
 #include <iostream>
 #include <vector>
@@ -13,6 +15,8 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include <GL/freeglut_ext.h>
+
+
 
 #define TYP			double
 
@@ -33,7 +37,7 @@ namespace Graph2D {
 	extern const unsigned char 	RP;		// positiv rotation till nästa triangel
 	extern const unsigned char 	RN;		// negativ rotation tlil föregående triangel
 
-	struct point;
+	class point;
 	struct edge;
 
 	extern const point vertexCenteredPoint;//(.0, .0);
@@ -89,6 +93,7 @@ namespace Graph2D {
 
 	};
 
+/*
 	struct point {
 		TYP x;
 		TYP y;
@@ -105,7 +110,7 @@ namespace Graph2D {
 		point operator*(TYP a);
 		void operator*=(TYP a);
 		TYP operator&(point &A);
-	};
+	};*/
 
 	//struct Point;
 	struct Point {
