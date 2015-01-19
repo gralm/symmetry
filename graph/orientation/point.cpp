@@ -1,4 +1,4 @@
-#include "point.h"
+#include "orientation.h"
 
 namespace Graph2D {
 
@@ -22,6 +22,11 @@ namespace Graph2D {
 		std::cout << "[" << x << ", " << y << "]" << std::endl;
 	}
 
+
+	bool point::defined() const
+	{
+		return (x+100.)*(x+100.) + (y+100.)*(y+100.) > .001;
+	}
 
 	point point::operator+ (point A)	{	return point(A.x+x, A.y+y);}
 	void point::operator+= (point A)	{	x += A.x;	y += A.y;}

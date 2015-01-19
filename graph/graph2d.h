@@ -1,7 +1,7 @@
 #ifndef GRAPHIC_HPP
 #define GRAPHIC_HPP
 
-#include "./orientation/point.h"
+#include "./orientation/orientation.h"
 
 #include <cmath>
 #include <iostream>
@@ -16,9 +16,6 @@
 #include <GL/glut.h>
 #include <GL/freeglut_ext.h>
 
-
-
-#define TYP			double
 
 #define COS30			0.86602540378444
 #define SIN30			0.5
@@ -53,16 +50,16 @@ namespace Graph2D {
 	extern int scrHeight;
 
 
-	extern TYP xMin;
-	extern TYP xMax;
-	extern TYP yMin;
-	extern TYP yMax;
+	extern double xMin;
+	extern double xMax;
+	extern double yMin;
+	extern double yMax;
 
 	extern int mouseX;
 	extern int mouseY;
 
-	extern int vertexChosen;
-	extern int vertexMouseOver;
+	extern int indexChosen;
+	extern int indexMouseOver;
 
 	extern std::vector<point> V;
 	extern std::vector<edge> E;
@@ -81,41 +78,11 @@ namespace Graph2D {
 		// mode = 7:	Resultat och Spara.
 	extern int mode;
 
-	//struct prefix;
-
-	struct prefix {
-		unsigned char r[10];
-		prefix();
-		void update();
-		void print();
-
-		prefix operator-(prefix &A);
-
-	};
-
-/*
-	struct point {
-		TYP x;
-		TYP y;
-
-		point();
-		point(TYP x_, TYP y_);
-		point(const point &A_);
-		void print();
-
-		point operator+(point &A);
-		void operator+=(point &A);
-		point operator-(point &A);
-		void operator-=(point &A);
-		point operator*(TYP a);
-		void operator*=(TYP a);
-		TYP operator&(point &A);
-	};*/
 
 	//struct Point;
 	struct Point {
-		prefix P;
-		int v;
+		Prefix Pfx;
+		int index;
 
 		point getpoint();
 		void print();
@@ -123,7 +90,7 @@ namespace Graph2D {
 
 	//struct edge;
 	struct Edge {
-		prefix P;
+		Prefix P;
 		int e;
 	};
 
@@ -150,25 +117,21 @@ namespace Graph2D {
 
 	};
 
-	point getRootPoint(point p_);
-
+////////////////////////////////////
 		// AB är koordinater på skärmen, pixelposition
 	point fromABtoXY(int x, int y);
-
 		//XY är transformerade koordinater, edgelängden = 1.0
 	void fromXYtoAB(point XY, int *ABx, int *ABy);
-
-
-		// returnerar true om face är slutet.
-	int checkE_ToBe();
-
-		// returns -1 if over none, radius = pixel-radius
-	int mouseOverVertex(point co_);
-
-	int mouseOverVertex(int x, int y);
-	prefix getRootPrefix(point coord_);
-	Point mouseOverVertex2(int x, int y);
-	prefix getRootPrefix(point coord_);
+		// returnerar 
+		// 0 om det är felaktigt
+		// 1 om det är ok men icke sluten
+		// 2 om face är ok.
+	int checkE_ToBe();		// returnerar true om face är slutet.
+	int mouseOverIndex(point co_);
+	// returns -1 if over none, radius = pixel-radius
+	Point mouseOverPoint(point co_);
+	Prefix getPrefix(point coord);
+	point getRootpoint(point coord);
 	void setMousePosition(int x, int y);
 	void mouseClick(int x, int y);
 	int insertVertex(point coord_);
@@ -179,6 +142,7 @@ namespace Graph2D {
 	void getAllFromRoots(const point vRoot_, point *vAll_);
 	void setColorOfVertex(int vert_, TYP str_);
 	void display();
+
 }
 #endif
 
@@ -189,12 +153,13 @@ namespace Graph2D {
 1.	Byt namn på RP,RN,SP,SN till VCPR VCNR, FCPR, FCNR
 	= Vertice/Face-Centered-Positive/Negative-Rotation
 
-2. 	Byt struct point till en 2d-klass eller utveckla funktioner i 
-	den för att lättare hantera beräkningar
+2. 	
 
 3.	Dela upp struktarna i olika filer så att graph2d blir
 	något mer läsbar.
 
-4.	Gör std::lista av prefix::r istället för en jälla array
-
+4.	
 */
+
+
+

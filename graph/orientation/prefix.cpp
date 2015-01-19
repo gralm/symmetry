@@ -1,5 +1,5 @@
-#include "prefix.h"
-//#include "testorientation.h"
+
+#include "orientation.h"
 #include <iostream>
 
 using namespace std;
@@ -10,6 +10,7 @@ using namespace std;
 namespace Graph2D {
 
 
+		// Root orientation
 	Prefix::Prefix()
 	{
 

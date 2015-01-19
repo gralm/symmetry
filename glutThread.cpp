@@ -60,7 +60,7 @@ void checkThreads()
         case COMM_MSGTYP_CHOOSE_VERTEX:{
             int *val = (int*)(msg.data);
             cout << "nu ska en vertex choooosas: " << *val << endl;
-            Graph2D::vertexChosen = *val;
+            Graph2D::indexChosen = *val;
             delete[] val;
             break;}
         case COMM_MSGTYP_SET_MODE: {
