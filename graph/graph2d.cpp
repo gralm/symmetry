@@ -127,6 +127,7 @@ namespace Graph2D {
 		if (E_ToBe.size() < 3)
 			return 1;
 
+
 			// kolla om den roterar i positiv z-riktning
 		point fr_ = E_ToBe[0].fr.getpoint();
 		point to_ = E_ToBe[0].to.getpoint();
@@ -134,16 +135,16 @@ namespace Graph2D {
 		point edge1_;
 		for (int i=1; i<E_ToBe.size()-1; i++)
 		{
-			cout << "i: " << endl;
+			//cout << "i: " << endl;
 			fr_ = to_;
 			to_ = E_ToBe[i].to.getpoint();
 			edge1_ = to_ - fr_;
 
-			cout << "edge0: ";
+			/*cout << "edge0: ";
 			edge0_.print();
 			cout << endl << "edge1_";
 			edge1_.print();
-			cout << endl;
+			cout << endl;*/
 
 			if ((~edge0_ * edge1_) < 0.0)
 			{
@@ -157,6 +158,37 @@ namespace Graph2D {
 			}
 			edge0_ = edge1_;
 		}
+
+
+			// kolla om den passerar sig själv
+		for (int i=2; i<E_ToBe.size(); i++)
+		{
+			for (int j=0; j<i-1; j++)
+			{
+				point Afr_ = E_ToBe[j].fr.getpoint();
+				point Ato_ = E_ToBe[j].to.getpoint();
+				point Bfr_ = E_ToBe[i].fr.getpoint();
+				point Bto_ = E_ToBe[i].to.getpoint();
+				
+				point P_ = ~(Afr_ - Bfr_);
+				point Q_ = Ato_ - Afr_;
+				point R_ = Bto_ - Bfr_;
+
+				double divider_ = Q_ * ~R_;
+				double a_ = (Q_ * P_) / divider_;
+				double b_ = (R_ * P_) / divider_;
+
+				//cout << "a_: " << a_ << "\tb_: " << b_ << endl;
+				if (a_>0 && a_<1 && b_>0 && b_<1)
+				{
+					cout << "EDGES FUNKAR ICKE ICKE ICKE!!!" << endl;
+					cout << "korsar varandra i=" << i << " och j=" << j << endl;
+					cout << "a_: " << a_ << "\tb_: " << b_ << endl;
+					return 0;
+				}
+			}
+		}
+
 
 
 			// allt funkar.
