@@ -39,6 +39,7 @@ namespace Graph2D {
 
 				rots[2] = (it2 == R.end())? 0: *it2;
 
+
 				if (rots[0] == VP) {
 					if (rots[1] == VN) {
 						d = 0;

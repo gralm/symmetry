@@ -822,6 +822,7 @@ namespace Graph2D {
 
 	void test()
 	{
+
 		insertVertex(point(0.28, 0.15));
 		insertVertex(point(0.4, 0.2));
 		insertVertex(point(0.15, 0.1));

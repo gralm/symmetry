@@ -5,6 +5,10 @@ VPATH = object/ bitmap/ graphic/ tm/
 OBJPATH = obj/
 OBJFLAGS = -c -pthread -o 
 EXEFILE = symmetry
+TESTFILE = testfile.exe
+
+
+
 
 bygg: 
 	make -s $(OBJPATH)point.o
@@ -44,5 +48,33 @@ onlyglut:
 	make -s $(OBJPATH)glutThread2.o
 	$(CC) -DONLYGLUT -o onlyglut2.exe $(OBJPATH)glutThread2.o -L "C:\MinGW\freeglut\lib" -l freeglut -lopengl32 -lglu32
 
+
+
+
+
+
+
+
+
+
+testing:
+	make -s $(OBJPATH)testOrientation.o
+	make -s $(OBJPATH)graph2d.o
+	make -s $(OBJPATH)orientation.o
+	make -s $(OBJPATH)point.o
+	make -s $(OBJPATH)prefix.o
+	make -s $(OBJPATH)comm.o
+	$(CC) -o $(TESTFILE) $(OBJPATH)*.o -l freeglut -lgdi32 -lopengl32 -lglu32 -lpthreadGC2
+
+$(OBJPATH)testOrientation.o: test/orientation/testOrientation.cpp
+	$(CC) $(OBJFLAGS) $(OBJPATH)testOrientation.o test/orientation/testOrientation.cpp -I $(INC_DIR)
+
+
+
+
+
+
+
+
 clean: 
-	rm -f $(OBJPATH)*.o $(EXEFILE).exe
+	rm -f $(OBJPATH)*.o *.exe

@@ -34,6 +34,11 @@
 	// FN, FN = FP			0100 	8
 	// FN, FP = 1 			0200 	9
 
+			// lägg in följande:
+		// FP VP FN = FP VP FN FN FP = FP VP FP FP = 	VN FP
+		// FP VN FN = FP FP FN VN FN = 					FN VP
+		// FN VP FP = FN VP FP VP VN = FN FN VN = 		FP VN
+		// FN VN FP = FN VN FP FP FN = FN VN FN FN = 	VP FN
 
 namespace Graph2D {
 
