@@ -102,7 +102,7 @@ namespace Graph2D {
 
 	void Prefix::print()
 	{
-		cout << "[";
+		cout << "Pfx [";
 		for (list<TYP>::iterator it = R.begin(); it != R.end(); it++)
 		{
 			if (it != R.begin())
@@ -124,7 +124,7 @@ namespace Graph2D {
 					break;
 			}
 		}
-		cout << "]" << endl;
+		cout << "]";// << endl;
 	}
 
 
@@ -133,6 +133,29 @@ namespace Graph2D {
 		if (r & (VP|FP))
 		R.push_back(r);
 	}
+
+	bool Prefix::rotate(Prefix &r)
+	{
+		for (list<TYP>::iterator itr = r.R.begin(); itr != r.R.end(); itr++)
+			R.push_back(*itr);
+		simplify();
+	}
+
+	TYP Prefix::operator[](int i)
+	{
+		if (i<0 || i>=R.size())
+			return 0;
+
+		for (list<TYP>::iterator itR = R.begin(); itR != R.end(); itR++)
+		{
+			if (i-- == 0)
+				return *itR;
+		}
+
+		cout << "Hit ska den ju inte heller komma, det here is sjuuuukt lixom!!!" << endl;
+		return 0;
+	}
+
 
 	Prefix Prefix::difference(Prefix A)
 	{
@@ -158,6 +181,15 @@ namespace Graph2D {
 	}
 
 
+	Prefix Prefix::getInverse()
+	{
+		Prefix invPfx;
+		for (list<TYP>::reverse_iterator rit = R.rbegin(); rit != R.rend(); rit++)
+			invPfx.R.push_back(INV_ROTATION(*rit));
+		return invPfx;
+	}
+
+
 			// omvandla alla:	summa = 1023
 		// VP, VN = 1 			0001 	0
 		// VP, FP, VP = FN		0002 	1
@@ -169,4 +201,11 @@ namespace Graph2D {
 		// FN, VN, FN = VP		0080  	7
 		// FN, FN = FP			0100 	8
 		// FN, FP = 1 			0200 	9
+
+			// lägg in följande:
+		// FP VP FN = FP VP FN FN FP = FP VP FP FP = 	VN FP
+		// FP VN FN = FP FP FN VN FN = 					FN VP
+		// FN VP FP = FN VP FP VP VN = FN FN VN = 		FP VN
+		// FN VN FP = FN VN FP FP FN = FN VN FN FN = 	VP FN
 }
+

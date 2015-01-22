@@ -25,6 +25,8 @@ void init(void)
     Graph2D::yMin = -.5;
     Graph2D::yMax = 1.;
 
+    Graph2D::test();
+
     glOrtho(Graph2D::xMin, Graph2D::xMax, 
             Graph2D::yMin, Graph2D::yMax, -1.0, 1.0);
 

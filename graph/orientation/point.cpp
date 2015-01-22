@@ -19,7 +19,7 @@ namespace Graph2D {
 
 	void point::print()
 	{
-		std::cout << "[" << x << ", " << y << "]" << std::endl;
+		std::cout << "coo [" << x << ", " << y << "]";// << std::endl;
 	}
 
 

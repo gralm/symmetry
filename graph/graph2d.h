@@ -94,6 +94,11 @@ namespace Graph2D {
 		int e;
 	};
 
+	class Face {
+		Prefix P;
+		int fr;
+	};
+
 	struct edge {
 		Point fr;
 		Point to;
@@ -105,17 +110,6 @@ namespace Graph2D {
 		void print();
 	};
 
-	struct direction {
-		TYP Rx, Ry;
-		TYP Sx, Sy;
-
-		direction();
-
-		void rotate(int dir_);
-		point rotate(int dir_, point p_);
-		void print();
-
-	};
 
 ////////////////////////////////////
 		// AB är koordinater på skärmen, pixelposition
@@ -127,6 +121,7 @@ namespace Graph2D {
 		// 1 om det är ok men icke sluten
 		// 2 om face är ok.
 	int checkE_ToBe();		// returnerar true om face är slutet.
+	int getEnclosedPoints(point *A, std::list<Point> &PntList);
 	int mouseOverIndex(point co_);
 	// returns -1 if over none, radius = pixel-radius
 	Point mouseOverPoint(point co_);
@@ -142,6 +137,8 @@ namespace Graph2D {
 	void getAllFromRoots(const point vRoot_, point *vAll_);
 	void setColorOfVertex(int vert_, TYP str_);
 	void display();
+
+	void test();
 
 }
 #endif

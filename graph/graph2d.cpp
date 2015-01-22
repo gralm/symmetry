@@ -79,7 +79,26 @@ namespace Graph2D {
 
 	void Point::print()
 	{
-		cout << "(" << index << "), ";
+		cout << "index (";
+		switch(index)
+		{
+			case -1:
+				cout << "undef.";
+				break;
+			case VERTEX_CENTERED:
+				cout << "VC";
+				break;
+			case EDGE_CENTERED:
+				cout << "EC";
+				break;
+			case FACE_CENTERED:
+				cout << "FC";
+				break;
+			default:
+				cout << index;
+				break;
+		}
+		cout << "), ";
 		Pfx.print();
 		cout << ", ";
 		this->getpoint().print();
@@ -118,14 +137,26 @@ namespace Graph2D {
 
 
 
-		// returnerar 
+		// 	detta är en fullständig test som kollar inte 
+		//	bara sista tillagda edgen utan alla edges i facet
+		// 		returnerar:
 		// 0 om det är felaktigt
 		// 1 om det är ok men icke sluten
 		// 2 om face är ok.
 	int checkE_ToBe()
 	{
-		if (E_ToBe.size() < 3)
-			return 1;
+
+		int siz = E_ToBe.size();
+		/*switch(siz)
+		{
+			case 1:
+				return 1;
+				break;
+			case 2:
+
+		}
+		if (siz < 3 && )
+			return 1;*/
 
 
 			// kolla om den roterar i positiv z-riktning
@@ -133,18 +164,11 @@ namespace Graph2D {
 		point to_ = E_ToBe[0].to.getpoint();
 		point edge0_ = to_ - fr_;
 		point edge1_;
-		for (int i=1; i<E_ToBe.size()-1; i++)
+		for (int i=1; i<siz-1; i++)
 		{
-			//cout << "i: " << endl;
 			fr_ = to_;
 			to_ = E_ToBe[i].to.getpoint();
 			edge1_ = to_ - fr_;
-
-			/*cout << "edge0: ";
-			edge0_.print();
-			cout << endl << "edge1_";
-			edge1_.print();
-			cout << endl;*/
 
 			if ((~edge0_ * edge1_) < 0.0)
 			{
@@ -160,8 +184,9 @@ namespace Graph2D {
 		}
 
 
-			// kolla om den passerar sig själv
-		for (int i=2; i<E_ToBe.size(); i++)
+
+			// kolla om den korsar sig själv
+		for (int i=2; i<siz-1; i++)
 		{
 			for (int j=0; j<i-1; j++)
 			{
@@ -189,10 +214,178 @@ namespace Graph2D {
 			}
 		}
 
+			// kontrollera att inga Points är inkapslade av markeringen.
+		list<Point> enclosedPoints;
+		point A[3];
+		A[0] = E_ToBe[0].fr.getpoint();
+		for (int i=2; i<siz; i++)
+		{
+			A[1] = E_ToBe[i-1].fr.getpoint();
+			A[2] = E_ToBe[i].fr.getpoint();
+			getEnclosedPoints(A, enclosedPoints);
+		}
+		
+		cout << " ************* " << endl;
+		cout << "Enclosed Points: " << endl;
+		for (list<Point>::iterator itP = enclosedPoints.begin(); itP != enclosedPoints.end(); itP++){
+			itP->print();
+			cout << endl;
+		}
+		cout << " ************* " << endl;
 
 
-			// allt funkar.
-		return 2;
+		if (enclosedPoints.size() > 0)
+			return 0;
+
+
+
+			// Här kontrolleras om kanterna i ytan är sluten:
+		if (E_ToBe[siz - 1].fr.index == E_ToBe[0].fr.index)
+		{
+				// Nu kan den vara sluten 
+			Prefix pfxDiff = E_ToBe[0].fr.Pfx.difference(E_ToBe[siz-1].fr.Pfx);
+			cout << "prefix difference: ";
+			pfxDiff.print();
+			cout << endl;	
+
+				// ytan börjar och slutar i samma punkt.
+				// Förutsatt att dne kommit hit ner i funktionen
+				// så är kanterna slutna till en yta. Toppen!
+			if (pfxDiff.getSize() == 0)
+			{
+				cout << "startar och slutar i samma punkt :) " << endl;
+				return 2;
+			}
+
+				// om pfxDiff = [VP] så kan det vara en Vertex-Centered Face.
+			if (pfxDiff.getSize() == 1 && pfxDiff[0] == VP)
+			{
+					//kontrollera så att inga punkter existerar i det området
+				cout << "Det is en VP rotation detta :) " << endl;
+
+				Orientation ori;
+				ori.rotate(E_ToBe[0].fr.Pfx);
+				point A[3];
+				A[0] = E_ToBe[0].fr.getpoint();
+				A[1] = E_ToBe[siz-1].fr.getpoint();
+				A[2] = ori.getWCFromOC(point(0,0));
+				list<Point> enclosedPoints;
+				getEnclosedPoints(A, enclosedPoints);
+
+				cout << "the following killar ligger in the way: " << endl;
+				for (list<Point>::iterator itP = enclosedPoints.begin(); itP != enclosedPoints.end(); itP++){
+					itP->print();
+					cout << endl;
+				}
+
+					// Det är ingen vertexcentered face för den har punkter inom sig.
+				if (enclosedPoints.size() > 0)
+					return 1;
+
+					// kontrollera 
+				if (siz == 2)
+					return 2;
+
+					// här kan man vara ute på riktigt hal is om 
+					// man exempelvis INTE bygger 10 edgeiga faces
+					// i ikosaeder-symmetri, utan istället bygger
+					// snorspetsiga fula trianglar. Men skyll dig själv!
+				A[0] = E_ToBe[1].fr.getpoint();
+				A[2] = ori.getOCFromWC(A[0]);
+				ori.rotate(VP);
+				A[2] = ori.getWCFromOC(A[2]);
+
+
+				if ((A[2] - A[1]) * ~(A[1] - A[0]) > 0)
+				{
+					// den kan antas rotera kring vertexen.
+					return 2;
+				} else 
+					return 1;
+			}
+				
+				// kolla om det är en face-centered face
+			if (pfxDiff.getSize() == 1 && pfxDiff[0] == FP)
+			{
+				cout << "det kan vara en face-centered face detta" << endl;
+			}
+
+				// kolla om det är en edge-centered face
+			if (pfxDiff.getSize() == 1 && pfxDiff[0] == FN)
+			{
+				cout << "may be able att vara en edge-centered fejja detta hair-inga" << endl;
+			}
+
+
+				// annars är det omständigare att kolla om det är ett slutet face.
+
+		}
+
+			// allt funkar och den är inte sluten. Fortsätt bygga din fejja!!!
+		return 1;
+	}
+
+		// A måste vara en array med tre element. I PntList appendas alla inneslutna Points
+	int getEnclosedPoints(point *A, list<Point> &PntList)
+	{
+		Prefix pfx[3];
+		vector<Prefix> relPfxToControl;
+		Orientation ori;
+		Point PointToAdd;
+		double dh = 0.00000001;
+
+
+		for (int j=0; j<3; j++)
+			pfx[j] = getPrefix(A[j]);
+
+
+			// radda upp alla unika prefix i pfx och stega genom dem.
+			// detta är en ful-lösning som måste analyseras noggrannare
+			// Vid rotation [VP FP] måste ju även punkter i området 
+			// [VP], [FN] kontrolleras, inte bara [VP FP]. Det görs icke ännu.
+
+		relPfxToControl.push_back(pfx[0]);
+		Prefix pfx_tf = pfx[0].difference(pfx[1]);
+		if (pfx_tf.getSize() > 0)
+			relPfxToControl.push_back(pfx_tf);
+		if (pfx[2].difference(pfx[0]).getSize() > 0)
+		{
+			pfx_tf = pfx[1].difference(pfx[2]);
+			if (pfx_tf.getSize() > 0)
+				relPfxToControl.push_back(pfx_tf);
+		}
+
+		point *V_OC = new point[V.size()];
+		for (int j=0; j<V.size(); j++)
+			V_OC[j] = ori.getOCFromWC(V[j]);
+
+
+		for (int k=0; k<relPfxToControl.size(); k++) {
+			ori.rotate(relPfxToControl[k]);
+			PointToAdd.Pfx.rotate(relPfxToControl[k]);
+
+			for (int i=0; i<V.size(); i++)
+			{
+				point V_WC = ori.getWCFromOC(V_OC[i]);
+
+				bool enclosed = true;
+				for (int j=0; j<3 && enclosed; j++)
+				{
+					if (~(A[j==2? 0: j+1] - A[j]) * (V_WC - A[j]) < dh)
+						enclosed = false;
+				}
+
+				if (enclosed)
+				{
+					PointToAdd.index = i;
+					PntList.push_back(PointToAdd);
+				}
+			}
+		}
+
+		delete[] V_OC;
+
+		return 0;
 	}
 
 
@@ -296,6 +489,9 @@ namespace Graph2D {
 
 	void mouseClick(int x, int y)
 	{
+		cout << "here klickas it: ";
+		fromABtoXY(x, y).print();
+
 		if (mode == 0)
     	{
     		point coord_(fromABtoXY(x, y));
@@ -371,7 +567,24 @@ namespace Graph2D {
 				cout << endl;
 			}
 
-			cout << "sluten: " << checkE_ToBe() << endl;
+			int sluten = checkE_ToBe();
+			cout << "sluten: " << sluten << endl;
+			switch(sluten)
+			{
+				case 0:
+					cout << "Det bidde error nostans." << endl;
+					E_ToBe.clear();
+					break;
+				case 1:
+					cout << "Den is icke fardig just nu men on god way" << endl;
+					break;
+				case 2:
+					cout << "Den ska vara sluten nu" << endl;
+					break;
+				default:
+					cout << "Hit ska den icke anlanda" << endl;
+					break;
+			}
 		}
 
 	}
@@ -497,6 +710,9 @@ namespace Graph2D {
 
 	}
 
+	point pointsToDrawTillfalligt[3];
+		
+
 	void display()
 	{
 		point vAll_[9];
@@ -585,6 +801,45 @@ namespace Graph2D {
     			drawPoint(vAll_[i]);	
     	}
 
+
+    	// ta dän detta sen:
+		glBegin(GL_LINE_STRIP);{
+			/*glVertex3f(0.25, 0.05, 0.0);
+			glVertex3f(0.65, 0.55, 0.0);
+			glVertex3f(0.05, 0.75, 0.0);
+			glVertex3f(0.25, 0.05, 0.0);*/
+			glVertex3f(pointsToDrawTillfalligt[0].x, pointsToDrawTillfalligt[0].y, 0.0);
+			glVertex3f(pointsToDrawTillfalligt[1].x, pointsToDrawTillfalligt[1].y, 0.0);
+			glVertex3f(pointsToDrawTillfalligt[2].x, pointsToDrawTillfalligt[2].y, 0.0);
+			glVertex3f(pointsToDrawTillfalligt[0].x, pointsToDrawTillfalligt[0].y, 0.0);
+		}
+		glEnd();
+
+
+
 	    glutSwapBuffers();
+	}
+
+	void test()
+	{
+		insertVertex(point(0.28, 0.15));
+		insertVertex(point(0.4, 0.2));
+		insertVertex(point(0.15, 0.1));
+
+		pointsToDrawTillfalligt[0] = point(0.25, 0.05);
+		pointsToDrawTillfalligt[1] = point(0.65, 0.55);
+		pointsToDrawTillfalligt[2] = point(0.05, 0.75);
+
+		list<Point> PntList;
+		int result = getEnclosedPoints(pointsToDrawTillfalligt, PntList);
+
+		cout << "Punkter som ligger i areat: " << endl;
+		for (list<Point>::iterator itP = PntList.begin(); itP != PntList.end(); itP++)
+		{
+			itP->print();
+			cout << endl;
+		}
+
+		cout << "nu skiter det sig " << endl;
 	}
 }

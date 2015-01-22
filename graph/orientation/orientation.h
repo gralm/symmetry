@@ -50,6 +50,8 @@ namespace Graph2D {
 
 		bool defined() const;
 
+		//Prefix getPrefix();
+
 		point operator~ ();
 
 		point operator+ (point A);
@@ -73,7 +75,11 @@ namespace Graph2D {
 		void simplify();
 		void print();
 		bool rotate(TYP r);
+		bool rotate(Prefix &r);
 		int getSize();
+		Prefix getInverse();
+
+		TYP operator[](int i);
 
 		Prefix difference(Prefix A);
 	};
