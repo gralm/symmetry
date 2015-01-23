@@ -61,7 +61,7 @@ namespace Graph2D {
 					break;
 			}
 		} else if (index >= V.size()) {
-			cout << "hit skulle den ju inte komma ju ju ju " << endl;
+			//cout << "hit skulle den ju inte komma ju ju ju " << endl;
 			return point(-100, -100);
 		} else {
 			rootpoint_ = V[index];
@@ -104,6 +104,29 @@ namespace Graph2D {
 		this->getpoint().print();
 	}
 
+	void Edge::print()
+	{
+		cout << "index (";
+		switch(index)
+		{
+			case -1:
+				cout << "undef.";
+				break;
+			default:
+				cout << index;
+				break;
+		}
+		cout << "), ";
+		Pfx.print();
+	}
+
+	Point::Point() {}
+
+	Point::Point(Prefix Pfx_, int index_)
+	{
+		Pfx = Pfx_;
+		index = index_;
+	}
 
 
 	void edge::print()
@@ -113,10 +136,19 @@ namespace Graph2D {
 		cout << endl << "\tPoint to = ";
 		to.print();
 		cout << endl;
-		cout << "\tEdge next = " << 0 << endl;
+
+		cout << "\tEdge next = ";
+		next.print();
+		cout << endl << "\tEdge prev = ";
+		prev.print();
+		cout << endl << "\tEdge oppo = ";
+		oppo.print();
+		cout << endl;
+		/*cout << "\tEdge next = " << 0 << endl;
 		cout << "\tEdge prev = " << 0 << endl;
-		cout << "\tEdge oppo = " << 0 << endl;
+		cout << "\tEdge oppo = " << 0 << endl;*/
 	}
+
 
 
 		// AB är koordinater på skärmen, pixelposition
@@ -147,6 +179,8 @@ namespace Graph2D {
 	{
 
 		int siz = E_ToBe.size();
+		if (siz <= 1)
+			return 1;
 		/*switch(siz)
 		{
 			case 1:
@@ -580,13 +614,87 @@ namespace Graph2D {
 					break;
 				case 2:
 					cout << "Den ska vara sluten nu" << endl;
+					cout << (addFaceToBe()? "gick bra att adda": "gick icke laya too");
+					cout << endl;
 					break;
 				default:
 					cout << "Hit ska den icke anlanda" << endl;
 					break;
 			}
 		}
+	}
 
+	void printEs()
+	{
+		for (int i=0; i<E.size(); i++)
+		{
+			cout << i << ":" << endl;
+			E[i].print();
+			cout << endl;
+		}
+	}
+
+	bool addFaceToBe()
+	{
+				//vector<edge>::iterator ite = E_ToBe.end();
+		int sizE = E.size();
+
+		//		Fixa:
+		// Rootera tillbaka ytan så att början 
+		//och slutet alltid rör  en rootPoint.
+		Prefix draBortPfxInv = E_ToBe[0].fr.Pfx;//.getSize();
+		cout << "The following prefix ska dras away" << endl;
+		draBortPfxInv.print();
+		draBortPfxInv = draBortPfxInv.getInverse();
+
+		for (int i=0; i<E_ToBe.size()-1; i++)
+		{
+			edge edgeToPushBack;
+
+			Prefix enAnnanPrefixIgen = draBortPfxInv;
+			enAnnanPrefixIgen.rotate(E_ToBe[i].fr.Pfx);
+			enAnnanPrefixIgen.simplify();
+			edgeToPushBack.fr.Pfx = enAnnanPrefixIgen;
+			edgeToPushBack.fr.index = E_ToBe[i].fr.index;
+
+			enAnnanPrefixIgen = draBortPfxInv;
+			enAnnanPrefixIgen.rotate(E_ToBe[i].to.Pfx);
+			enAnnanPrefixIgen.simplify();
+			edgeToPushBack.to.Pfx = enAnnanPrefixIgen;
+			edgeToPushBack.to.index = E_ToBe[i].to.index;
+
+			edgeToPushBack.next = Edge(Prefix(), (i==E_ToBe.size()-2? sizE: sizE + i + 1));
+			edgeToPushBack.prev = Edge(Prefix(), (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
+
+				// kolla genom om man kan hitta någon opposite
+			cout << endl;
+			//int kortastePrefix = 10000000;
+			edgeToPushBack.oppo.index = -1;
+			int indexToUse = -1;
+			for (int j=0; j<E.size(); j++)
+			{
+				if (E[j].fr.index == edgeToPushBack.to.index
+					&& E[j].to.index == edgeToPushBack.fr.index)
+				{
+					Prefix EfrDiffETPBto = E[j].fr.Pfx.difference(edgeToPushBack.to.Pfx);
+					Prefix EtoDiffETPBfr = E[j].to.Pfx.difference(edgeToPushBack.fr.Pfx);
+					Prefix PfxDiff = EfrDiffETPBto.difference(EtoDiffETPBfr);
+					if (PfxDiff.getSize() == 0) {
+						//PfxToUse = EfrDiffETPBto;
+						if (E[j].oppo.index != -1)
+							cout << "E[" << j << "].oppo = E[" << i + sizE << "] men is already upptagen med E[" << E[j].oppo.index << "]" << endl;
+						edgeToPushBack.oppo = Edge(EfrDiffETPBto, j);
+						E[j].oppo = Edge(EfrDiffETPBto.getInverse(), i + sizE);
+					}
+				}
+			}
+
+			E.push_back(edgeToPushBack);
+		}
+
+		E_ToBe.clear();
+
+		printEs();
 	}
 
 	int insertVertex(point coord_)

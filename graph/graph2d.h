@@ -84,19 +84,26 @@ namespace Graph2D {
 		Prefix Pfx;
 		int index;
 
+		Point();
+		Point(Prefix Pfx_, int index_);
 		point getpoint();
 		void print();
 	};
 
 	//struct edge;
 	struct Edge {
-		Prefix P;
-		int e;
+		Prefix Pfx;
+		int index;
+
+		Edge() {}
+		Edge(Prefix Pfx_, int index_) {Pfx = Pfx_; index = index_;}
+		void print();
 	};
 
 	class Face {
 		Prefix P;
 		int fr;
+		int mode;
 	};
 
 	struct edge {
@@ -122,6 +129,7 @@ namespace Graph2D {
 		// 2 om face är ok.
 	int checkE_ToBe();		// returnerar true om face är slutet.
 	int getEnclosedPoints(point *A, std::list<Point> &PntList);
+	bool addFaceToBe();
 	int mouseOverIndex(point co_);
 	// returns -1 if over none, radius = pixel-radius
 	Point mouseOverPoint(point co_);
