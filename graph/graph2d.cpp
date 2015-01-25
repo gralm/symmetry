@@ -29,6 +29,8 @@ namespace Graph2D {
 	std::vector<edge> E;
 
 
+	point pointsToDrawTillfalligt[3];
+
 	Prefix preE_ToBe;
 	vector<edge> E_ToBe;
 
@@ -294,8 +296,12 @@ namespace Graph2D {
 				// om pfxDiff = [VP] så kan det vara en Vertex-Centered Face.
 			if (pfxDiff.getSize() == 1 && pfxDiff[0] == VP)
 			{
-					//kontrollera så att inga punkter existerar i det området
 				cout << "Det is en VP rotation detta :) " << endl;
+				
+				
+					//kontrollera så att inga punkter existerar i det området
+				if (vertexPointActive)
+					return 1;
 
 				Orientation ori;
 				ori.rotate(E_ToBe[0].fr.Pfx);
@@ -316,9 +322,14 @@ namespace Graph2D {
 				if (enclosedPoints.size() > 0)
 					return 1;
 
+
 					// kontrollera 
 				if (siz == 2)
 					return 2;
+
+
+				// Kontrollera så att polygonen är konvex om 
+				// den är sluten.
 
 					// här kan man vara ute på riktigt hal is om 
 					// man exempelvis INTE bygger 10 edgeiga faces
@@ -341,18 +352,146 @@ namespace Graph2D {
 				// kolla om det är en face-centered face
 			if (pfxDiff.getSize() == 1 && pfxDiff[0] == FP)
 			{
-				cout << "det kan vara en face-centered face detta" << endl;
+				cout << "   *******    \n Det is en FP rotation detta :) " << endl;
+				
+				
+					//kontrollera så att inga punkter existerar i det området
+				if (facePointActive)
+					return 1;
+
+				point A[3];
+				Orientation ori;
+				A[2] = ori.getOCFromWC(faceCenteredPoint);
+
+				ori.rotate(E_ToBe[0].fr.Pfx);
+				A[0] = E_ToBe[0].fr.getpoint();
+				A[1] = E_ToBe[siz-1].fr.getpoint();
+				A[2] = ori.getWCFromOC(A[2]);
+				for (int k=0; k<3; k++)
+					pointsToDrawTillfalligt[k] = A[k];
+
+				list<Point> enclosedPoints;
+				getEnclosedPoints(A, enclosedPoints);
+
+				cout << "the following killar ligger in the way: " << endl;
+				for (list<Point>::iterator itP = enclosedPoints.begin(); itP != enclosedPoints.end(); itP++){
+					itP->print();
+					cout << endl;
+				}
+
+					// Det är ingen vertexcentered face för den har punkter inom sig.
+				if (enclosedPoints.size() > 0)
+					return 1;
+
+
+					// kontrollera 
+				if (siz == 2)
+					return 2;
+
+				cout << "kom hit" << endl;
+				//return 1;
+
+
+				// Kontrollera så att polygonen är konvex om 
+				// den är sluten.
+
+					// här kan man vara ute på riktigt hal is om 
+					// man exempelvis INTE bygger 10 edgeiga faces
+					// i ikosaeder-symmetri, utan istället bygger
+					// snorspetsiga fula trianglar. Men skyll dig själv!
+				A[0] = E_ToBe[1].fr.getpoint();
+				A[2] = ori.getOCFromWC(A[0]);
+				ori.rotate(FP);
+				A[2] = ori.getWCFromOC(A[2]);
+
+				/*for (int k=0; k<3; k++) {
+					cout << "k: " << k << "\t";
+					A[k].print();
+					cout << endl;
+				}*/
+
+				//cout << "(A[2] - A[1]) * ~(A[1] - A[0]) = " << ((A[2] - A[1]) * ~(A[1] - A[0])) << endl;
+
+
+				if ((A[2] - A[1]) * ~(A[1] - A[0]) > 0)
+				{
+					// den kan antas rotera kring vertexen.
+					return 2;
+				} else 
+					return 1;
 			}
 
 				// kolla om det är en edge-centered face
 			if (pfxDiff.getSize() == 1 && pfxDiff[0] == FN)
 			{
-				cout << "may be able att vara en edge-centered fejja detta hair-inga" << endl;
+				cout << "   *******    \n Det is en FN rotation detta :) " << endl;
+				
+				
+					//kontrollera så att inga punkter existerar i det området
+				if (edgePointActive)
+					return 1;
+/*
+				point A[3];
+				Orientation ori;
+				A[2] = ori.getOCFromWC(faceCenteredPoint);
+
+				ori.rotate(E_ToBe[0].fr.Pfx);
+				A[0] = E_ToBe[0].fr.getpoint();
+				A[1] = E_ToBe[siz-1].fr.getpoint();
+				A[2] = ori.getWCFromOC(A[2]);
+				for (int k=0; k<3; k++)
+					pointsToDrawTillfalligt[k] = A[k];
+
+				list<Point> enclosedPoints;
+				getEnclosedPoints(A, enclosedPoints);
+
+				cout << "the following killar ligger in the way: " << endl;
+				for (list<Point>::iterator itP = enclosedPoints.begin(); itP != enclosedPoints.end(); itP++){
+					itP->print();
+					cout << endl;
+				}
+
+					// Det är ingen vertexcentered face för den har punkter inom sig.
+				if (enclosedPoints.size() > 0)
+					return 1;
+
+
+					// kontrollera 
+				if (siz == 2)
+					return 2;
+
+				cout << "kom hit" << endl;
+				//return 1;
+
+
+				// Kontrollera så att polygonen är konvex om 
+				// den är sluten.
+
+					// här kan man vara ute på riktigt hal is om 
+					// man exempelvis INTE bygger 10 edgeiga faces
+					// i ikosaeder-symmetri, utan istället bygger
+					// snorspetsiga fula trianglar. Men skyll dig själv!
+				A[0] = E_ToBe[1].fr.getpoint();
+				A[2] = ori.getOCFromWC(A[0]);
+				ori.rotate(FP);
+				A[2] = ori.getWCFromOC(A[2]);
+
+				//for (int k=0; k<3; k++) {
+				//	cout << "k: " << k << "\t";
+				//	A[k].print();
+				//	cout << endl;
+				//}
+
+				//cout << "(A[2] - A[1]) * ~(A[1] - A[0]) = " << ((A[2] - A[1]) * ~(A[1] - A[0])) << endl;
+
+
+				if ((A[2] - A[1]) * ~(A[1] - A[0]) > 0)
+				{
+					// den kan antas rotera kring vertexen.
+					return 2;
+				} else 
+					return 1;*/
 			}
-
-
-				// annars är det omständigare att kolla om det är ett slutet face.
-
 		}
 
 			// allt funkar och den är inte sluten. Fortsätt bygga din fejja!!!
@@ -818,7 +957,6 @@ namespace Graph2D {
 
 	}
 
-	point pointsToDrawTillfalligt[3];
 		
 
 	void display()
@@ -930,7 +1068,7 @@ namespace Graph2D {
 
 	void test()
 	{
-
+/*
 		insertVertex(point(0.28, 0.15));
 		insertVertex(point(0.4, 0.2));
 		insertVertex(point(0.15, 0.1));
@@ -948,7 +1086,7 @@ namespace Graph2D {
 			itP->print();
 			cout << endl;
 		}
-
+*/
 		cout << "nu skiter det sig " << endl;
 	}
 }
