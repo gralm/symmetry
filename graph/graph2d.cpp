@@ -27,6 +27,7 @@ namespace Graph2D {
 
 	std::vector<point> V;
 	std::vector<edge> E;
+	std::vector<face> F;
 
 
 	point pointsToDrawTillfalligt[3];
@@ -146,11 +147,44 @@ namespace Graph2D {
 		cout << endl << "\tEdge oppo = ";
 		oppo.print();
 		cout << endl;
-		/*cout << "\tEdge next = " << 0 << endl;
-		cout << "\tEdge prev = " << 0 << endl;
-		cout << "\tEdge oppo = " << 0 << endl;*/
 	}
 
+
+	face::face()
+	{
+		fr = -1;
+		edges = 0;
+	}
+
+	face::face(int fr_, int edges_, int type_)
+	{
+		fr = fr_;
+		edges = edges_;
+		type = type_;
+	}
+
+	void face::print()
+	{
+		cout << "from: " << fr << "\t len: " << edges << "\t typ: ";
+		switch(type)
+		{
+			case -1:
+				cout << "Not-Centered";
+				break;
+			case VERTEX_CENTERED:
+				cout << "Vertex-Centered";
+				break;
+			case EDGE_CENTERED:
+				cout << "Edge-Centered";
+				break;
+			case FACE_CENTERED:
+				cout << "Face-Centered";
+				break;
+			default:
+				cout << "Felaktig";
+				break;
+		}
+	}
 
 
 		// AB är koordinater på skärmen, pixelposition
@@ -325,7 +359,7 @@ namespace Graph2D {
 
 					// kontrollera 
 				if (siz == 2)
-					return 2;
+					return VERTEX_CENTERED;
 
 
 				// Kontrollera så att polygonen är konvex om 
@@ -344,7 +378,7 @@ namespace Graph2D {
 				if ((A[2] - A[1]) * ~(A[1] - A[0]) > 0)
 				{
 					// den kan antas rotera kring vertexen.
-					return 2;
+					return VERTEX_CENTERED;
 				} else 
 					return 1;
 			}
@@ -386,7 +420,7 @@ namespace Graph2D {
 
 					// kontrollera 
 				if (siz == 2)
-					return 2;
+					return FACE_CENTERED;
 
 				cout << "kom hit" << endl;
 				//return 1;
@@ -416,13 +450,13 @@ namespace Graph2D {
 				if ((A[2] - A[1]) * ~(A[1] - A[0]) > 0)
 				{
 					// den kan antas rotera kring vertexen.
-					return 2;
+					return FACE_CENTERED;
 				} else 
 					return 1;
 			}
 
 				// kolla om det är en edge-centered face
-			if (pfxDiff.getSize() == 1 && pfxDiff[0] == FN)
+			if (pfxDiff.getSize() == 2 && (pfxDiff[0]^pfxDiff[1] == 6))
 			{
 				cout << "   *******    \n Det is en FN rotation detta :) " << endl;
 				
@@ -430,20 +464,41 @@ namespace Graph2D {
 					//kontrollera så att inga punkter existerar i det området
 				if (edgePointActive)
 					return 1;
-/*
+
+					// om det är ett rakt streck 
+				if (siz == 2)
+					return 1;
+
+
+
 				point A[3];
 				Orientation ori;
-				A[2] = ori.getOCFromWC(faceCenteredPoint);
-
 				ori.rotate(E_ToBe[0].fr.Pfx);
-				A[0] = E_ToBe[0].fr.getpoint();
-				A[1] = E_ToBe[siz-1].fr.getpoint();
-				A[2] = ori.getWCFromOC(A[2]);
-				for (int k=0; k<3; k++)
-					pointsToDrawTillfalligt[k] = A[k];
+
+				switch(pfxDiff[0])
+				{
+					case FP:
+					case VN:
+						A[0] = ori.getWCFromOC(point(COS30, -SIN30)*.5);
+						break;
+					case FN:
+					case VP:
+						A[0] = ori.getWCFromOC(point(COS30, SIN30)*.5);
+						break;
+					default:
+						cout << "hit ska jag typ icke kommmmma" << endl;
+						break;
+				}
 
 				list<Point> enclosedPoints;
-				getEnclosedPoints(A, enclosedPoints);
+
+				for (int k=0; k<siz-1; k++)
+				{
+					A[1] = E_ToBe[k].fr.getpoint();
+					A[2] = E_ToBe[k+1].fr.getpoint();
+					getEnclosedPoints(A, enclosedPoints);
+				}
+
 
 				cout << "the following killar ligger in the way: " << endl;
 				for (list<Point>::iterator itP = enclosedPoints.begin(); itP != enclosedPoints.end(); itP++){
@@ -452,45 +507,28 @@ namespace Graph2D {
 				}
 
 					// Det är ingen vertexcentered face för den har punkter inom sig.
-				if (enclosedPoints.size() > 0)
+				if (enclosedPoints.size() > 0) {
+					cout << "Det is killar in the way" << endl;
+					return 0;
+				}
+
+					// nästa punkt i serien kommer bli A[]
+				A[0] = A[0]*2.0 - E_ToBe[1].fr.getpoint();
+
+
+				cout << "kille0: " << endl;
+				A[0].print();
+				cout << endl << "kille1: ";
+				A[1].print();
+				cout << endl << "kille2: ";
+				A[2].print();
+				cout << endl;
+				cout << "value: " << ((A[0] - A[2]) * ~(A[2] - A[1])) << endl;
+
+				if ((A[0] - A[2]) * ~(A[2] - A[1]) < 0)
 					return 1;
 
-
-					// kontrollera 
-				if (siz == 2)
-					return 2;
-
-				cout << "kom hit" << endl;
-				//return 1;
-
-
-				// Kontrollera så att polygonen är konvex om 
-				// den är sluten.
-
-					// här kan man vara ute på riktigt hal is om 
-					// man exempelvis INTE bygger 10 edgeiga faces
-					// i ikosaeder-symmetri, utan istället bygger
-					// snorspetsiga fula trianglar. Men skyll dig själv!
-				A[0] = E_ToBe[1].fr.getpoint();
-				A[2] = ori.getOCFromWC(A[0]);
-				ori.rotate(FP);
-				A[2] = ori.getWCFromOC(A[2]);
-
-				//for (int k=0; k<3; k++) {
-				//	cout << "k: " << k << "\t";
-				//	A[k].print();
-				//	cout << endl;
-				//}
-
-				//cout << "(A[2] - A[1]) * ~(A[1] - A[0]) = " << ((A[2] - A[1]) * ~(A[1] - A[0])) << endl;
-
-
-				if ((A[2] - A[1]) * ~(A[1] - A[0]) > 0)
-				{
-					// den kan antas rotera kring vertexen.
-					return 2;
-				} else 
-					return 1;*/
+				return EDGE_CENTERED;
 			}
 		}
 
@@ -742,6 +780,23 @@ namespace Graph2D {
 
 			int sluten = checkE_ToBe();
 			cout << "sluten: " << sluten << endl;
+
+			switch(sluten)
+			{
+				case 2:
+					cout << "DET blev en vanlig FACE" << endl;
+					break;
+				case VERTEX_CENTERED:
+					cout << "DET blev en VERTEX FACE" << endl;
+					break;
+				case EDGE_CENTERED:
+					cout << "DET blev en EDGE FACE" << endl;
+					break;
+				case FACE_CENTERED:
+					cout << "DET blev en FACE FACE" << endl;
+					break;
+			}
+
 			switch(sluten)
 			{
 				case 0:
@@ -752,8 +807,12 @@ namespace Graph2D {
 					cout << "Den is icke fardig just nu men on god way" << endl;
 					break;
 				case 2:
+				case VERTEX_CENTERED:
+				case EDGE_CENTERED:
+				case FACE_CENTERED:
 					cout << "Den ska vara sluten nu" << endl;
-					cout << (addFaceToBe()? "gick bra att adda": "gick icke laya too");
+
+					cout << (addFaceToBe(sluten)? "gick bra att adda": "gick icke laya too");
 					cout << endl;
 					break;
 				default:
@@ -763,18 +822,28 @@ namespace Graph2D {
 		}
 	}
 
-	void printEs()
+	void printAll()
 	{
+		cout << "\t" << "Edges" << endl;
 		for (int i=0; i<E.size(); i++)
 		{
 			cout << i << ":" << endl;
 			E[i].print();
 			cout << endl;
 		}
+
+		cout << "\t" << "Faces: " << endl;
+		for (int i=0; i<F.size(); i++)
+		{
+			cout << i << ": ";
+			F[i].print();
+			cout << endl;
+		}
 	}
 
-	bool addFaceToBe()
+	bool addFaceToBe(int sluten)
 	{
+		cout << "i addfacetobe so is sluten = " << sluten << endl;
 				//vector<edge>::iterator ite = E_ToBe.end();
 		int sizE = E.size();
 
@@ -802,14 +871,62 @@ namespace Graph2D {
 			edgeToPushBack.to.Pfx = enAnnanPrefixIgen;
 			edgeToPushBack.to.index = E_ToBe[i].to.index;
 
-			edgeToPushBack.next = Edge(Prefix(), (i==E_ToBe.size()-2? sizE: sizE + i + 1));
-			edgeToPushBack.prev = Edge(Prefix(), (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
+			Prefix PfxNext;
+			Prefix PfxPrev;
+			if (sluten == 2) {
+				edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
+				edgeToPushBack.prev = Edge(PfxPrev, (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
+			} else if (sluten == VERTEX_CENTERED) {
+
+				if (i==0)
+					PfxPrev.rotate(VN);
+				if (i==E_ToBe.size()-2)
+					PfxNext.rotate(VP);
+				edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
+				edgeToPushBack.prev = Edge(PfxPrev, i==0? sizE + E_ToBe.size() - 2: sizE + i - 1);
+				//edgeToPushBack.next = (i==E_ToBe.size()-2? Edge(Pfx, sizE): Edge(Prefix(), sizE + i + 1));
+				
+			} else if (sluten == EDGE_CENTERED) {
+				PfxNext;
+				PfxPrev;
+				Prefix cpPrefixHelvete;
+
+				cpPrefixHelvete = E_ToBe[E_ToBe.size()-1].fr.Pfx;			
+				cpPrefixHelvete.rotate(draBortPfxInv);
+
+				cout << "when it is done, it becomasar: ";
+				cpPrefixHelvete.print();
+				cout << endl;
+
+				if (i==0) {
+					PfxPrev = cpPrefixHelvete;
+				}
+
+
+				if (i==E_ToBe.size()-2) {
+					PfxNext = cpPrefixHelvete;
+				}
+
+				edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
+				edgeToPushBack.prev = Edge(PfxPrev, (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
+			} else if (sluten == FACE_CENTERED) {
+				Prefix PfxNext;
+				Prefix PfxPrev;
+
+				if (i==0)
+					PfxPrev.rotate(FN);
+				if (i==E_ToBe.size()-2)
+					PfxNext.rotate(FP);
+				edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
+				edgeToPushBack.prev = Edge(PfxPrev, (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
+			}
 
 				// kolla genom om man kan hitta någon opposite
 			cout << endl;
 			//int kortastePrefix = 10000000;
 			edgeToPushBack.oppo.index = -1;
-			int indexToUse = -1;
+			//int indexToUse = -1;
+			/*
 			for (int j=0; j<E.size(); j++)
 			{
 				if (E[j].fr.index == edgeToPushBack.to.index
@@ -826,14 +943,80 @@ namespace Graph2D {
 						E[j].oppo = Edge(EfrDiffETPBto.getInverse(), i + sizE);
 					}
 				}
+			}*/
+
+				// kolla genom om man kan hitta någon opposite, IGEN
+			if (edgeToPushBack.oppo.index == -1) {
+				for (int j=0; j<E.size(); j++)
+				{
+					if (E[j].fr.index == edgeToPushBack.to.index
+						&& E[j].to.index == edgeToPushBack.fr.index)
+					{
+						// A.to * inv(B.fr) * B.to * inv(A.fr)
+						Prefix shitness;
+						Prefix shitness2;
+						shitness.rotate(E[j].to.Pfx);
+						shitness2 = edgeToPushBack.fr.Pfx.getInverse();
+						shitness.rotate(shitness2);
+						shitness.rotate(edgeToPushBack.to.Pfx);
+						shitness2 = E[j].fr.Pfx.getInverse();
+						shitness.rotate(shitness2);
+						shitness.simplify();
+						cout << "shitness [" << j << "]: ";
+						shitness.print();
+						cout << endl;
+						if (shitness.getSize() == 0)
+						{
+							Prefix nyaDiffisen = E[j].to.Pfx;
+							shitness2 = edgeToPushBack.fr.Pfx.getInverse();
+							nyaDiffisen.rotate(shitness2);
+							cout << "fann en oppo here: ";
+							nyaDiffisen.print(),
+							cout << endl;
+
+							//edgeToPushBack.oppo = Edge(nyaDiffisen, j);
+							//E[j].oppo = Edge(nyaDiffisen.getInverse(), i + sizE);
+							edgeToPushBack.oppo = Edge(nyaDiffisen.getInverse(), j);
+							E[j].oppo = Edge(nyaDiffisen, i + sizE);
+						}
+					}
+				}
 			}
+			cout << "a" << endl;
+
+			if (edgeToPushBack.oppo.index == -1)
+			{
+
+
+				cout << "oppo is -1 here och i = " << i << endl;
+				cout << "denna kan ha opposite med sig self" << endl;
+				cout << "fr.index = " << E_ToBe[i].fr.index << endl;
+				cout << "to.index = " << E_ToBe[i].to.index << endl;
+
+				if (E_ToBe[i].fr.index == E_ToBe[i].to.index)
+				{
+					Prefix Pfx = E_ToBe[i].fr.Pfx.difference(E_ToBe[i].to.Pfx);
+					cout << "denna har prefix: ";
+					Pfx.print();
+					cout << endl;
+
+					if (Pfx.getSize() == 2 && Pfx[0]^Pfx[1] == 6)
+					{
+						edgeToPushBack.oppo.index = E_ToBe[i].fr.index;
+						edgeToPushBack.oppo.Pfx = Pfx;
+					}
+				}
+
+			}
+			cout << "b" << endl;
 
 			E.push_back(edgeToPushBack);
 		}
 
 		E_ToBe.clear();
+		F.push_back(face(sizE, E.size() - sizE, sluten == 2? -1: sluten));
 
-		printEs();
+		printAll();
 	}
 
 	int insertVertex(point coord_)
@@ -917,6 +1100,58 @@ namespace Graph2D {
 		glEnd();	
 	}
 
+	void drawedge(edge &e)
+	{
+		point fr[9];
+		point to[9];
+
+		getAllFromRoots(e.fr.getpoint(), fr);
+		getAllFromRoots(e.to.getpoint(), to);
+
+		glBegin(GL_LINES);
+
+		for (int i=0; i<9; i++)
+		{
+			glVertex3f(fr[i].x, fr[i].y, 0.);
+			glVertex3f(to[i].x, to[i].y, 0.);
+		}
+		glEnd();
+	}
+
+	void drawfaces() {
+		
+		int i=0;
+		for (int j=0; j<F.size(); j++)
+		{
+			switch(F[j].type)
+			{
+				case VERTEX_CENTERED:
+					glColor3f(.7, .5, .3);
+					break;
+				case EDGE_CENTERED:
+					glColor3f(.3, .7, .5);
+					break;
+				case FACE_CENTERED:
+					glColor3f(.5, .3, .7);
+					break;
+				default:
+					glColor3f(.5, .5, .5);
+					break;
+			}
+
+			for (int k=0; k<F[j].edges; k++)
+			{
+				drawedge(E[i]);
+				i++;
+			}
+		}
+		/*for (int i=0; i<E.size(); i++) {
+			drawedge(E[i]);
+		}*/
+	}
+
+
+
 	void getAllFromRoots(const point vRoot_, point *vAll_)
 	{
 		//if (vRoot_.y <= -100)
@@ -969,6 +1204,8 @@ namespace Graph2D {
 	    	// rita bräde:
 	    drawBrade();
 
+
+		drawfaces();
 
 
 		setColorOfVertex(VERTEX_CENTERED, 1.0);
@@ -1026,7 +1263,6 @@ namespace Graph2D {
 			glVertex3f(coords_.x, coords_.y, 0.0);
 			glEnd();
 		}
-
 
 
 

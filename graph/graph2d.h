@@ -41,6 +41,10 @@ namespace Graph2D {
 	extern const point edgeCenteredPoint;//(.25, SIN60*.5);
 	extern const point faceCenteredPoint;//(.5, .25/COS30);
 
+	extern const int VERTEX_CENTERED;
+	extern const int EDGE_CENTERED;
+	extern const int FACE_CENTERED;
+
 	extern bool facePointActive;
 	extern bool edgePointActive;
 	extern bool vertexPointActive;
@@ -61,8 +65,11 @@ namespace Graph2D {
 	extern int indexChosen;
 	extern int indexMouseOver;
 
+	class face;
+
 	extern std::vector<point> V;
 	extern std::vector<edge> E;
+	extern std::vector<face> F;
 
 
 	//extern prefix preE_ToBe;
@@ -106,6 +113,19 @@ namespace Graph2D {
 		int mode;
 	};
 
+	class face {
+	public:
+		int fr;
+		int edges;
+		int type;
+
+		face();
+		face(int fr_, int edges_, int type_);
+
+		void print();
+
+	};
+
 	struct edge {
 		Point fr;
 		Point to;
@@ -129,7 +149,7 @@ namespace Graph2D {
 		// 2 om face är ok.
 	int checkE_ToBe();		// returnerar true om face är slutet.
 	int getEnclosedPoints(point *A, std::list<Point> &PntList);
-	bool addFaceToBe();
+	bool addFaceToBe(int sluten);
 	int mouseOverIndex(point co_);
 	// returns -1 if over none, radius = pixel-radius
 	Point mouseOverPoint(point co_);
@@ -142,6 +162,8 @@ namespace Graph2D {
 	void drawPoint(point _P);
 	void drawCircle(point _P, bool filled);
 	void drawBrade();
+	void drawedge(edge &e);
+	void drawfaces();
 	void getAllFromRoots(const point vRoot_, point *vAll_);
 	void setColorOfVertex(int vert_, TYP str_);
 	void display();
