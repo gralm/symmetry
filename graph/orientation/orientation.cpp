@@ -71,4 +71,23 @@ namespace Graph2D {
 		//return point(A * point(COS30, SIN30),  A*point(-SIN30, COS30));
 		return point(A.x*COS30 + A.y*SIN30,  -A.x*SIN30 + A.y*COS30);
 	}
+
+	void rotationPrint(TYP a_)
+	{
+		switch(a_)
+		{
+			case VP:
+				cout << "VP";
+				break;
+			case VN:
+				cout << "VN";
+				break;
+			case FP:
+				cout << "FP";
+				break;
+			case FN:
+				cout << "FN";
+				break;
+		}
+	}
 }

@@ -42,7 +42,6 @@
 
 namespace Graph2D {
 
-
 	class point {
 	public:
 		double x;
@@ -105,6 +104,8 @@ namespace Graph2D {
 
 		static point getWCFromRootOC(point A);
 	};
+
+	void rotationPrint(TYP);
 
 }
 

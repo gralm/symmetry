@@ -95,6 +95,7 @@ namespace Graph2D {
 		Point(Prefix Pfx_, int index_);
 		point getpoint();
 		void print();
+		bool equalTo(Point &A);
 	};
 
 	//struct edge;

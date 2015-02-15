@@ -131,6 +131,91 @@ namespace Graph2D {
 		index = index_;
 	}
 
+	bool Point::equalTo(Point &A) {
+		Prefix subPfx = Pfx.difference(A.Pfx);
+		bool keepTrying = (index<-1);
+		subPfx.simplify();
+
+		cout << endl << "subPfx before: ";
+		subPfx.print();
+		cout << endl;
+
+
+		//for (list<TYP>::reverse_iterator rit = R.rbegin(); rit != R.rend(); rit++)
+			//toReturn.R.push_back(INV_ROTATION(*rit));
+
+		int previousEcTYP = 0;
+		int k = 0;
+
+		keepTrying = true;
+		for (list<TYP>::reverse_iterator ritR = subPfx.R.rbegin(); keepTrying && ritR != subPfx.R.rend();)
+		{
+			k++;
+			cout << "now is ritR = ";
+			rotationPrint(*ritR);
+			cout << endl;
+
+			if (index == VERTEX_CENTERED && (*ritR == VN || *ritR == VP)) {
+				cout << "VC" << endl;
+				/*subPfx.R.erase(--(ritR.base()));
+				ritR = subPfx.R.rbegin();*/
+				ritR = list<TYP>::reverse_iterator(subPfx.R.erase(--(ritR.base())));
+				cout << "ritR efter erase: ";
+				rotationPrint(*ritR);
+				cout << endl;
+			} else if (index == FACE_CENTERED && (*ritR == FN || *ritR == FP)) {
+				cout << "FC" << endl;
+				ritR = list<TYP>::reverse_iterator(subPfx.R.erase(--(ritR.base())));
+				cout << "ritR efter erase: ";
+				rotationPrint(*ritR);
+			} else if (index == EDGE_CENTERED) {
+				//TYP ritRold = *ritR;
+				if ((previousEcTYP == FP && *ritR == VP) || (previousEcTYP == VN && *ritR == FN)) {
+					cout << "ECa" << endl;
+					subPfx.R.pop_back();
+					subPfx.R.pop_back();
+					ritR = subPfx.R.rbegin();
+					//ritR = list<TYP>::reverse_iterator(subPfx.R.erase(--(ritR.base())));
+					//ritR = list<TYP>::reverse_iterator(subPfx.R.erase(--(ritR.base())));
+					previousEcTYP = 0;
+				} else if ((previousEcTYP == VN && *ritR == FP) || (previousEcTYP == VN && *ritR == FP)){
+					cout << "ECd" << endl;
+					subPfx.R.pop_back();
+					subPfx.R.pop_back();
+					subPfx.R.push_back(FN);
+					ritR = subPfx.R.rbegin();
+					subPfx.print();
+					cout << endl;
+					subPfx.simplify();
+					subPfx.print();
+					cout << endl;
+					previousEcTYP = 0;
+					cout << endl;
+				} else if (previousEcTYP == 0 && (*ritR == FP || *ritR == VN)) {
+					cout << "ECb" << endl;
+					previousEcTYP = *ritR;
+					ritR++;
+				} else {
+					cout << "ECc" << endl;
+					keepTrying = false;
+				}
+			} else {
+
+				cout << "0" << endl;
+				keepTrying = false;
+			}
+			if (k > 10)
+				break; 
+		}
+
+
+		cout << endl << "subPfx efter: ";
+		subPfx.print();
+		cout << endl;
+
+		return (subPfx.getSize() == 0);
+	}
+
 
 	void edge::print()
 	{
@@ -1304,6 +1389,27 @@ namespace Graph2D {
 
 	void test()
 	{
+		Prefix BPfx;
+		BPfx.rotate(VP);
+		BPfx.rotate(FP);
+		BPfx.rotate(VP);
+		Point B(BPfx, EDGE_CENTERED);
+		cout << "B: ";
+		B.print();
+		
+		Prefix CPfx;
+		CPfx.rotate(FP);
+		CPfx.rotate(VN);
+		Point C(CPfx, EDGE_CENTERED);
+		cout << endl << "C: ";
+		C.print();
+
+		bool hej = B.equalTo(C);
+		cout << endl << "equalTo: ";
+		cout << (hej? "sant": "falskt") << endl;
+
+
+
 /*
 		insertVertex(point(0.28, 0.15));
 		insertVertex(point(0.4, 0.2));
