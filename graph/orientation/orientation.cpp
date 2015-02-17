@@ -91,3 +91,16 @@ namespace Graph2D {
 		}
 	}
 }
+/*
+	Icosaedral symmetri:
+	VP X0 = X1
+
+	VP = 	[.5,			sqrt(3.)/2,			0]
+			[-sqrt(5./12), 	sqrt(5.)/6,			-2./3]
+			[-sqrt(1./3),	1./3				sqrt(5.)/3]
+
+	VP VP VP VP = VN
+
+	VN = VP^-1
+*/
+

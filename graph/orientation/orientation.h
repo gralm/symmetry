@@ -2,6 +2,7 @@
 #define TESTORIENTATION_H
 
 #include <list>
+#include <vector>
 #include <iostream>
 
 #define COS30			0.86602540378444
@@ -20,6 +21,11 @@
 #define VN		3	// 110
 #define FP		4	// 001
 #define FN		5	// 101
+
+#define VERTEX_CENTERED		(-2)
+#define EDGE_CENTERED		(-3)
+#define FACE_CENTERED		(-4)
+
 
 
 		// omvandla alla:	summa = 1023
@@ -41,6 +47,15 @@
 		// FN VN FP = FN VN FP FP FN = FN VN FN FN = 	VP FN
 
 namespace Graph2D {
+
+	struct Edge;
+
+	class Face;
+
+	class face;
+
+	struct edge;
+
 
 	class point {
 	public:
@@ -69,6 +84,12 @@ namespace Graph2D {
 		void operator*= (double a);
 	};
 
+
+	extern const point vertexCenteredPoint;//(.0, .0);
+	extern const point edgeCenteredPoint;//(.25, SIN60*.5);
+	extern const point faceCenteredPoint;//(.5, .25/COS30);
+
+
 	class Prefix {
 	public:
 		std::list<TYP> R;
@@ -79,14 +100,31 @@ namespace Graph2D {
 		void simplify();
 		void print();
 		bool rotate(TYP r);
-		bool rotate(Prefix &r);
+		bool rotate(const Prefix &r);
 		int getSize();
 		Prefix getInverse();
 
 		TYP operator[](int i);
+		Prefix operator*(const Prefix &A);
 
 		Prefix difference(Prefix A);
 	};
+
+
+	//struct Point;
+	struct Point {
+		Prefix Pfx;
+		int index;
+
+		Point();
+		Point(Prefix Pfx_, int index_);
+		point getpoint();
+		void print();
+		bool equalTo(Point &A);
+	};
+	extern std::vector<point> V;
+	extern std::vector<edge> E;
+	extern std::vector<face> F;
 
 	class Orientation {
 	public:

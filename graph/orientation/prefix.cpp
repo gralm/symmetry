@@ -135,9 +135,13 @@ namespace Graph2D {
 		R.push_back(r);
 	}
 
-	bool Prefix::rotate(Prefix &r)
+	bool Prefix::rotate(const Prefix &r)
 	{
-		for (list<TYP>::iterator itr = r.R.begin(); itr != r.R.end(); itr++)
+		list<TYP>::const_iterator itr;
+		itr = r.R.begin();
+		//itr++;
+
+		for (itr = r.R.begin(); itr != r.R.end(); itr++)
 			R.push_back(*itr);
 		simplify();
 	}
@@ -155,6 +159,21 @@ namespace Graph2D {
 
 		cout << "Hit ska den ju inte heller komma, det here is sjuuuukt lixom!!!" << endl;
 		return 0;
+	}
+
+	Prefix Prefix::operator*(const Prefix &A)
+	{
+		Prefix toReturn;
+		toReturn.R = R;
+
+		toReturn.rotate(A);
+		
+		//for (list<TYP>::iterator it = A.R.begin(); it != A.R.end(); it++)
+		//	toReturn.R.push_back( (*it));
+
+		simplify();
+
+		return toReturn;
 	}
 
 

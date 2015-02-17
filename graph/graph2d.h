@@ -37,13 +37,11 @@ namespace Graph2D {
 	class point;
 	struct edge;
 
+	
 	extern const point vertexCenteredPoint;//(.0, .0);
 	extern const point edgeCenteredPoint;//(.25, SIN60*.5);
 	extern const point faceCenteredPoint;//(.5, .25/COS30);
 
-	extern const int VERTEX_CENTERED;
-	extern const int EDGE_CENTERED;
-	extern const int FACE_CENTERED;
 
 	extern bool facePointActive;
 	extern bool edgePointActive;
@@ -86,18 +84,6 @@ namespace Graph2D {
 	extern int mode;
 
 
-	//struct Point;
-	struct Point {
-		Prefix Pfx;
-		int index;
-
-		Point();
-		Point(Prefix Pfx_, int index_);
-		point getpoint();
-		void print();
-		bool equalTo(Point &A);
-	};
-
 	//struct edge;
 	struct Edge {
 		Prefix Pfx;
@@ -136,6 +122,7 @@ namespace Graph2D {
 		Edge oppo;
 
 		void print();
+		bool isOppositeOf(const edge &e, Prefix *pfx);	// returns true if it is opposite. If pfx != null, pfx
 	};
 
 

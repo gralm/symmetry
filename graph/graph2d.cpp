@@ -5,10 +5,6 @@ using namespace std;
 
 namespace Graph2D {
 
-	const int VERTEX_CENTERED = -2;
-	const int EDGE_CENTERED = -3;
-	const int FACE_CENTERED = -4;
-
 	int mode = 0;
 
 	double xMin = 0;
@@ -39,73 +35,7 @@ namespace Graph2D {
 	int indexChosen = -1;
 	int indexMouseOver = -1;
 
-	const point vertexCenteredPoint(.0, .0);
-	const point edgeCenteredPoint(.25, SIN60*.5);
-	const point faceCenteredPoint(.5, .25/COS30);
 
-	point Point::getpoint()
-	{
-		point rootpoint_;
-		if (index < 0) {
-			switch (index)
-			{
-				case VERTEX_CENTERED:
-					rootpoint_ = vertexCenteredPoint;
-					break;
-				case EDGE_CENTERED:
-					rootpoint_ = edgeCenteredPoint;
-					break;
-				case FACE_CENTERED:
-					rootpoint_ = faceCenteredPoint;
-					break;
-				default:
-					cout << "it became default o det ska det inte" << endl;
-					rootpoint_ = point(-100, -100);
-					break;
-			}
-		} else if (index >= V.size()) {
-			//cout << "hit skulle den ju inte komma ju ju ju " << endl;
-			return point(-100, -100);
-		} else {
-			rootpoint_ = V[index];
-		}
-
-		Orientation ori_;
-		point rotatedpoint_ = ori_.getOCFromWC(rootpoint_);
-		ori_.rotate(Pfx);
-		rotatedpoint_ = ori_.getWCFromOC(rotatedpoint_);
-		return rotatedpoint_;
-		
-		// niclas nosch 11-12
-		// erik är från combitech
-	}
-
-	void Point::print()
-	{
-		cout << "index (";
-		switch(index)
-		{
-			case -1:
-				cout << "undef.";
-				break;
-			case VERTEX_CENTERED:
-				cout << "VC";
-				break;
-			case EDGE_CENTERED:
-				cout << "EC";
-				break;
-			case FACE_CENTERED:
-				cout << "FC";
-				break;
-			default:
-				cout << index;
-				break;
-		}
-		cout << "), ";
-		Pfx.print();
-		cout << ", ";
-		this->getpoint().print();
-	}
 
 	void Edge::print()
 	{
@@ -123,98 +53,6 @@ namespace Graph2D {
 		Pfx.print();
 	}
 
-	Point::Point() {}
-
-	Point::Point(Prefix Pfx_, int index_)
-	{
-		Pfx = Pfx_;
-		index = index_;
-	}
-
-	bool Point::equalTo(Point &A) {
-		Prefix subPfx = Pfx.difference(A.Pfx);
-		bool keepTrying = (index<-1);
-		subPfx.simplify();
-
-		cout << endl << "subPfx before: ";
-		subPfx.print();
-		cout << endl;
-
-
-		//for (list<TYP>::reverse_iterator rit = R.rbegin(); rit != R.rend(); rit++)
-			//toReturn.R.push_back(INV_ROTATION(*rit));
-
-		int previousEcTYP = 0;
-		int k = 0;
-
-		keepTrying = true;
-		for (list<TYP>::reverse_iterator ritR = subPfx.R.rbegin(); keepTrying && ritR != subPfx.R.rend();)
-		{
-			k++;
-			cout << "now is ritR = ";
-			rotationPrint(*ritR);
-			cout << endl;
-
-			if (index == VERTEX_CENTERED && (*ritR == VN || *ritR == VP)) {
-				cout << "VC" << endl;
-				/*subPfx.R.erase(--(ritR.base()));
-				ritR = subPfx.R.rbegin();*/
-				ritR = list<TYP>::reverse_iterator(subPfx.R.erase(--(ritR.base())));
-				cout << "ritR efter erase: ";
-				rotationPrint(*ritR);
-				cout << endl;
-			} else if (index == FACE_CENTERED && (*ritR == FN || *ritR == FP)) {
-				cout << "FC" << endl;
-				ritR = list<TYP>::reverse_iterator(subPfx.R.erase(--(ritR.base())));
-				cout << "ritR efter erase: ";
-				rotationPrint(*ritR);
-			} else if (index == EDGE_CENTERED) {
-				//TYP ritRold = *ritR;
-				if ((previousEcTYP == FP && *ritR == VP) || (previousEcTYP == VN && *ritR == FN)) {
-					cout << "ECa" << endl;
-					subPfx.R.pop_back();
-					subPfx.R.pop_back();
-					ritR = subPfx.R.rbegin();
-					//ritR = list<TYP>::reverse_iterator(subPfx.R.erase(--(ritR.base())));
-					//ritR = list<TYP>::reverse_iterator(subPfx.R.erase(--(ritR.base())));
-					previousEcTYP = 0;
-				} else if ((previousEcTYP == VN && *ritR == FP) || (previousEcTYP == VN && *ritR == FP)){
-					cout << "ECd" << endl;
-					subPfx.R.pop_back();
-					subPfx.R.pop_back();
-					subPfx.R.push_back(FN);
-					ritR = subPfx.R.rbegin();
-					subPfx.print();
-					cout << endl;
-					subPfx.simplify();
-					subPfx.print();
-					cout << endl;
-					previousEcTYP = 0;
-					cout << endl;
-				} else if (previousEcTYP == 0 && (*ritR == FP || *ritR == VN)) {
-					cout << "ECb" << endl;
-					previousEcTYP = *ritR;
-					ritR++;
-				} else {
-					cout << "ECc" << endl;
-					keepTrying = false;
-				}
-			} else {
-
-				cout << "0" << endl;
-				keepTrying = false;
-			}
-			if (k > 10)
-				break; 
-		}
-
-
-		cout << endl << "subPfx efter: ";
-		subPfx.print();
-		cout << endl;
-
-		return (subPfx.getSize() == 0);
-	}
 
 
 	void edge::print()
@@ -232,6 +70,29 @@ namespace Graph2D {
 		cout << endl << "\tEdge oppo = ";
 		oppo.print();
 		cout << endl;
+	}
+
+		// returns true if e is opposite edge. If pfx != null, pfx
+	bool edge::isOppositeOf(const edge &e, Prefix *pfx)
+	{
+		//Point fr;
+		//Point to;
+		/*
+			Point
+		Prefix Pfx;
+		int index;
+		*/
+
+			// avsluta om inte ens punkterna stämmer
+		if (fr.index != e.to.index || to.index != e.fr.index)
+			return false;
+
+		Prefix A_ = fr.Pfx * to.Pfx.getInverse();
+		
+
+
+		//pfx->R.clear();
+		return false;
 	}
 
 
@@ -710,12 +571,106 @@ namespace Graph2D {
 
 	// returns -1 if over none, radius = pixel-radius
 
-	Point mouseOverPoint(point co_)
+	/*Point mouseOverPoint(point co_)
 	{
 		Point P_;
 		P_.Pfx = getPrefix(co_);
 		co_ = getRootpoint(co_);
 		P_.index = mouseOverIndex(co_);
+		//return  mouseOverIndex(getRootpoint(co_));
+		return P_;
+	}*/
+
+	Point mouseOverPoint(point co_)
+	{
+			
+		Point P_;
+		P_.Pfx = getPrefix(co_);
+		point co2_ = getRootpoint(co_);
+		P_.index = mouseOverIndex(co2_);
+
+
+
+		double r2 = co_.x*co_.x + co_.y*co_.y;
+			// kolla om det är Edge-centered
+		if (P_.index == EDGE_CENTERED)
+		{
+			Prefix edgePfx;
+			cout << endl << " *********** detta is edge" << endl;
+				// returnera något annat istället, detta ger fel prefix
+			if (r2 < 0.5) {	// r2 = .25 eller .75
+				if (co_.x < 0) {
+					cout << "A" << endl;
+					edgePfx.rotate(VP);
+					//A
+				} else if (co_.x > .375) {
+					cout << "C" << endl;
+					edgePfx.rotate(VN);
+					// C
+				} else if (co_.y > 0) {
+					cout << "B" << endl;
+					// B
+				} else {
+					cout << "D" << endl;
+					edgePfx.rotate(VN);
+					edgePfx.rotate(VN);
+					// D
+				}
+			} else {
+				if (co_.x < .5) {
+					cout << "E" << endl;
+					edgePfx.rotate(VP);
+					edgePfx.rotate(FN);
+					// E
+				} else if (co_.y > 0) {
+					cout << "F" << endl;
+					edgePfx.rotate(FN);
+					// F
+				} else {
+					cout << "G" << endl;
+					edgePfx.rotate(VN);
+					edgePfx.rotate(FN);
+					// G
+				}
+			}
+			P_.Pfx = edgePfx;
+		} else if (P_.index == FACE_CENTERED) {
+			Prefix edgePfx;
+			cout << endl << " *********** detta is face" << endl;
+			if (co_.y < 0) {
+				// c
+				cout << "c" << endl;
+				edgePfx.rotate(VN);
+			} else if (co_.y < .5) {
+				cout << "b" << endl;
+			} else {
+				edgePfx.rotate(VP);
+				cout << "a" << endl;
+			}
+			P_.Pfx = edgePfx;
+		} else if (P_.index == VERTEX_CENTERED) {
+			Prefix edgePfx;
+			cout << endl << " *********** detta is vertex" << endl;
+			if (r2 < 0.25) {
+				cout << "T" << endl;
+			} else if (co_.x < 0.0) {
+				edgePfx.rotate(VP);
+				edgePfx.rotate(FN);
+				cout << "P" << endl;
+			} else if (co_.x > .75) {
+				edgePfx.rotate(FP);
+				cout << "R" << endl;
+			} else if (co_.y > 0) {
+				edgePfx.rotate(FN);
+
+				cout << "Q" << endl;
+			} else {
+				edgePfx.rotate(VN);
+				edgePfx.rotate(FP);
+				cout << "S" << endl;
+			}
+			P_.Pfx = edgePfx;
+		}
 		//return  mouseOverIndex(getRootpoint(co_));
 		return P_;
 	}
@@ -805,24 +760,27 @@ namespace Graph2D {
 		    		//indexChosen = VERTEX_CENTERED;
 					int msgtyp = vertexPointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
 					vertexPointActive = true;
+					char vertCent = VERTEX_CENTERED;
 					CommMsg wakeV(COMM_THREAD_GLUT, COMM_THREAD_MAIN, 
-						msgtyp, 0, sizeof(int), (char*)&VERTEX_CENTERED);
+						msgtyp, 0, sizeof(int), &vertCent);
 					commSendMsg(&wakeV);
 
 				} else if (indexMouseOver == EDGE_CENTERED) {
 					//indexChosen = EDGE_CENTERED;
 					int msgtyp = edgePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
 					edgePointActive = true;
+					char edgeCent = EDGE_CENTERED;
 					CommMsg wakeV(COMM_THREAD_GLUT, COMM_THREAD_MAIN, 
-						msgtyp, 0, sizeof(int), (char*)&EDGE_CENTERED);
+						msgtyp, 0, sizeof(int), &edgeCent);
 					commSendMsg(&wakeV);
 
 				} else if (indexMouseOver == FACE_CENTERED) {
 					//indexChosen = FACE_CENTERED;
 					int msgtyp = facePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
 					facePointActive = true;
+					char faceCent = FACE_CENTERED;
 					CommMsg wakeV(COMM_THREAD_GLUT, COMM_THREAD_MAIN, 
-						msgtyp, 0, sizeof(int), (char*)&FACE_CENTERED);
+						msgtyp, 0, sizeof(int), &faceCent);
 					commSendMsg(&wakeV);
 				}
 			} else {
@@ -1190,6 +1148,8 @@ namespace Graph2D {
 		point fr[9];
 		point to[9];
 
+
+
 		getAllFromRoots(e.fr.getpoint(), fr);
 		getAllFromRoots(e.to.getpoint(), to);
 
@@ -1197,12 +1157,19 @@ namespace Graph2D {
 
 		for (int i=0; i<9; i++)
 		{
+			point sidan = point(-(to[i].y-fr[i].y), to[i].x-fr[i].x) * (.01/sqrt((to[i]-fr[i])*(to[i]-fr[i])));
+			fr[i] += sidan;
+			to[i] += sidan;
 			glVertex3f(fr[i].x, fr[i].y, 0.);
 			glVertex3f(to[i].x, to[i].y, 0.);
+			fr[i] -= sidan;
+			to[i] -= sidan;
 		}
 		glEnd();
 	}
 
+
+		// Här ska fixas, man ska förkrympa edgen in mot facets mittpunkt
 	void drawfaces() {
 		
 		int i=0;

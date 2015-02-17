@@ -15,6 +15,7 @@ bygg:
 	make -s $(OBJPATH)prefix.o
 	make -s $(OBJPATH)orientation.o
 	make -s $(OBJPATH)graph2d.o
+	make -s $(OBJPATH)cpoint.o
 	make -s $(OBJPATH)main.o
 	make -s $(OBJPATH)comm.o
 	make -s $(OBJPATH)glutThread.o
@@ -37,6 +38,9 @@ $(OBJPATH)graph2d.o: graph/graph2d.cpp
 
 $(OBJPATH)point.o: graph/orientation/point.cpp
 	$(CC) $(OBJFLAGS) $(OBJPATH)point.o graph/orientation/point.cpp -I $(INC_DIR)
+
+$(OBJPATH)cpoint.o: graph/orientation/cpoint.cpp
+	$(CC) $(OBJFLAGS) $(OBJPATH)cpoint.o graph/orientation/cpoint.cpp -I $(INC_DIR)
 
 $(OBJPATH)prefix.o: graph/orientation/prefix.cpp
 	$(CC) $(OBJFLAGS) $(OBJPATH)prefix.o graph/orientation/prefix.cpp -I $(INC_DIR)
