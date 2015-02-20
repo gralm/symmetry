@@ -17,7 +17,7 @@ namespace Graph2D {
 		y = A_.y;
 	}
 
-	void point::print()
+	void point::print() const
 	{
 		std::cout << "coo [" << x << ", " << y << "]";// << std::endl;
 	}

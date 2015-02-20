@@ -11,7 +11,7 @@ namespace Graph2D {
 	const point edgeCenteredPoint(.25, SIN60*.5);
 	const point faceCenteredPoint(.5, .25/COS30);
 
-	point Point::getpoint()
+	point Point::getpoint() const
 	{
 		point rootpoint_;
 		if (index < 0) {
@@ -48,7 +48,7 @@ namespace Graph2D {
 		// erik är från combitech
 	}
 
-	void Point::print()
+	void Point::print() const
 	{
 		cout << "index (";
 		switch(index)
@@ -72,7 +72,8 @@ namespace Graph2D {
 		cout << "), ";
 		Pfx.print();
 		cout << ", ";
-		this->getpoint().print();
+		point hej = getpoint();
+		hej.print();
 	}
 
 

@@ -18,8 +18,8 @@
 #define INV_ROTATION(r)		(r^1)
 
 #define VP		2	// 010
-#define VN		3	// 110
-#define FP		4	// 001
+#define VN		3	// 011
+#define FP		4	// 100
 #define FN		5	// 101
 
 #define VERTEX_CENTERED		(-2)
@@ -65,7 +65,7 @@ namespace Graph2D {
 		point();
 		point(double x_, double y_);
 		point(const point &A_);
-		void print();
+		void print() const;
 
 		bool defined() const;
 
@@ -98,14 +98,14 @@ namespace Graph2D {
 
 		int findInList();
 		void simplify();
-		void print();
+		void print() const;
 		bool rotate(TYP r);
 		bool rotate(const Prefix &r);
 		int getSize();
-		Prefix getInverse();
+		Prefix getInverse() const;
 
 		TYP operator[](int i);
-		Prefix operator*(const Prefix &A);
+		Prefix operator*(const Prefix &A) const;
 
 		Prefix difference(Prefix A);
 	};
@@ -118,8 +118,8 @@ namespace Graph2D {
 
 		Point();
 		Point(Prefix Pfx_, int index_);
-		point getpoint();
-		void print();
+		point getpoint() const;
+		void print() const;
 		bool equalTo(Point &A);
 	};
 	extern std::vector<point> V;

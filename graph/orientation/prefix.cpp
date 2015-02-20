@@ -101,10 +101,10 @@ namespace Graph2D {
 		return;
 	}
 
-	void Prefix::print()
+	void Prefix::print() const
 	{
 		cout << "Pfx [";
-		for (list<TYP>::iterator it = R.begin(); it != R.end(); it++)
+		for (list<TYP>::const_iterator it = R.begin(); it != R.end(); it++)
 		{
 			if (it != R.begin())
 				cout << ", ";
@@ -161,7 +161,7 @@ namespace Graph2D {
 		return 0;
 	}
 
-	Prefix Prefix::operator*(const Prefix &A)
+	Prefix Prefix::operator*(const Prefix &A) const
 	{
 		Prefix toReturn;
 		toReturn.R = R;
@@ -171,7 +171,7 @@ namespace Graph2D {
 		//for (list<TYP>::iterator it = A.R.begin(); it != A.R.end(); it++)
 		//	toReturn.R.push_back( (*it));
 
-		simplify();
+		toReturn.simplify();
 
 		return toReturn;
 	}
@@ -201,10 +201,10 @@ namespace Graph2D {
 	}
 
 
-	Prefix Prefix::getInverse()
+	Prefix Prefix::getInverse() const
 	{
 		Prefix invPfx;
-		for (list<TYP>::reverse_iterator rit = R.rbegin(); rit != R.rend(); rit++)
+		for (list<TYP>::const_reverse_iterator rit = R.rbegin(); rit != R.rend(); rit++)
 			invPfx.R.push_back(INV_ROTATION(*rit));
 		return invPfx;
 	}

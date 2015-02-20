@@ -91,7 +91,7 @@ namespace Graph2D {
 
 		Edge() {}
 		Edge(Prefix Pfx_, int index_) {Pfx = Pfx_; index = index_;}
-		void print();
+		void print() const;
 	};
 
 	class Face {
@@ -121,7 +121,7 @@ namespace Graph2D {
 		Edge prev;
 		Edge oppo;
 
-		void print();
+		void print() const;
 		bool isOppositeOf(const edge &e, Prefix *pfx);	// returns true if it is opposite. If pfx != null, pfx
 	};
 

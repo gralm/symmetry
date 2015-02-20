@@ -37,7 +37,7 @@ namespace Graph2D {
 
 
 
-	void Edge::print()
+	void Edge::print() const
 	{
 		cout << "index (";
 		switch(index)
@@ -55,7 +55,7 @@ namespace Graph2D {
 
 
 
-	void edge::print()
+	void edge::print() const
 	{
 		cout << "\tPoint fr = ";
 		fr.print();
@@ -75,20 +75,103 @@ namespace Graph2D {
 		// returns true if e is opposite edge. If pfx != null, pfx
 	bool edge::isOppositeOf(const edge &e, Prefix *pfx)
 	{
-		//Point fr;
-		//Point to;
-		/*
-			Point
-		Prefix Pfx;
-		int index;
-		*/
-
 			// avsluta om inte ens punkterna stämmer
 		if (fr.index != e.to.index || to.index != e.fr.index)
 			return false;
 
-		Prefix A_ = fr.Pfx * to.Pfx.getInverse();
-		
+		Prefix X;
+
+			//
+		cout << " ** drive isOppositeOf" << endl;
+		cout << "this: " << endl;
+		this->print();
+		cout << endl << "edge e: " << endl;
+		e.print();
+
+
+		switch(fr.index)
+		{
+			case VERTEX_CENTERED: {
+				cout << "a" << endl;
+
+					// fr = X e.to
+				X = fr.Pfx;
+				X.rotate(e.to.Pfx.getInverse());
+				Point e_fr(X * e.fr.Pfx, e.fr.index);				
+				if (to.equalTo(e_fr))	{*pfx = X;	return true;}
+				
+					// fr [VP] = X e.to 			
+				X = fr.Pfx;
+				X.rotate(VP);
+				X.rotate(e.to.Pfx.getInverse());
+				e_fr = Point(X * e.fr.Pfx, e.fr.index);				
+				if (to.equalTo(e_fr))	{*pfx = X;	return true;}
+				
+					// fr [VN] = X e.to
+				X = fr.Pfx;
+				X.rotate(VN);
+				X.rotate(e.to.Pfx.getInverse());
+				e_fr = Point(X * e.fr.Pfx, e.fr.index);				
+				if (to.equalTo(e_fr))	{*pfx = X;	return true;}
+
+				cout << "a" << endl;
+				break;
+			}
+			case EDGE_CENTERED: {
+				cout << "b" << endl;
+
+				X = fr.Pfx;
+				X.rotate(e.to.Pfx.getInverse());
+				Point e_fr(X * e.fr.Pfx, e.fr.index);				
+				if (to.equalTo(e_fr))	{*pfx = X;	return true;}
+				
+					// fr [VP] = X e.to 			
+				X = fr.Pfx;
+				X.rotate(VP);
+				X.rotate(FP);
+				X.rotate(e.to.Pfx.getInverse());
+				e_fr = Point(X * e.fr.Pfx, e.fr.index);				
+				if (to.equalTo(e_fr))	{*pfx = X;	return true;}
+
+				break;
+			}
+			case FACE_CENTERED: {	
+				cout << "c" << endl;
+
+					// fr = X e.to
+				X = fr.Pfx;
+				X.rotate(e.to.Pfx.getInverse());
+				Point e_fr(X * e.fr.Pfx, e.fr.index);				
+				if (to.equalTo(e_fr))	{*pfx = X;	return true;}
+				
+					// fr [FP] = X e.to 			
+				X = fr.Pfx;
+				X.rotate(FP);
+				X.rotate(e.to.Pfx.getInverse());
+				e_fr = Point(X * e.fr.Pfx, e.fr.index);				
+				if (to.equalTo(e_fr))	{*pfx = X;	return true;}
+				
+					// fr [FN] = X e.to
+				X = fr.Pfx;
+				X.rotate(FN);
+				X.rotate(e.to.Pfx.getInverse());
+				e_fr = Point(X * e.fr.Pfx, e.fr.index);				
+				if (to.equalTo(e_fr))	{*pfx = X;	return true;}
+
+				cout << "c" << endl;
+				break;
+			}
+			default: {
+
+				cout << "D" << endl;
+				X = fr.Pfx;
+				X.rotate(e.to.Pfx.getInverse());
+				Point e_fr(X * e.fr.Pfx, e.fr.index);				
+				if (to.equalTo(e_fr))	{*pfx = X;	return true;}
+				cout << "D" << endl;
+				break;
+			}
+		}
 
 
 		//pfx->R.clear();
@@ -968,90 +1051,35 @@ namespace Graph2D {
 			cout << endl;
 			//int kortastePrefix = 10000000;
 			edgeToPushBack.oppo.index = -1;
-			//int indexToUse = -1;
-			/*
-			for (int j=0; j<E.size(); j++)
-			{
-				if (E[j].fr.index == edgeToPushBack.to.index
-					&& E[j].to.index == edgeToPushBack.fr.index)
-				{
-					Prefix EfrDiffETPBto = E[j].fr.Pfx.difference(edgeToPushBack.to.Pfx);
-					Prefix EtoDiffETPBfr = E[j].to.Pfx.difference(edgeToPushBack.fr.Pfx);
-					Prefix PfxDiff = EfrDiffETPBto.difference(EtoDiffETPBfr);
-					if (PfxDiff.getSize() == 0) {
-						//PfxToUse = EfrDiffETPBto;
-						if (E[j].oppo.index != -1)
-							cout << "E[" << j << "].oppo = E[" << i + sizE << "] men is already upptagen med E[" << E[j].oppo.index << "]" << endl;
-						edgeToPushBack.oppo = Edge(EfrDiffETPBto, j);
-						E[j].oppo = Edge(EfrDiffETPBto.getInverse(), i + sizE);
-					}
-				}
-			}*/
+
+
+
+
 
 				// kolla genom om man kan hitta någon opposite, IGEN
 			if (edgeToPushBack.oppo.index == -1) {
 				for (int j=0; j<E.size(); j++)
 				{
-					if (E[j].fr.index == edgeToPushBack.to.index
-						&& E[j].to.index == edgeToPushBack.fr.index)
-					{
-						// A.to * inv(B.fr) * B.to * inv(A.fr)
-						Prefix shitness;
-						Prefix shitness2;
-						shitness.rotate(E[j].to.Pfx);
-						shitness2 = edgeToPushBack.fr.Pfx.getInverse();
-						shitness.rotate(shitness2);
-						shitness.rotate(edgeToPushBack.to.Pfx);
-						shitness2 = E[j].fr.Pfx.getInverse();
-						shitness.rotate(shitness2);
-						shitness.simplify();
-						cout << "shitness [" << j << "]: ";
-						shitness.print();
-						cout << endl;
-						if (shitness.getSize() == 0)
-						{
-							Prefix nyaDiffisen = E[j].to.Pfx;
-							shitness2 = edgeToPushBack.fr.Pfx.getInverse();
-							nyaDiffisen.rotate(shitness2);
-							cout << "fann en oppo here: ";
-							nyaDiffisen.print(),
-							cout << endl;
+					Prefix oppositeOfPrefix;
+					//if (E[j].isOppositeOf(E_ToBe[i], &oppositeOfPrefix)) {
+					if (E[j].isOppositeOf(edgeToPushBack, &oppositeOfPrefix)) {
+						edgeToPushBack.oppo = Edge(oppositeOfPrefix.getInverse(), j);
+						E[j].oppo = Edge(oppositeOfPrefix, i + sizE);
 
-							//edgeToPushBack.oppo = Edge(nyaDiffisen, j);
-							//E[j].oppo = Edge(nyaDiffisen.getInverse(), i + sizE);
-							edgeToPushBack.oppo = Edge(nyaDiffisen.getInverse(), j);
-							E[j].oppo = Edge(nyaDiffisen, i + sizE);
-						}
+						break;
 					}
 				}
 			}
-			cout << "a" << endl;
+			//cout << "a" << endl;
 
+			Prefix oppositeOfPrefix;
 			if (edgeToPushBack.oppo.index == -1)
 			{
-
-
-				cout << "oppo is -1 here och i = " << i << endl;
-				cout << "denna kan ha opposite med sig self" << endl;
-				cout << "fr.index = " << E_ToBe[i].fr.index << endl;
-				cout << "to.index = " << E_ToBe[i].to.index << endl;
-
-				if (E_ToBe[i].fr.index == E_ToBe[i].to.index)
-				{
-					Prefix Pfx = E_ToBe[i].fr.Pfx.difference(E_ToBe[i].to.Pfx);
-					cout << "denna har prefix: ";
-					Pfx.print();
-					cout << endl;
-
-					if (Pfx.getSize() == 2 && Pfx[0]^Pfx[1] == 6)
-					{
-						edgeToPushBack.oppo.index = E_ToBe[i].fr.index;
-						edgeToPushBack.oppo.Pfx = Pfx;
-					}
+				//if (E_ToBe[i].isOppositeOf(E_ToBe[i], &oppositeOfPrefix)) {
+				if (E_ToBe[i].isOppositeOf(edgeToPushBack, &oppositeOfPrefix)) {
+					edgeToPushBack.oppo = Edge(oppositeOfPrefix.getInverse(), i + sizE);
 				}
-
 			}
-			cout << "b" << endl;
 
 			E.push_back(edgeToPushBack);
 		}
@@ -1356,7 +1384,7 @@ namespace Graph2D {
 
 	void test()
 	{
-		Prefix BPfx;
+		/*Prefix BPfx;
 		BPfx.rotate(VP);
 		BPfx.rotate(FP);
 		BPfx.rotate(VP);
@@ -1373,28 +1401,80 @@ namespace Graph2D {
 
 		bool hej = B.equalTo(C);
 		cout << endl << "equalTo: ";
-		cout << (hej? "sant": "falskt") << endl;
-
-
+		cout << (hej? "sant": "falskt") << endl;*/
 
 /*
-		insertVertex(point(0.28, 0.15));
-		insertVertex(point(0.4, 0.2));
-		insertVertex(point(0.15, 0.1));
+		Prefix diff;
+		edge edgeA, edgeB;
+		edgeA.fr.index = edgeA.to.index = edgeB.fr.index = edgeB.to.index = EDGE_CENTERED;
+		edgeA.to.Pfx.rotate(VP);
+		edgeB.to.Pfx.rotate(FP);
 
-		pointsToDrawTillfalligt[0] = point(0.25, 0.05);
-		pointsToDrawTillfalligt[1] = point(0.65, 0.55);
-		pointsToDrawTillfalligt[2] = point(0.05, 0.75);
+		cout << "\tedgeA: " << endl;
+		edgeA.print();
+		cout << endl;
 
-		list<Point> PntList;
-		int result = getEnclosedPoints(pointsToDrawTillfalligt, PntList);
+		cout << "\tedgeB: " << endl;
+		edgeB.print();
+		cout << endl;*/
 
-		cout << "Punkter som ligger i areat: " << endl;
-		for (list<Point>::iterator itP = PntList.begin(); itP != PntList.end(); itP++)
+		Prefix diff;
+		edge edgeA, edgeB;
+
+		/*edgeA.fr.index = 0;
+		edgeA.fr.Pfx;
+		edgeA.to.index = FACE_CENTERED;
+		edgeA.to.Pfx.rotate(FN);
+
+		edgeB.fr.index = FACE_CENTERED;
+		edgeB.fr.Pfx.rotate(FN);
+		edgeB.to.index = 0;
+		edgeB.to.Pfx.rotate(FN);*/
+
+		edgeA.fr.index = 0;
+		edgeA.fr.Pfx;
+		edgeA.to.index = FACE_CENTERED;
+		edgeA.to.Pfx.rotate(FN);
+
+		edgeB.fr.index = FACE_CENTERED;
+		edgeB.fr.Pfx.rotate(FN);
+		edgeB.to.index = 0;
+		edgeB.to.Pfx.rotate(FN);
+
+
+
+
+		if (edgeA.isOppositeOf(edgeB, &diff))
 		{
-			itP->print();
+			cout << "is opposite: ";
+			diff.print();
 			cout << endl;
+		} else {
+			cout << "not opposite" << endl;
 		}
+
+/*
+	bool edge::isOppositeOf(const edge &e, Prefix *pfx)
+	{
+		//Point fr;
+		//Point to;
+		
+			Point
+		Prefix Pfx;
+		int index;
+		
+
+			// avsluta om inte ens punkterna stämmer
+		if (fr.index != e.to.index || to.index != e.fr.index)
+			return false;
+
+		Prefix A_ = fr.Pfx * to.Pfx.getInverse();
+		
+
+
+		//pfx->R.clear();
+		return false;
+	}
 */
 		cout << "nu skiter det sig " << endl;
 	}
