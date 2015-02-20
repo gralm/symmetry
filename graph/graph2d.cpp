@@ -1230,6 +1230,63 @@ namespace Graph2D {
 		}*/
 	}
 
+	void drawfaces2() {
+		
+		int i=0;
+		double pullBack = 0.1;
+
+		for (int j=0; j<F.size(); j++)
+		{
+			point faceCenter(0, 0);
+			point *v = new point[F[j].edges];
+
+			for (int k=0; k<F[j].edges; k++) 
+				v[k] = E[i++].fr.getpoint();
+
+			switch(F[j].type)
+			{
+				case VERTEX_CENTERED:
+					glColor3f(.7, .5, .3);
+					faceCenter = vertexCenteredPoint;
+					break;
+				case EDGE_CENTERED:
+					glColor3f(.3, .7, .5);
+					faceCenter = edgeCenteredPoint;
+					break;
+				case FACE_CENTERED:
+					glColor3f(.5, .3, .7);
+					faceCenter = faceCenteredPoint;
+					break;
+				default:{
+					glColor3f(.5, .5, .5);
+					for (int k=0; k<F[j].edges; k++)
+						faceCenter += v[k];
+
+					faceCenter *= 1.0/F[j].edges;
+					break;
+				}
+			}
+
+			for (int k=0; k<F[j].edges; k++)
+			{
+				v[k] *= 1. - pullBack;
+				v[k] += faceCenter * pullBack;
+			}
+
+			glBegin(GL_LINE_STRIP);
+			glVertex3f(v[F[j].edges - 1].x, v[F[j].edges - 1].y, 0.);
+			for (int k=0; k<F[j].edges; k++)
+				glVertex3f(v[k].x, v[k].y, 0.);
+			
+			glEnd();
+
+			delete[] v;
+		}
+		/*for (int i=0; i<E.size(); i++) {
+			drawedge(E[i]);
+		}*/
+	}
+
 
 
 	void getAllFromRoots(const point vRoot_, point *vAll_)
@@ -1285,7 +1342,7 @@ namespace Graph2D {
 	    drawBrade();
 
 
-		drawfaces();
+		drawfaces2();
 
 
 		setColorOfVertex(VERTEX_CENTERED, 1.0);
