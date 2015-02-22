@@ -25,9 +25,6 @@ namespace Graph2D {
 	std::vector<edge> E;
 	std::vector<face> F;
 
-
-	point pointsToDrawTillfalligt[3];
-
 	Prefix preE_ToBe;
 	vector<edge> E_ToBe;
 
@@ -430,8 +427,6 @@ namespace Graph2D {
 				A[0] = E_ToBe[0].fr.getpoint();
 				A[1] = E_ToBe[siz-1].fr.getpoint();
 				A[2] = ori.getWCFromOC(A[2]);
-				for (int k=0; k<3; k++)
-					pointsToDrawTillfalligt[k] = A[k];
 
 				list<Point> enclosedPoints;
 				getEnclosedPoints(A, enclosedPoints);
@@ -466,15 +461,6 @@ namespace Graph2D {
 				A[2] = ori.getOCFromWC(A[0]);
 				ori.rotate(FP);
 				A[2] = ori.getWCFromOC(A[2]);
-
-				/*for (int k=0; k<3; k++) {
-					cout << "k: " << k << "\t";
-					A[k].print();
-					cout << endl;
-				}*/
-
-				//cout << "(A[2] - A[1]) * ~(A[1] - A[0]) = " << ((A[2] - A[1]) * ~(A[1] - A[0])) << endl;
-
 
 				if ((A[2] - A[1]) * ~(A[1] - A[0]) > 0)
 				{
@@ -653,16 +639,6 @@ namespace Graph2D {
 	}
 
 	// returns -1 if over none, radius = pixel-radius
-
-	/*Point mouseOverPoint(point co_)
-	{
-		Point P_;
-		P_.Pfx = getPrefix(co_);
-		co_ = getRootpoint(co_);
-		P_.index = mouseOverIndex(co_);
-		//return  mouseOverIndex(getRootpoint(co_));
-		return P_;
-	}*/
 
 	Point mouseOverPoint(point co_)
 	{
@@ -1197,96 +1173,85 @@ namespace Graph2D {
 	}
 
 
-		// Här ska fixas, man ska förkrympa edgen in mot facets mittpunkt
-	void drawfaces() {
+	void drawFace(face &F_)
+	{
+		static point V_[200];
+		int fVertices = F_.edges;
+		double edgeGap = 0.1;
+		point faceCenter(0., 0.);
+		int numOfCopies = 9;
+
+		for (int v=0; v<fVertices; v++)
+			V_[numOfCopies*v] = E[F_.fr + v].fr.getpoint();
 		
-		int i=0;
-		for (int j=0; j<F.size(); j++)
-		{
-			switch(F[j].type)
-			{
-				case VERTEX_CENTERED:
-					glColor3f(.7, .5, .3);
-					break;
-				case EDGE_CENTERED:
-					glColor3f(.3, .7, .5);
-					break;
-				case FACE_CENTERED:
-					glColor3f(.5, .3, .7);
-					break;
-				default:
-					glColor3f(.5, .5, .5);
-					break;
-			}
-
-			for (int k=0; k<F[j].edges; k++)
-			{
-				drawedge(E[i]);
-				i++;
-			}
-		}
-		/*for (int i=0; i<E.size(); i++) {
-			drawedge(E[i]);
-		}*/
-	}
-
-	void drawfaces2() {
+		V_[numOfCopies*fVertices] = E[F_.fr + fVertices - 1].to.getpoint();
+		fVertices++;
 		
-		int i=0;
-		double pullBack = 0.1;
+		switch(F_.type) {
+			case VERTEX_CENTERED:
+				glColor3f(.7, .5, .3);
+				faceCenter = vertexCenteredPoint;
+				break;
 
-		for (int j=0; j<F.size(); j++)
-		{
-			point faceCenter(0, 0);
-			point *v = new point[F[j].edges];
+			case EDGE_CENTERED: {
+				glColor3f(.3, .7, .5);
+				switch(E[F_.fr + F_.edges - 1].to.Pfx[0])
+				{
+					case VP:
+					case FN:
+						faceCenter = edgeCenteredPoint;
+						break;
 
-			for (int k=0; k<F[j].edges; k++) 
-				v[k] = E[i++].fr.getpoint();
+					case FP:
+					case VN:
+						faceCenter = point(.5, 0);
+						break;
 
-			switch(F[j].type)
-			{
-				case VERTEX_CENTERED:
-					glColor3f(.7, .5, .3);
-					faceCenter = vertexCenteredPoint;
-					break;
-				case EDGE_CENTERED:
-					glColor3f(.3, .7, .5);
-					faceCenter = edgeCenteredPoint;
-					break;
-				case FACE_CENTERED:
-					glColor3f(.5, .3, .7);
-					faceCenter = faceCenteredPoint;
-					break;
-				default:{
-					glColor3f(.5, .5, .5);
-					for (int k=0; k<F[j].edges; k++)
-						faceCenter += v[k];
-
-					faceCenter *= 1.0/F[j].edges;
-					break;
+					default:
+						cout << "hit ska det iCKKKE komma!" << endl;
+						break;
 				}
+				
+				break;
 			}
 
-			for (int k=0; k<F[j].edges; k++)
-			{
-				v[k] *= 1. - pullBack;
-				v[k] += faceCenter * pullBack;
+			case FACE_CENTERED:
+				glColor3f(.5, .3, .7);
+				faceCenter = faceCenteredPoint;
+				break;
+
+			default: {
+				glColor3f(.5, .5, .5);
+				for (int fVert=0; fVert<F_.edges; fVert++)
+					faceCenter += V_[numOfCopies*fVert];
+				faceCenter *= 1.0/F_.edges;
+				break;
+
 			}
-
-			glBegin(GL_LINE_STRIP);
-			glVertex3f(v[F[j].edges - 1].x, v[F[j].edges - 1].y, 0.);
-			for (int k=0; k<F[j].edges; k++)
-				glVertex3f(v[k].x, v[k].y, 0.);
-			
-			glEnd();
-
-			delete[] v;
 		}
-		/*for (int i=0; i<E.size(); i++) {
-			drawedge(E[i]);
-		}*/
+
+		for (int v=0; v<fVertices; v++) {
+			V_[numOfCopies*v] = V_[numOfCopies*v]*(1.0 - edgeGap) + faceCenter*edgeGap;
+			getAllFromRoots(V_[numOfCopies*v], V_ + numOfCopies*v);
+		}
+
+
+		glBegin(GL_LINES);
+		for (int copies = 0; copies < numOfCopies; copies++)
+		{
+			for (int v=0; v<fVertices-1; v++)
+			{
+				glVertex3f(V_[v*numOfCopies+copies].x, V_[v*numOfCopies+copies].y, 0.);
+				glVertex3f(V_[v*numOfCopies+numOfCopies+copies].x, V_[v*numOfCopies+numOfCopies+copies].y, 0.);
+			}
+		}
+		glEnd();				
 	}
 
+	void drawFaces() {
+		for (int f=0; f<F.size(); f++)
+			drawFace(F[f]);
+	}
 
 
 	void getAllFromRoots(const point vRoot_, point *vAll_)
@@ -1341,8 +1306,8 @@ namespace Graph2D {
 	    	// rita bräde:
 	    drawBrade();
 
-
-		drawfaces2();
+	    	// rita ut alla färdiga faces på nåt snyggt sätt.
+		drawFaces();
 
 
 		setColorOfVertex(VERTEX_CENTERED, 1.0);
@@ -1420,73 +1385,14 @@ namespace Graph2D {
     			drawPoint(vAll_[i]);	
     	}
 
-
-    	// ta dän detta sen:
-		glBegin(GL_LINE_STRIP);{
-			/*glVertex3f(0.25, 0.05, 0.0);
-			glVertex3f(0.65, 0.55, 0.0);
-			glVertex3f(0.05, 0.75, 0.0);
-			glVertex3f(0.25, 0.05, 0.0);*/
-			glVertex3f(pointsToDrawTillfalligt[0].x, pointsToDrawTillfalligt[0].y, 0.0);
-			glVertex3f(pointsToDrawTillfalligt[1].x, pointsToDrawTillfalligt[1].y, 0.0);
-			glVertex3f(pointsToDrawTillfalligt[2].x, pointsToDrawTillfalligt[2].y, 0.0);
-			glVertex3f(pointsToDrawTillfalligt[0].x, pointsToDrawTillfalligt[0].y, 0.0);
-		}
-		glEnd();
-
-
-
 	    glutSwapBuffers();
 	}
 
 	void test()
 	{
-		/*Prefix BPfx;
-		BPfx.rotate(VP);
-		BPfx.rotate(FP);
-		BPfx.rotate(VP);
-		Point B(BPfx, EDGE_CENTERED);
-		cout << "B: ";
-		B.print();
-		
-		Prefix CPfx;
-		CPfx.rotate(FP);
-		CPfx.rotate(VN);
-		Point C(CPfx, EDGE_CENTERED);
-		cout << endl << "C: ";
-		C.print();
-
-		bool hej = B.equalTo(C);
-		cout << endl << "equalTo: ";
-		cout << (hej? "sant": "falskt") << endl;*/
-
-/*
-		Prefix diff;
-		edge edgeA, edgeB;
-		edgeA.fr.index = edgeA.to.index = edgeB.fr.index = edgeB.to.index = EDGE_CENTERED;
-		edgeA.to.Pfx.rotate(VP);
-		edgeB.to.Pfx.rotate(FP);
-
-		cout << "\tedgeA: " << endl;
-		edgeA.print();
-		cout << endl;
-
-		cout << "\tedgeB: " << endl;
-		edgeB.print();
-		cout << endl;*/
 
 		Prefix diff;
 		edge edgeA, edgeB;
-
-		/*edgeA.fr.index = 0;
-		edgeA.fr.Pfx;
-		edgeA.to.index = FACE_CENTERED;
-		edgeA.to.Pfx.rotate(FN);
-
-		edgeB.fr.index = FACE_CENTERED;
-		edgeB.fr.Pfx.rotate(FN);
-		edgeB.to.index = 0;
-		edgeB.to.Pfx.rotate(FN);*/
 
 		edgeA.fr.index = 0;
 		edgeA.fr.Pfx;
@@ -1509,30 +1415,5 @@ namespace Graph2D {
 		} else {
 			cout << "not opposite" << endl;
 		}
-
-/*
-	bool edge::isOppositeOf(const edge &e, Prefix *pfx)
-	{
-		//Point fr;
-		//Point to;
-		
-			Point
-		Prefix Pfx;
-		int index;
-		
-
-			// avsluta om inte ens punkterna stämmer
-		if (fr.index != e.to.index || to.index != e.fr.index)
-			return false;
-
-		Prefix A_ = fr.Pfx * to.Pfx.getInverse();
-		
-
-
-		//pfx->R.clear();
-		return false;
-	}
-*/
-		cout << "nu skiter det sig " << endl;
 	}
 }
