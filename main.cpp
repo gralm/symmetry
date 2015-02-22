@@ -6,6 +6,7 @@
 #include <time.h>
 #include "comm/comm.h"
 #include "glutThread.h"
+#include "gui/gui.h"
 
 #define UI_UPDATE_TIME          100
 
@@ -95,6 +96,7 @@ void createMultiEdit(HWND hwnd, const char* text, int left, int width, int top, 
     SendMessage(hwndOject, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE, 0));
 }
 
+/*
 void createEdit(HWND hwnd, const char* text, int left, int width, int top, int height, int id)
 {
     HFONT hfDefault = NULL;
@@ -108,7 +110,7 @@ void createEdit(HWND hwnd, const char* text, int left, int width, int top, int h
         MessageBox(hwnd, "Could not create text field 2.", "Error", MB_OK | MB_ICONERROR);
 
     SendMessage(hwndOject, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE,0));
-}
+}*/
 
 
     // http://www.winprog.org/tutorial/controls.html

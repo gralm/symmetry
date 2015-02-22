@@ -17,12 +17,16 @@ bygg:
 	make -s $(OBJPATH)graph2d.o
 	make -s $(OBJPATH)cpoint.o
 	make -s $(OBJPATH)main.o
+	make -s $(OBJPATH)gui.o
 	make -s $(OBJPATH)comm.o
 	make -s $(OBJPATH)glutThread.o
 	$(CC) -o $(EXEFILE).exe $(OBJPATH)*.o -L "C:\MinGW\freeglut\lib" -l freeglut -lgdi32 -lopengl32 -lglu32 -lpthreadGC2
 
 $(OBJPATH)main.o: main.cpp
 	$(CC) $(OBJFLAGS) $(OBJPATH)main.o main.cpp -I $(INC_DIR)
+
+$(OBJPATH)gui.o: gui/gui.cpp
+	$(CC) $(OBJFLAGS) $(OBJPATH)gui.o gui/gui.cpp -I $(INC_DIR)
 
 $(OBJPATH)comm.o: comm/comm.cpp
 	$(CC) $(OBJFLAGS) $(OBJPATH)comm.o comm/comm.cpp -I $(INC_DIR)
