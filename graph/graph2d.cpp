@@ -50,6 +50,11 @@ namespace Graph2D {
 		Pfx.print();
 	}
 
+	bool Edge::isDefined() const
+	{
+		return index != -1;
+	}
+
 
 
 	void edge::print() const
@@ -659,34 +664,27 @@ namespace Graph2D {
 				// returnera något annat istället, detta ger fel prefix
 			if (r2 < 0.5) {	// r2 = .25 eller .75
 				if (co_.x < 0) {
-					cout << "A" << endl;
 					edgePfx.rotate(VP);
 					//A
 				} else if (co_.x > .375) {
-					cout << "C" << endl;
 					edgePfx.rotate(VN);
 					// C
 				} else if (co_.y > 0) {
-					cout << "B" << endl;
 					// B
 				} else {
-					cout << "D" << endl;
 					edgePfx.rotate(VN);
 					edgePfx.rotate(VN);
 					// D
 				}
 			} else {
 				if (co_.x < .5) {
-					cout << "E" << endl;
 					edgePfx.rotate(VP);
 					edgePfx.rotate(FN);
 					// E
 				} else if (co_.y > 0) {
-					cout << "F" << endl;
 					edgePfx.rotate(FN);
 					// F
 				} else {
-					cout << "G" << endl;
 					edgePfx.rotate(VN);
 					edgePfx.rotate(FN);
 					// G
@@ -1364,6 +1362,8 @@ namespace Graph2D {
 			}
 			glVertex3f(coords_.x, coords_.y, 0.0);
 			glEnd();
+		} else if (mode == 2) {
+
 		}
 
 
@@ -1387,6 +1387,55 @@ namespace Graph2D {
 
 	    glutSwapBuffers();
 	}
+ 
+	int setMode(int newModeVal)		// returnerar det satta värdet
+	{
+		switch(newModeVal) {
+			case 0: {
+				cout << "Mode = 0, skapa vertice mode" << endl;
+				break;}
+			case 1:
+				if (V.size() == 0)
+				{
+					cout << "V.len = 0, kan inte ta sig till next step" << endl;
+					return mode;
+				}
+				cout << "Mode = 1, skapa face/edges mode" << endl;
+				break;
+			case 2: {
+				if (E.size() == 0)
+				{
+					cout << "Mode cannot be 2, no edges exist." << endl;
+					return mode;
+				}
+
+				for (int e=0; e<E.size(); e++)
+				{
+					if (!E[e].oppo.isDefined())
+					{
+						cout << "edge[" << e << "].oppo is not yet defined" << endl;
+						return mode;
+					}
+				}
+
+				cout << "Mode = 2, choose symmetry" << endl;
+				break;
+			}
+			case 3:
+				cout << "Mode = 3, relax towards flat surfaces" << endl;
+				break;
+			case 4:
+				cout << "Mode = 4, relax flat surfaces" << endl;
+				break;
+			default:
+				cout << "Mode = ?, funkar inte" << endl;
+				return mode;
+				break;
+		}
+		mode = newModeVal;
+		return mode;
+	}
+
 
 	void test()
 	{

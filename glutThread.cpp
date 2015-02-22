@@ -68,7 +68,14 @@ void checkThreads()
         case COMM_MSGTYP_SET_MODE: {
             int *val = (int*)(msg.data);
             cout << "nu choooosas ett nytt val i glutThread.cpp: " << *val << endl;
-            Graph2D::mode = *val;
+            //Graph2D::mode = *val;
+            int newVal = Graph2D::setMode(*val);
+            //if (newVal != *val) // gick icke att sätta det värdet, därför måste allt ställas tillbaka
+            //{
+            CommMsg changeMode(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_SET_MODE, 0, sizeof(newVal), (char*)&newVal);
+            commSendMsg(&changeMode);
+            //}
+
             delete val;
             break;
         }

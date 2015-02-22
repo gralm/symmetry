@@ -92,6 +92,7 @@ namespace Graph2D {
 		Edge() {}
 		Edge(Prefix Pfx_, int index_) {Pfx = Pfx_; index = index_;}
 		void print() const;
+		bool isDefined() const;
 	};
 
 	class Face {
@@ -154,6 +155,7 @@ namespace Graph2D {
 	void drawfaces();
 	void getAllFromRoots(const point vRoot_, point *vAll_);
 	void setColorOfVertex(int vert_, TYP str_);
+	int setMode(int newModeVal);
 	void display();
 
 	void test();

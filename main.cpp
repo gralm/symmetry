@@ -247,16 +247,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
                     case IDC_NEXT_BUTTON: {
                         cout << "Det klickas på next" << endl;
-                        mode++;
-                        CommMsg ChangeMode(COMM_THREAD_MAIN, COMM_THREAD_GLUT, COMM_MSGTYP_SET_MODE, 0, sizeof(int), (char*) &mode);
+                        int newMode = mode+1;
+                        CommMsg ChangeMode(COMM_THREAD_MAIN, COMM_THREAD_GLUT, COMM_MSGTYP_SET_MODE, 0, sizeof(int), (char*) &newMode);
                         commSendMsg(&ChangeMode);
                         
                         break;
                     }
                     case IDC_PREV_BUTTON:{
                         cout << "Det klickas på prev" << endl;
-                        mode--;
-                        CommMsg ChangeMode(COMM_THREAD_MAIN, COMM_THREAD_GLUT, COMM_MSGTYP_SET_MODE, 0, sizeof(int), (char*) &mode);
+                        int newMode = mode-1;
+                        CommMsg ChangeMode(COMM_THREAD_MAIN, COMM_THREAD_GLUT, COMM_MSGTYP_SET_MODE, 0, sizeof(int), (char*) &newMode);
                         commSendMsg(&ChangeMode);
                         break;
                     }
@@ -323,6 +323,20 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
                     SendDlgItemMessage(hwnd, IDC_LISTBOX, LB_ADDSTRING, 0, (LPARAM)msg.data);
                     msg.destroy();
                     break;
+
+                case COMM_MSGTYP_SET_MODE: {
+                    cout << "MAIN - tji fick main threadden, det gick inte att byta mode." << endl;
+                    mode = *((int*)(msg.data));
+                    cout << "mode = " << mode << endl;
+
+                    if (mode == 2)
+                    {
+                    }
+
+                    delete msg.data;
+                    break;
+                }
+
 
                 case COMM_MSGTYP_ADD_CENTERED_VERTEX:{
                     cout << "Nu addades en centered vertex" << endl;
