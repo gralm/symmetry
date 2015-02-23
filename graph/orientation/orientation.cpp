@@ -5,11 +5,19 @@ using namespace std;
 
 namespace Graph2D {
 
+	bool definedVec(const VEC A)
+	{
+		return (A-VEC(100., 100.))*(A-VEC(100., 100.)) > .001;
+	}
+	/*bool point::defined() const
+	{
+		return (x+100.)*(x+100.) + (y+100.)*(y+100.) > .001;
+	}*/
 
 		// Root orientation
 	Orientation::Orientation() {
-		V = point(0, 0);
-		F = point(.5, COS30/3.);
+		V = VEC(0, 0);
+		F = VEC(.5, COS30/3.);
 	}
 
 	void Orientation::rotate(Prefix p_)
@@ -49,27 +57,27 @@ namespace Graph2D {
 	}
 
 	
-	point Orientation::getOCFromWC(point A)
+	VEC Orientation::getOCFromWC(VEC A)
 	{
-		return point((A-V) * (F-V), (A-V) * ~(F-V))*TAN60;
+		return VEC((A-V) * (F-V), (A-V) * ~(F-V))*TAN60;
 	}
 
-	point Orientation::getWCFromOC(point A)
+	VEC Orientation::getWCFromOC(VEC A)
 	{
 		return V + ((F-V)*A.x + ~(F-V)*A.y)*TAN60;
 	}
 
 	void Orientation::print()
 	{
-		cout << "V: ";		V.print();
-		cout << "F: ";		F.print();
+		cout << "V: " << V << endl;
+		cout << "F: " << F << endl;
 	}
 
 
-	point Orientation::getWCFromRootOC(point A)
+	VEC Orientation::getWCFromRootOC(VEC A)
 	{
 		//return point(A * point(COS30, SIN30),  A*point(-SIN30, COS30));
-		return point(A.x*COS30 + A.y*SIN30,  -A.x*SIN30 + A.y*COS30);
+		return VEC(A.x*COS30 + A.y*SIN30,  -A.x*SIN30 + A.y*COS30);
 	}
 
 	void rotationPrint(TYP a_)

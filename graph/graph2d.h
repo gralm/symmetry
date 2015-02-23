@@ -34,13 +34,13 @@ namespace Graph2D {
 	extern const unsigned char 	RP;		// positiv rotation till nästa triangel
 	extern const unsigned char 	RN;		// negativ rotation tlil föregående triangel
 
-	class point;
+	//class point;
 	struct edge;
 
 	
-	extern const point vertexCenteredPoint;//(.0, .0);
-	extern const point edgeCenteredPoint;//(.25, SIN60*.5);
-	extern const point faceCenteredPoint;//(.5, .25/COS30);
+	extern const VEC vertexCenteredPoint;//(.0, .0);
+	extern const VEC edgeCenteredPoint;//(.25, SIN60*.5);
+	extern const VEC faceCenteredPoint;//(.5, .25/COS30);
 
 
 	extern bool facePointActive;
@@ -65,7 +65,7 @@ namespace Graph2D {
 
 	class face;
 
-	extern std::vector<point> V;
+	extern std::vector<VEC> V;
 	extern std::vector<edge> E;
 	extern std::vector<face> F;
 
@@ -129,31 +129,31 @@ namespace Graph2D {
 
 ////////////////////////////////////
 		// AB är koordinater på skärmen, pixelposition
-	point fromABtoXY(int x, int y);
+	VEC fromABtoXY(int x, int y);
 		//XY är transformerade koordinater, edgelängden = 1.0
-	void fromXYtoAB(point XY, int *ABx, int *ABy);
+	void fromXYtoAB(VEC XY, int *ABx, int *ABy);
 		// returnerar 
 		// 0 om det är felaktigt
 		// 1 om det är ok men icke sluten
 		// 2 om face är ok.
 	int checkE_ToBe();		// returnerar true om face är slutet.
-	int getEnclosedPoints(point *A, std::list<Point> &PntList);
+	int getEnclosedPoints(VEC *A, std::list<Point> &PntList);
 	bool addFaceToBe(int sluten);
-	int mouseOverIndex(point co_);
+	int mouseOverIndex(VEC co_);
 	// returns -1 if over none, radius = pixel-radius
-	Point mouseOverPoint(point co_);
-	Prefix getPrefix(point coord);
-	point getRootpoint(point coord);
+	Point mouseOverPoint(VEC co_);
+	Prefix getPrefix(VEC coord);
+	VEC getRootpoint(VEC coord);
 	void setMousePosition(int x, int y);
 	void mouseClick(int x, int y);
-	int insertVertex(point coord_);
+	int insertVertex(VEC coord_);
 	void insertLine(int x, int y);
-	void drawPoint(point _P);
-	void drawCircle(point _P, bool filled);
+	void drawPoint(VEC _P);
+	void drawCircle(VEC _P, bool filled);
 	void drawBrade();
 	void drawedge(edge &e);
 	void drawfaces();
-	void getAllFromRoots(const point vRoot_, point *vAll_);
+	void getAllFromRoots(const VEC vRoot_, VEC *vAll_);
 	void setColorOfVertex(int vert_, TYP str_);
 	int setMode(int newModeVal);
 	void display();

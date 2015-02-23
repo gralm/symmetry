@@ -21,7 +21,7 @@ namespace Graph2D {
 	int mouseX = -100;
 	int mouseY = -100;
 
-	std::vector<point> V;
+	std::vector<VEC> V;
 	std::vector<edge> E;
 	std::vector<face> F;
 
@@ -219,16 +219,16 @@ namespace Graph2D {
 
 
 		// AB är koordinater på skärmen, pixelposition
-	point fromABtoXY(int x, int y)
+	VEC fromABtoXY(int x, int y)
 	{
-		return point(
+		return VEC(
 			xMin + x*(xMax - xMin)/scrWidth,
 			yMax - y*(yMax - yMin)/scrHeight);
 		
 	}
 
 		//XY är transformerade koordinater, edgelängden = 1.0
-	void fromXYtoAB(point XY, int *ABx, int *ABy)
+	void fromXYtoAB(VEC XY, int *ABx, int *ABy)
 	{
 		*ABx = scrWidth*(XY.x + 0.5)*2.0/3.0;
 		*ABy = scrHeight*(XY.y + 1.0)*COS30;
@@ -261,10 +261,10 @@ namespace Graph2D {
 
 
 			// kolla om den roterar i positiv z-riktning
-		point fr_ = E_ToBe[0].fr.getpoint();
-		point to_ = E_ToBe[0].to.getpoint();
-		point edge0_ = to_ - fr_;
-		point edge1_;
+		VEC fr_ = E_ToBe[0].fr.getpoint();
+		VEC to_ = E_ToBe[0].to.getpoint();
+		VEC edge0_ = to_ - fr_;
+		VEC edge1_;
 		for (int i=1; i<siz-1; i++)
 		{
 			fr_ = to_;
@@ -274,11 +274,10 @@ namespace Graph2D {
 			if ((~edge0_ * edge1_) < 0.0)
 			{
 				cout << "******** EDGES INVALID ********* " << endl;
-				cout << "edge0: ";
-				edge0_.print();
-				cout << "\t edge1: ";
-				edge1_.print();
-				cout << endl;
+				cout << "edge0: " << edge0_;
+				//edge0_.print();
+				cout << "\t edge1: " << edge1_ << endl;
+				
 				return 0;
 			}
 			edge0_ = edge1_;
@@ -291,14 +290,14 @@ namespace Graph2D {
 		{
 			for (int j=0; j<i-1; j++)
 			{
-				point Afr_ = E_ToBe[j].fr.getpoint();
-				point Ato_ = E_ToBe[j].to.getpoint();
-				point Bfr_ = E_ToBe[i].fr.getpoint();
-				point Bto_ = E_ToBe[i].to.getpoint();
+				VEC Afr_ = E_ToBe[j].fr.getpoint();
+				VEC Ato_ = E_ToBe[j].to.getpoint();
+				VEC Bfr_ = E_ToBe[i].fr.getpoint();
+				VEC Bto_ = E_ToBe[i].to.getpoint();
 				
-				point P_ = ~(Afr_ - Bfr_);
-				point Q_ = Ato_ - Afr_;
-				point R_ = Bto_ - Bfr_;
+				VEC P_ = ~(Afr_ - Bfr_);
+				VEC Q_ = Ato_ - Afr_;
+				VEC R_ = Bto_ - Bfr_;
 
 				double divider_ = Q_ * ~R_;
 				double a_ = (Q_ * P_) / divider_;
@@ -317,7 +316,7 @@ namespace Graph2D {
 
 			// kontrollera att inga Points är inkapslade av markeringen.
 		list<Point> enclosedPoints;
-		point A[3];
+		VEC A[3];
 		A[0] = E_ToBe[0].fr.getpoint();
 		for (int i=2; i<siz; i++)
 		{
@@ -370,10 +369,10 @@ namespace Graph2D {
 
 				Orientation ori;
 				ori.rotate(E_ToBe[0].fr.Pfx);
-				point A[3];
+				VEC A[3];
 				A[0] = E_ToBe[0].fr.getpoint();
 				A[1] = E_ToBe[siz-1].fr.getpoint();
-				A[2] = ori.getWCFromOC(point(0,0));
+				A[2] = ori.getWCFromOC(VEC(0,0));
 				list<Point> enclosedPoints;
 				getEnclosedPoints(A, enclosedPoints);
 
@@ -424,7 +423,7 @@ namespace Graph2D {
 				if (facePointActive)
 					return 1;
 
-				point A[3];
+				VEC A[3];
 				Orientation ori;
 				A[2] = ori.getOCFromWC(faceCenteredPoint);
 
@@ -491,7 +490,7 @@ namespace Graph2D {
 
 
 
-				point A[3];
+				VEC A[3];
 				Orientation ori;
 				ori.rotate(E_ToBe[0].fr.Pfx);
 
@@ -499,11 +498,11 @@ namespace Graph2D {
 				{
 					case FP:
 					case VN:
-						A[0] = ori.getWCFromOC(point(COS30, -SIN30)*.5);
+						A[0] = ori.getWCFromOC(VEC(COS30, -SIN30)*.5);
 						break;
 					case FN:
 					case VP:
-						A[0] = ori.getWCFromOC(point(COS30, SIN30)*.5);
+						A[0] = ori.getWCFromOC(VEC(COS30, SIN30)*.5);
 						break;
 					default:
 						cout << "hit ska jag typ icke kommmmma" << endl;
@@ -536,13 +535,10 @@ namespace Graph2D {
 				A[0] = A[0]*2.0 - E_ToBe[1].fr.getpoint();
 
 
-				cout << "kille0: " << endl;
-				A[0].print();
-				cout << endl << "kille1: ";
-				A[1].print();
-				cout << endl << "kille2: ";
-				A[2].print();
-				cout << endl;
+				cout << "kille0: " << A[0] << endl;
+				cout << "kille1: " << A[1] << endl;
+				cout << "kille2: " << A[2] << endl;
+				
 				cout << "value: " << ((A[0] - A[2]) * ~(A[2] - A[1])) << endl;
 
 				if ((A[0] - A[2]) * ~(A[2] - A[1]) < 0)
@@ -557,7 +553,7 @@ namespace Graph2D {
 	}
 
 		// A måste vara en array med tre element. I PntList appendas alla inneslutna Points
-	int getEnclosedPoints(point *A, list<Point> &PntList)
+	int getEnclosedPoints(VEC *A, list<Point> &PntList)
 	{
 		Prefix pfx[3];
 		vector<Prefix> relPfxToControl;
@@ -586,7 +582,7 @@ namespace Graph2D {
 				relPfxToControl.push_back(pfx_tf);
 		}
 
-		point *V_OC = new point[V.size()];
+		VEC *V_OC = new VEC[V.size()];
 		for (int j=0; j<V.size(); j++)
 			V_OC[j] = ori.getOCFromWC(V[j]);
 
@@ -597,7 +593,7 @@ namespace Graph2D {
 
 			for (int i=0; i<V.size(); i++)
 			{
-				point V_WC = ori.getWCFromOC(V_OC[i]);
+				VEC V_WC = ori.getWCFromOC(V_OC[i]);
 
 				bool enclosed = true;
 				for (int j=0; j<3 && enclosed; j++)
@@ -620,7 +616,7 @@ namespace Graph2D {
 	}
 
 
-	int mouseOverIndex(point co_)
+	int mouseOverIndex(VEC co_)
 	{
 		double radius2 = 20.0 / (scrHeight + scrHeight);
 		radius2 *= radius2;
@@ -645,12 +641,12 @@ namespace Graph2D {
 
 	// returns -1 if over none, radius = pixel-radius
 
-	Point mouseOverPoint(point co_)
+	Point mouseOverPoint(VEC co_)
 	{
 			
 		Point P_;
 		P_.Pfx = getPrefix(co_);
-		point co2_ = getRootpoint(co_);
+		VEC co2_ = getRootpoint(co_);
 		P_.index = mouseOverIndex(co2_);
 
 
@@ -733,14 +729,14 @@ namespace Graph2D {
 	}
 
 
-	Prefix getPrefix(point coord)
+	Prefix getPrefix(VEC coord)
 	{
 		Prefix pfx;
 		Orientation ori;
 
 		if (coord.y > 0)
 		{
-			if (!(coord * point(COS30, -SIN30) > 0 && coord.x>0)){
+			if (!(coord * VEC(COS30, -SIN30) > 0 && coord.x>0)){
 				ori.rotate(VP);
 				pfx.rotate(VP);
 			}
@@ -749,11 +745,11 @@ namespace Graph2D {
 			pfx.rotate(VN);
 		}
 
-		point vertexpoint_[3];
+		VEC vertexpoint_[3];
 		double dist[3];
-		vertexpoint_[0] = ori.getWCFromOC(point(0, 0)) - coord;
-		vertexpoint_[1] = ori.getWCFromOC(point(COS30, -SIN30)) - coord;
-		vertexpoint_[2] = ori.getWCFromOC(point(COS30, SIN30)) - coord;
+		vertexpoint_[0] = ori.getWCFromOC(VEC(0, 0)) - coord;
+		vertexpoint_[1] = ori.getWCFromOC(VEC(COS30, -SIN30)) - coord;
+		vertexpoint_[2] = ori.getWCFromOC(VEC(COS30, SIN30)) - coord;
 
 		for (int i=0; i<3; i++)
 			dist[i] = vertexpoint_[i]*vertexpoint_[i];
@@ -774,13 +770,13 @@ namespace Graph2D {
 		return pfx;		
 	}
 
-	point getRootpoint(point coord)
+	VEC getRootpoint(VEC coord)
 	{
 		Prefix pfx = getPrefix(coord);
 		Orientation ori;
 		ori.rotate(pfx);
-		point OCcoords(ori.getOCFromWC(coord));
-		return point(
+		VEC OCcoords(ori.getOCFromWC(coord));
+		return VEC(
 			OCcoords.x*COS30 - OCcoords.y*SIN30, 
 			OCcoords.x*SIN30 + OCcoords.y*COS30);
 
@@ -797,12 +793,11 @@ namespace Graph2D {
 
 	void mouseClick(int x, int y)
 	{
-		cout << "here klickas it: ";
-		fromABtoXY(x, y).print();
+		cout << "here klickas it: " << fromABtoXY(x, y) << endl;
 
 		if (mode == 0)
     	{
-    		point coord_(fromABtoXY(x, y));
+    		VEC coord_(fromABtoXY(x, y));
     		coord_ = getRootpoint(coord_);
 
     		indexMouseOver = mouseOverIndex(coord_);
@@ -1064,7 +1059,7 @@ namespace Graph2D {
 		printAll();
 	}
 
-	int insertVertex(point coord_)
+	int insertVertex(VEC coord_)
 	{
 		int index_ = V.size();
 		V.push_back(coord_);
@@ -1085,11 +1080,11 @@ namespace Graph2D {
 	{
 		static edge e_[10];
 		static int numOfEdges_ = 0;
-		point coord_(fromABtoXY(x, y));
+		VEC coord_(fromABtoXY(x, y));
     	coord_ = getRootpoint(coord_);
 	}
 
-	void drawPoint(point _P)
+	void drawPoint(VEC _P)
 	{
 		int siz_ = 10;	// 10 pixlar hög och 10 pixlar bred punkt
 		double delta_ = siz_ *(xMax - xMin)*0.5/scrWidth;
@@ -1107,7 +1102,7 @@ namespace Graph2D {
 		glEnd();
 	}
 
-	void drawCircle(point _P, bool filled)	// egentligen en hexagon
+	void drawCircle(VEC _P, bool filled)	// egentligen en hexagon
 	{
 		int siz_ = 10;	// 10 pixlar hög och 10 pixlar bred punkt
 		double delta_ = siz_ *(xMax - xMin)*0.5/scrWidth;
@@ -1147,8 +1142,8 @@ namespace Graph2D {
 
 	void drawedge(edge &e)
 	{
-		point fr[9];
-		point to[9];
+		VEC fr[9];
+		VEC to[9];
 
 
 
@@ -1159,7 +1154,7 @@ namespace Graph2D {
 
 		for (int i=0; i<9; i++)
 		{
-			point sidan = point(-(to[i].y-fr[i].y), to[i].x-fr[i].x) * (.01/sqrt((to[i]-fr[i])*(to[i]-fr[i])));
+			VEC sidan = VEC(-(to[i].y-fr[i].y), to[i].x-fr[i].x) * (.01/sqrt((to[i]-fr[i])*(to[i]-fr[i])));
 			fr[i] += sidan;
 			to[i] += sidan;
 			glVertex3f(fr[i].x, fr[i].y, 0.);
@@ -1173,10 +1168,10 @@ namespace Graph2D {
 
 	void drawFace(face &F_)
 	{
-		static point V_[200];
+		static VEC V_[200];
 		int fVertices = F_.edges;
 		double edgeGap = 0.1;
-		point faceCenter(0., 0.);
+		VEC faceCenter(0., 0.);
 		int numOfCopies = 9;
 
 		for (int v=0; v<fVertices; v++)
@@ -1202,7 +1197,7 @@ namespace Graph2D {
 
 					case FP:
 					case VN:
-						faceCenter = point(.5, 0);
+						faceCenter = VEC(.5, 0);
 						break;
 
 					default:
@@ -1252,10 +1247,11 @@ namespace Graph2D {
 	}
 
 
-	void getAllFromRoots(const point vRoot_, point *vAll_)
+	void getAllFromRoots(const VEC vRoot_, VEC *vAll_)
 	{
 		//if (vRoot_.y <= -100)
-		if (!vRoot_.defined())
+		//if (!vRoot_.defined())
+		if (!definedVec(vRoot_))
 		{
 			for (int i=0; i<9; i++)
 				vAll_[i] = vRoot_;
@@ -1265,7 +1261,7 @@ namespace Graph2D {
 		for (int i=0; i<3; i++)
 		{
 			Orientation ori;
-			point OCcoord = ori.getOCFromWC(vRoot_);
+			VEC OCcoord = ori.getOCFromWC(vRoot_);
 			if (i)
 				ori.rotate(i==1? VP: VN);
 			
@@ -1296,7 +1292,7 @@ namespace Graph2D {
 
 	void display()
 	{
-		point vAll_[9];
+		VEC vAll_[9];
 
 			// clear all pixels
 	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -1331,7 +1327,7 @@ namespace Graph2D {
 
 
 	    	// rita musem p, om inte mouseOver
-    	point coords_ = fromABtoXY(mouseX, mouseY);
+    	VEC coords_ = fromABtoXY(mouseX, mouseY);
     	//cout << "coords of mouse: ";
     	//coords_.print();
 		if (mode == 0) {
@@ -1357,7 +1353,7 @@ namespace Graph2D {
 			glBegin(GL_LINE_STRIP);
 			for (int i=0; i<len; i++)
 			{
-				point p_ = E_ToBe[i].fr.getpoint();
+				VEC p_ = E_ToBe[i].fr.getpoint();
 				glVertex3f(p_.x, p_.y, 0.0);
 			}
 			glVertex3f(coords_.x, coords_.y, 0.0);

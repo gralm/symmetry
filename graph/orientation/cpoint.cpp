@@ -7,13 +7,13 @@ using namespace std;
 namespace Graph2D {
 
 
-	const point vertexCenteredPoint(.0, .0);
-	const point edgeCenteredPoint(.25, SIN60*.5);
-	const point faceCenteredPoint(.5, .25/COS30);
+	const VEC vertexCenteredPoint(.0, .0);
+	const VEC edgeCenteredPoint(.25, SIN60*.5);
+	const VEC faceCenteredPoint(.5, .25/COS30);
 
-	point Point::getpoint() const
+	VEC Point::getpoint() const
 	{
-		point rootpoint_;
+		VEC rootpoint_;
 		if (index < 0) {
 			switch (index)
 			{
@@ -28,18 +28,18 @@ namespace Graph2D {
 					break;
 				default:
 					cout << "it became default o det ska det inte" << endl;
-					rootpoint_ = point(-100, -100);
+					rootpoint_ = VEC(-100, -100);
 					break;
 			}
 		} else if (index >= V.size()) {
 			//cout << "hit skulle den ju inte komma ju ju ju " << endl;
-			return point(-100, -100);
+			return VEC(-100, -100);
 		} else {
 			rootpoint_ = V[index];
 		}
 
 		Orientation ori_;
-		point rotatedpoint_ = ori_.getOCFromWC(rootpoint_);
+		VEC rotatedpoint_ = ori_.getOCFromWC(rootpoint_);
 		ori_.rotate(Pfx);
 		rotatedpoint_ = ori_.getWCFromOC(rotatedpoint_);
 		return rotatedpoint_;
@@ -71,13 +71,11 @@ namespace Graph2D {
 		}
 		cout << "), ";
 		Pfx.print();
-		cout << ", ";
-		point hej = getpoint();
-		hej.print();
+		cout << ", " << getpoint();
 	}
 
 
-		Point::Point() {}
+	Point::Point() {}
 
 	Point::Point(Prefix Pfx_, int index_)
 	{

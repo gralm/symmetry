@@ -4,6 +4,7 @@
 #include <list>
 #include <vector>
 #include <iostream>
+#include "./../../tm/vector3.h"
 
 #define COS30			0.86602540378444
 #define SIN30			0.5
@@ -57,37 +58,11 @@ namespace Graph2D {
 	struct edge;
 
 
-	class point {
-	public:
-		double x;
-		double y;
+	bool definedVec(VEC x);
 
-		point();
-		point(double x_, double y_);
-		point(const point &A_);
-		void print() const;
-
-		bool defined() const;
-
-		//Prefix getPrefix();
-
-		point operator~ ();
-
-		point operator+ (point A);
-		void operator+= (point A);
-
-		point operator- (point A);
-		void operator-= (point A);
-
-		double operator* (point A);
-		point operator* (double a);
-		void operator*= (double a);
-	};
-
-
-	extern const point vertexCenteredPoint;//(.0, .0);
-	extern const point edgeCenteredPoint;//(.25, SIN60*.5);
-	extern const point faceCenteredPoint;//(.5, .25/COS30);
+	extern const VEC vertexCenteredPoint;//(.0, .0);
+	extern const VEC edgeCenteredPoint;//(.25, SIN60*.5);
+	extern const VEC faceCenteredPoint;//(.5, .25/COS30);
 
 
 	class Prefix {
@@ -118,29 +93,29 @@ namespace Graph2D {
 
 		Point();
 		Point(Prefix Pfx_, int index_);
-		point getpoint() const;
+		VEC getpoint() const;
 		void print() const;
 		bool equalTo(Point &A);
 	};
-	extern std::vector<point> V;
+	extern std::vector<VEC> V;
 	extern std::vector<edge> E;
 	extern std::vector<face> F;
 
 	class Orientation {
 	public:
-		point V;
-		point F;
+		VEC V;
+		VEC F;
 
 		Orientation();
 
 		void rotate(Prefix p_);
 		void rotate(TYP);
-		point getOCFromWC(point A);		// get orientation coordinates from world coordinates
-		point getWCFromOC(point A);		// get world coordinates from orientation coordinates
-		point getWCRootFromOC(point A);
+		VEC getOCFromWC(VEC A);		// get orientation coordinates from world coordinates
+		VEC getWCFromOC(VEC A);		// get world coordinates from orientation coordinates
+		VEC getWCRootFromOC(VEC A);
 		void print();
 
-		static point getWCFromRootOC(point A);
+		static VEC getWCFromRootOC(VEC A);
 	};
 
 	void rotationPrint(TYP);

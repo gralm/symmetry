@@ -11,7 +11,6 @@ TESTFILE = testfile.exe
 
 
 bygg: 
-	make -s $(OBJPATH)point.o
 	make -s $(OBJPATH)prefix.o
 	make -s $(OBJPATH)orientation.o
 	make -s $(OBJPATH)graph2d.o
@@ -39,9 +38,6 @@ $(OBJPATH)glutThread2.o: glutThread2.cpp
 
 $(OBJPATH)graph2d.o: graph/graph2d.cpp
 	$(CC) $(OBJFLAGS) $(OBJPATH)graph2d.o graph/graph2d.cpp -I $(INC_DIR)
-
-$(OBJPATH)point.o: graph/orientation/point.cpp
-	$(CC) $(OBJFLAGS) $(OBJPATH)point.o graph/orientation/point.cpp -I $(INC_DIR)
 
 $(OBJPATH)cpoint.o: graph/orientation/cpoint.cpp
 	$(CC) $(OBJFLAGS) $(OBJPATH)cpoint.o graph/orientation/cpoint.cpp -I $(INC_DIR)
