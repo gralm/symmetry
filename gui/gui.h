@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include <iostream>
 #include <time.h>
+#include <list>
+#include <cstring>
+#include <commctrl.h>		// WC_LISTVIEW is defined here
 
 
 
@@ -22,6 +25,11 @@
 #define IDC_DEL_BUTTON          182
 
 
+#define IDC_VERTICE_LISTVIEW	201
+#define IDC_EDGE_LISTVIEW		202
+#define IDC_FACE_LISTVIEW		203
+
+
 
 
 void createEdit(HWND hwnd, const char* text, int left, int width, int top, int height, int id);
@@ -33,6 +41,6 @@ void createMultiEdit(HWND hwnd, const char* text, int left, int width, int top, 
 void createListbox(HWND hwnd, const char* text, int left, int width, int top, int height, int id);
 
 void createCheckbox(HWND hwnd, const char* text, int left, int width, int top, int height, int id);
-
+//void createMultiEdit2(HWND hwnd, const char* text, int left, int width, int top, int height, int id, std::list<char*> columnName);
 void changeGuiMode(HWND hwnd, int presentMode, int newMode);
 #endif

@@ -86,7 +86,48 @@ void createCheckbox(HWND hwnd, const char* text, int left, int width, int top, i
         MessageBox(hwnd, "Could not create checkbox", "Error", MB_OK | MB_ICONERROR);
 
     SendMessage(hWndCheckBox, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE,0));
+}
 
+struct ListViewColumn{
+	string name;
+	int width;
+	ListViewColumn(string name_, int width_) 	{name = name_;		width = width_;}
+};
+
+void createMultiEdit2(HWND hwnd, const char* text, int left, int width, int top, int height, int id, list<ListViewColumn> columns)
+{
+    HFONT hfDefault = NULL;
+    if (hfDefault == NULL)
+        hfDefault = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+
+	HWND hwndOject  = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, 
+	    	NULL, WS_CHILD | WS_VISIBLE | WS_BORDER | LVS_REPORT, 
+	        left, top, width, height, hwnd, (HMENU)id, GetModuleHandle(NULL), NULL);
+    //    WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL, 
+
+    LVCOLUMN lvc = { 0 };
+    LVITEM   lv  = { 0 };
+
+	lvc.mask = LVCF_TEXT | LVCF_SUBITEM | LVCF_WIDTH  | LVCF_FMT;
+	lvc.fmt  = LVCFMT_LEFT;
+
+	int i=0;
+	for (list<ListViewColumn>::iterator itcp = columns.begin(); itcp != columns.end(); itcp++)
+	{
+		char tillfalligText[100];
+		strcpy(tillfalligText, itcp->name.c_str());
+		lvc.cx       = itcp->width;
+		lvc.iSubItem = i;
+		lvc.pszText  = tillfalligText;
+		ListView_InsertColumn(hwndOject, i, &lvc);
+		i++;
+	}
+
+    if(hwndOject == NULL)
+        MessageBox(hwnd, "Could not create edit box.", "Error", MB_OK | MB_ICONERROR);
+
+    hfDefault = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+    SendMessage(hwndOject, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE, 0));
 }
 
 /*void createRadioButtons(HWND hwnd, const char* text, int left, int width, int top, int height, int id) 
@@ -108,14 +149,47 @@ void changeGuiMode(HWND hwnd, int presentMode, int newMode)
 	if (presentMode == newMode)
 		return;
 
+	list<ListViewColumn> columnNames;
 	if (presentMode == -1 && newMode == 0)	// initialize
 	{
-        createMultiEdit(hwnd, "comesing", 0, 200, 0, 100, IDC_MAIN_EDIT);
-        createEdit(hwnd, "tjej", 0, 100, 120, 24, IDC_TEXT);
-        createButton(hwnd, "hej", 100, 100, 120, 24, IDC_MAIN_BUTTON);
-        createCheckbox(hwnd, "vertex-centered", 0, 200, 150, 30, IDC_CHECK_BOX_1);
-        createCheckbox(hwnd, "edge-centered", 0, 200, 180, 30, IDC_CHECK_BOX_2);
-        createCheckbox(hwnd, "face-centered", 0, 200, 210, 30, IDC_CHECK_BOX_3);
+       // createMultiEdit(hwnd, "comesing", 0, 200, 0, 100, IDC_MAIN_EDIT);
+        
+        columnNames.push_back(ListViewColumn("id", 30));
+		columnNames.push_back(ListViewColumn("x", 55));
+		columnNames.push_back(ListViewColumn("y", 55));
+		columnNames.push_back(ListViewColumn("z", 55));
+		columnNames.push_back(ListViewColumn("m", 55));
+        createMultiEdit2(hwnd, "comesing", 0, 250, 0, 150, IDC_VERTICE_LISTVIEW, columnNames);
+
+        columnNames.clear();
+        columnNames.push_back(ListViewColumn("id", 50));
+		columnNames.push_back(ListViewColumn("fr", 30));
+		columnNames.push_back(ListViewColumn("to", 30));
+		columnNames.push_back(ListViewColumn("next", 30));
+		columnNames.push_back(ListViewColumn("prev", 30));
+		columnNames.push_back(ListViewColumn("oppo", 30));
+		columnNames.push_back(ListViewColumn("face", 30));
+		columnNames.push_back(ListViewColumn("len", 30));
+		columnNames.push_back(ListViewColumn("k", 30));
+		columnNames.push_back(ListViewColumn("d", 30));
+		columnNames.push_back(ListViewColumn("l0", 30));
+		columnNames.push_back(ListViewColumn("theta", 30));
+
+        createMultiEdit2(hwnd, "comesing", 0, 380, 150, 100, IDC_EDGE_LISTVIEW, columnNames);
+
+        columnNames.clear();
+        columnNames.push_back(ListViewColumn("id", 50));
+		columnNames.push_back(ListViewColumn("fr", 30));
+		columnNames.push_back(ListViewColumn("y", 30));
+		columnNames.push_back(ListViewColumn("z", 30));
+        createMultiEdit2(hwnd, "comesing", 200, 200, 0, 100, IDC_EDGE_LISTVIEW, columnNames);
+
+
+        createEdit(hwnd, "tjej", 250, 100, 50, 24, IDC_TEXT);
+        createButton(hwnd, "hej", 350, 100, 50, 24, IDC_MAIN_BUTTON);
+        //createCheckbox(hwnd, "vertex-centered", 0, 200, 150, 30, IDC_CHECK_BOX_1);
+        //createCheckbox(hwnd, "edge-centered", 0, 200, 180, 30, IDC_CHECK_BOX_2);
+        //createCheckbox(hwnd, "face-centered", 0, 200, 210, 30, IDC_CHECK_BOX_3);
         createListbox(hwnd, "gay", 0, 200, 240, 100, IDC_LISTBOX);
         createButton(hwnd, "taka awayness", 0, 100, 350, 24, IDC_DEL_BUTTON);
         

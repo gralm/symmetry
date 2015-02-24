@@ -321,7 +321,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         MessageBox(NULL, "Window Creation Failed!", "Error!", MB_ICONEXCLAMATION | MB_OK);
         return 0;
     }
-    SetWindowPos(hwnd, NULL, 100, 100, 250, 450, SWP_NOACTIVATE);
+    SetWindowPos(hwnd, NULL, 100, 100, 500, 450, SWP_NOACTIVATE);
     
     SetTimer(hwnd, 0, UI_UPDATE_TIME, checkMainThreads);
 
