@@ -110,5 +110,17 @@ namespace Graph2D {
 	VP VP VP VP = VN
 
 	VN = VP^-1
+
+
+
+		Octahedral Rotationsvktor: VP
+
+	0.6666667  - 0.5773503  - 0.4714045  
+    0.5773503  - 3.205D-17    0.8164966  
+  - 0.4714045  - 0.8164966    0.3333333 
+
+  [2/3 				-1/sqrt(3)		-sqrt(2)/3]
+  [1/sqrt(3)		0 				sqrt(2/3)]
+  [-sqrt(2) / 3 	-sqrt(2/3)		1/3]
 */
 
