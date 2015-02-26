@@ -43,4 +43,13 @@ void createListbox(HWND hwnd, const char* text, int left, int width, int top, in
 void createCheckbox(HWND hwnd, const char* text, int left, int width, int top, int height, int id);
 //void createMultiEdit2(HWND hwnd, const char* text, int left, int width, int top, int height, int id, std::list<char*> columnName);
 void changeGuiMode(HWND hwnd, int presentMode, int newMode);
+
+
+void addItemInListView(int listViewType, int rowId, std::list<std::string> cellValue);
+
+
+std::list<std::string> stringSplit(const char *str, int len, char splitChar);
+std::list<std::string> stringSplit(std::string str, char splitChar);
+
+
 #endif

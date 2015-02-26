@@ -2,6 +2,39 @@
 
 using namespace std;
 
+HWND hwndVertexListView = 0;
+HWND hwndEdgeListView = 0;
+HWND hwndFaceListView = 0;
+
+int numOfVerticeRows = 0;
+int numOfEdgeRows = 0;
+int numOfFaceRows = 0;
+
+list<string> stringSplit(const char *str, int len, char splitChar)
+{
+	list<string> strList;
+	if (len == 0)
+		return strList;
+
+	string nyString= "";
+	for (const char *c=str; c < str+len; c++)
+	{
+		if (*c == splitChar)
+		{
+			strList.push_back(nyString);
+			nyString = "";
+		} else 
+			nyString += *c;
+	}
+	strList.push_back(nyString);
+	return strList;
+}
+
+list<string> stringSplit(string str, char splitChar)
+{
+	return stringSplit(str.c_str(), str.size(), splitChar);
+}
+
 void createEdit(HWND hwnd, const char* text, int left, int width, int top, int height, int id)
 {
     HFONT hfDefault = NULL;
@@ -94,19 +127,22 @@ struct ListViewColumn{
 	ListViewColumn(string name_, int width_) 	{name = name_;		width = width_;}
 };
 
-void createMultiEdit2(HWND hwnd, const char* text, int left, int width, int top, int height, int id, list<ListViewColumn> columns)
+HWND createListView(HWND hwnd, const char* text, int left, int width, int top, int height, int id, list<ListViewColumn> columns)
 {
     HFONT hfDefault = NULL;
     if (hfDefault == NULL)
         hfDefault = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
 
-	HWND hwndOject  = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, 
+	HWND hwndObject  = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, 
 	    	NULL, WS_CHILD | WS_VISIBLE | WS_BORDER | LVS_REPORT, 
 	        left, top, width, height, hwnd, (HMENU)id, GetModuleHandle(NULL), NULL);
     //    WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL, 
 
+	// id = _In_opt_  HINSTANCE hInstance
+	// hwndObject = HWND WINAPI 
+
     LVCOLUMN lvc = { 0 };
-    LVITEM   lv  = { 0 };
+    //LVITEM   lv  = { 0 };
 
 	lvc.mask = LVCF_TEXT | LVCF_SUBITEM | LVCF_WIDTH  | LVCF_FMT;
 	lvc.fmt  = LVCFMT_LEFT;
@@ -119,15 +155,17 @@ void createMultiEdit2(HWND hwnd, const char* text, int left, int width, int top,
 		lvc.cx       = itcp->width;
 		lvc.iSubItem = i;
 		lvc.pszText  = tillfalligText;
-		ListView_InsertColumn(hwndOject, i, &lvc);
+		ListView_InsertColumn(hwndObject, i, &lvc);
 		i++;
 	}
 
-    if(hwndOject == NULL)
+    if(hwndObject == NULL)
         MessageBox(hwnd, "Could not create edit box.", "Error", MB_OK | MB_ICONERROR);
 
     hfDefault = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
-    SendMessage(hwndOject, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE, 0));
+    SendMessage(hwndObject, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE, 0));
+
+    return hwndObject;
 }
 
 /*void createRadioButtons(HWND hwnd, const char* text, int left, int width, int top, int height, int id) 
@@ -141,6 +179,52 @@ void createMultiEdit2(HWND hwnd, const char* text, int left, int width, int top,
 		WS_VISIBLE | WS_CHILD | BS_RADIOBUTTON, 10, 40, 80, 20, hWnd, 
 		(HMENU)IDB_RADIO2, hInstance, NULL);
 }*/
+
+void addItemInListView(int listViewType, int rowId, list<string> cellValue)
+{
+
+	HWND hwndObject;
+	switch(listViewType)
+	{
+		case IDC_VERTICE_LISTVIEW:
+			hwndObject = hwndVertexListView;
+			break;
+		case IDC_EDGE_LISTVIEW:
+			hwndObject = hwndEdgeListView;
+			break;
+		case IDC_FACE_LISTVIEW:
+			hwndObject = hwndFaceListView;
+			break;
+		default:
+			cout << "fel listViewType param" << endl;
+			return;
+	}
+
+	//cout << "num = " << hwndObject.getAdapter().getCount() << endl;
+	//cout << "num of rows = " << ListView_GetItemCount(hwndObject) << endl;
+
+
+	LVITEM lv = {0};
+	lv.iItem = rowId;
+
+
+	if (hwndObject == 0)
+		cout << "denna hwnd is not defined" << endl;
+
+	if (ListView_GetItemCount(hwndObject) > rowId)
+		ListView_SetItem(hwndObject, &lv);
+	else
+		ListView_InsertItem(hwndObject, &lv);
+	
+	int colVal = 0;
+	char cellValueCopy[100];
+
+	for (list<string>::iterator itstr = cellValue.begin(); itstr != cellValue.end(); itstr++)
+	{
+		strcpy(cellValueCopy, itstr->c_str());
+		ListView_SetItemText(hwndObject, rowId, colVal++, cellValueCopy);
+	}
+}
 
 
 void changeGuiMode(HWND hwnd, int presentMode, int newMode)
@@ -159,30 +243,44 @@ void changeGuiMode(HWND hwnd, int presentMode, int newMode)
 		columnNames.push_back(ListViewColumn("y", 55));
 		columnNames.push_back(ListViewColumn("z", 55));
 		columnNames.push_back(ListViewColumn("m", 55));
-        createMultiEdit2(hwnd, "comesing", 0, 250, 0, 150, IDC_VERTICE_LISTVIEW, columnNames);
+        hwndVertexListView = createListView(hwnd, "comesing", 0, 250, 0, 150, IDC_VERTICE_LISTVIEW, columnNames);
 
         columnNames.clear();
+        columnNames.push_back(ListViewColumn("id", 30));
+		columnNames.push_back(ListViewColumn("fr", 40));
+		columnNames.push_back(ListViewColumn("to", 40));
+		columnNames.push_back(ListViewColumn("next", 40));
+		columnNames.push_back(ListViewColumn("prev", 40));
+		columnNames.push_back(ListViewColumn("oppo", 40));
+		columnNames.push_back(ListViewColumn("face", 40));
+		columnNames.push_back(ListViewColumn("len", 40));
+		columnNames.push_back(ListViewColumn("k", 40));
+		columnNames.push_back(ListViewColumn("d", 40));
+		columnNames.push_back(ListViewColumn("l0", 40));
+		columnNames.push_back(ListViewColumn("theta", 40));
+        hwndEdgeListView = createListView(hwnd, "comesing", 0, 450, 150, 100, IDC_EDGE_LISTVIEW, columnNames);
+
+		list<string> val;
+		val.push_back("VC");
+		addItemInListView(IDC_VERTICE_LISTVIEW, numOfVerticeRows++, val);
+
+		val.clear();
+		val.push_back("EC");
+		addItemInListView(IDC_VERTICE_LISTVIEW, numOfVerticeRows++, val);
+
+		val.clear();
+		val.push_back("FC");
+		addItemInListView(IDC_VERTICE_LISTVIEW, numOfVerticeRows++, val);
+
+
+
+        /*columnNames.clear();
         columnNames.push_back(ListViewColumn("id", 50));
 		columnNames.push_back(ListViewColumn("fr", 30));
-		columnNames.push_back(ListViewColumn("to", 30));
-		columnNames.push_back(ListViewColumn("next", 30));
-		columnNames.push_back(ListViewColumn("prev", 30));
-		columnNames.push_back(ListViewColumn("oppo", 30));
-		columnNames.push_back(ListViewColumn("face", 30));
 		columnNames.push_back(ListViewColumn("len", 30));
-		columnNames.push_back(ListViewColumn("k", 30));
-		columnNames.push_back(ListViewColumn("d", 30));
-		columnNames.push_back(ListViewColumn("l0", 30));
-		columnNames.push_back(ListViewColumn("theta", 30));
-
-        createMultiEdit2(hwnd, "comesing", 0, 380, 150, 100, IDC_EDGE_LISTVIEW, columnNames);
-
-        columnNames.clear();
-        columnNames.push_back(ListViewColumn("id", 50));
-		columnNames.push_back(ListViewColumn("fr", 30));
-		columnNames.push_back(ListViewColumn("y", 30));
-		columnNames.push_back(ListViewColumn("z", 30));
-        createMultiEdit2(hwnd, "comesing", 200, 200, 0, 100, IDC_EDGE_LISTVIEW, columnNames);
+		columnNames.push_back(ListViewColumn("type", 30));
+		columnNames.push_back(ListViewColumn("flat", 30));
+        createMultiEdit2(hwnd, "comesing", 200, 200, 0, 100, IDC_FACE_LISTVIEW, columnNames);*/
 
 
         createEdit(hwnd, "tjej", 250, 100, 50, 24, IDC_TEXT);
@@ -190,11 +288,11 @@ void changeGuiMode(HWND hwnd, int presentMode, int newMode)
         //createCheckbox(hwnd, "vertex-centered", 0, 200, 150, 30, IDC_CHECK_BOX_1);
         //createCheckbox(hwnd, "edge-centered", 0, 200, 180, 30, IDC_CHECK_BOX_2);
         //createCheckbox(hwnd, "face-centered", 0, 200, 210, 30, IDC_CHECK_BOX_3);
-        createListbox(hwnd, "gay", 0, 200, 240, 100, IDC_LISTBOX);
-        createButton(hwnd, "taka awayness", 0, 100, 350, 24, IDC_DEL_BUTTON);
+        //createListbox(hwnd, "gay", 0, 200, 240, 100, IDC_LISTBOX);
+        //createButton(hwnd, "taka awayness", 0, 100, 350, 24, IDC_DEL_BUTTON);
         
-        createButton(hwnd, "<< Prev", 0, 100, 374, 24, IDC_PREV_BUTTON);
-        createButton(hwnd, "Next >>", 100, 100, 374, 24, IDC_NEXT_BUTTON);
+        createButton(hwnd, "<< Prev", 250, 100, 100, 24, IDC_PREV_BUTTON);
+        createButton(hwnd, "Next >>", 350, 100, 100, 24, IDC_NEXT_BUTTON);
 	} else if (newMode == 1) {
 		ShowWindow(GetDlgItem(hwnd, IDC_MAIN_BUTTON), SW_HIDE);
 	} else if (newMode == 2) {

@@ -196,12 +196,28 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
                     SendDlgItemMessage(hwnd, IDC_LISTBOX, LB_SETCURSEL, *index_, 0);
                     msg.destroy();
                     break;}
-                case COMM_MSGTYP_ADD_VERTEX:
-                    cout << "MAIN - nu addas en vertex med index: " << endl;
-                    cout << "sen blir arrayen: " << msg.data << endl;
-                    SendDlgItemMessage(hwnd, IDC_LISTBOX, LB_ADDSTRING, 0, (LPARAM)msg.data);
+                case COMM_MSGTYP_ADD_VERTEX: {
+                    list<string> returned = stringSplit((const char*) msg.data, msg.dataSiz, ',');
+                    
+                    list<string>::iterator firstIt = returned.begin();
+                    int vertexId = atoi(firstIt->c_str());
+                    switch(vertexId)
+                    {
+                        case -2:
+                            *firstIt = "VC";
+                            break;
+                        case -3:
+                            *firstIt = "EC";
+                            break;
+                        case -4:
+                            *firstIt = "FC";
+                            break;
+                    }
+
+                    int rowId = vertexId<0? -vertexId-2: vertexId+3;
+                    addItemInListView(IDC_VERTICE_LISTVIEW, rowId, returned);
                     msg.destroy();
-                    break;
+                    break;}
 
                 case COMM_MSGTYP_SET_MODE: {
                     int newMode = *((int*)(msg.data));
@@ -213,8 +229,6 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
                     delete msg.data;
                     break;
                 }
-
-
                 case COMM_MSGTYP_ADD_CENTERED_VERTEX:{
                     cout << "Nu addades en centered vertex" << endl;
                     int *val = (int*) msg.data;

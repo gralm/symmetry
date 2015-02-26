@@ -17,6 +17,10 @@
 #define COMM_MSGTYP_ADD_CENTERED_VERTEX		4
 #define COMM_MSGTYP_SET_MODE				5
 
+#define COMM_MSGTYP_UPDATE_VERTEX			6
+#define COMM_MSGTYP_UPDATE_EDGE				7
+#define COMM_MSGTYP_UPDATE_FACE				8
+
 	// return values messages (msg)
 #define COMM_RET_ID_CREATED			11
 #define COMM_RET_ID_OVERWRITTEN		12

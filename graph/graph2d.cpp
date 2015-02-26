@@ -805,37 +805,46 @@ namespace Graph2D {
     	
 	    	if (indexMouseOver < 0) {
 	    		indexChosen = indexMouseOver;
-
 	    		if (indexMouseOver == -1) {
-					indexChosen = indexMouseOver = insertVertex(coord_);
-		    	} else if (indexMouseOver == VERTEX_CENTERED) {
-		    		//indexChosen = VERTEX_CENTERED;
-					int msgtyp = vertexPointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
-					vertexPointActive = true;
-					char vertCent = VERTEX_CENTERED;
-					CommMsg wakeV(COMM_THREAD_GLUT, COMM_THREAD_MAIN, 
-						msgtyp, 0, sizeof(int), &vertCent);
-					commSendMsg(&wakeV);
+	    			indexChosen = indexMouseOver = insertVertex(coord_);
+	    		}
+	    		int msgtyp;
+	    		switch(indexMouseOver)
+	    		{
+	    			case VERTEX_CENTERED:
+	    				//msgtyp = vertexPointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
+	    				msgtyp = vertexPointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_VERTEX;
+	    				coord_ = vertexCenteredPoint;
+	    				vertexPointActive = true;
+	    				break;
+	    			case EDGE_CENTERED:
+						//msgtyp = edgePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
+	    				msgtyp = edgePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_VERTEX;
+	    				coord_  = edgeCenteredPoint;
+	    				edgePointActive = true;
+	    				break;
+	    			case FACE_CENTERED:
+						//msgtyp = facePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
+	    				msgtyp = facePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_VERTEX;
+	    				coord_ = faceCenteredPoint;
+	    				facePointActive = true;
+	    				break;
+	    			default:
+	    				msgtyp = COMM_MSGTYP_ADD_VERTEX;//vertexPointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
+	    				break;
+	    		}
+	    		cout << "vertexPointActive: " << (vertexPointActive? "true": "false") << endl;
+	    		cout << "edgePointActive: " << (edgePointActive? "true": "false") << endl;
+	    		cout << "facePointActive: " << (facePointActive? "true": "false") << endl;
 
-				} else if (indexMouseOver == EDGE_CENTERED) {
-					//indexChosen = EDGE_CENTERED;
-					int msgtyp = edgePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
-					edgePointActive = true;
-					char edgeCent = EDGE_CENTERED;
-					CommMsg wakeV(COMM_THREAD_GLUT, COMM_THREAD_MAIN, 
-						msgtyp, 0, sizeof(int), &edgeCent);
-					commSendMsg(&wakeV);
-
-				} else if (indexMouseOver == FACE_CENTERED) {
-					//indexChosen = FACE_CENTERED;
-					int msgtyp = facePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
-					facePointActive = true;
-					char faceCent = FACE_CENTERED;
-					CommMsg wakeV(COMM_THREAD_GLUT, COMM_THREAD_MAIN, 
-						msgtyp, 0, sizeof(int), &faceCent);
-					commSendMsg(&wakeV);
-				}
-			} else {
+	    		char strMess[200];
+				//snprintf(strMess, 40, "%d: [%.3f, %.3f]", indexMouseOver, coord_.x, coord_.y);
+				cout << "msgtyp: " << msgtyp << endl;
+				snprintf(strMess, 200, "%d, %.3f, %.3f, %.3f, 0.000", indexMouseOver, coord_.x, coord_.y, coord_.z);
+				cout << "Texten: " << strMess << endl;
+				CommMsg commMsgNewVertex(COMM_THREAD_GLUT, COMM_THREAD_MAIN, msgtyp, 0, strlen(strMess) + 1, strMess);
+				commSendMsg(&commMsgNewVertex);
+			} else {	// väljer en vertex som man klickat på.
 					indexChosen = indexMouseOver;
 					CommMsg nyttMess(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_CHOOSE_VERTEX, 0, sizeof(int), (char*)&indexChosen);
 					commSendMsg(&nyttMess);
@@ -1066,14 +1075,7 @@ namespace Graph2D {
 				// c:s strängmetoder ligger ljusår före c++:s hantering av stärngar
 				// c++ har sitt jädra stringstream::stream::string::hittepå som inte
 				// effektiviserar för någon någonsin. 
-
-		char os[40];
-		snprintf(os, 40, "%d: [%.3f, %.3f]", index_, coord_.x, coord_.y);
-		CommMsg messToSend(COMM_THREAD_GLUT, COMM_THREAD_MAIN, 
-			COMM_MSGTYP_ADD_VERTEX, 0, strlen(os) + 1, os);
-		commSendMsg(&messToSend);
 		return index_;
-		// behöver inte förstöra messToSend
 	}
 
 	void insertLine(int x, int y)
