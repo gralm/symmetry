@@ -1062,9 +1062,25 @@ namespace Graph2D {
 			E.push_back(edgeToPushBack);
 		}
 
-		E_ToBe.clear();
 		F.push_back(face(sizE, E.size() - sizE, sluten == 2? -1: sluten));
+		cout << "          *****************************************            " << endl;
+		cout << "tjena nu is jag here" << endl;
+			// uppdatera GUI:et
+		char strToSend[200];
+			// id, first edge, num of edges, type, görasigplatt-styrka
+		snprintf(strToSend, 200, "%d,%d,%d,%d,0.0", F.size()-1, E.size() - sizE, sizE, (sluten == 2? -1: sluten));
+		cout << "detta skickas when face skapas: " << strToSend << endl;
 
+		int fNum = F.size()-1;
+		for (int e=F[fNum].fr; e<F[fNum].fr+F[fNum].edges; e++)
+		{
+			snprintf(strToSend, 200, "%d,%d%s,%d%s,%d,0.0", e, E[e].fr.index, E[e].fr.Pfx.toString(), );
+			cout << strToSend << endl;
+
+		}
+
+
+		E_ToBe.clear();
 		printAll();
 	}
 

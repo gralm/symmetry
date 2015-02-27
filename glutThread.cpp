@@ -166,7 +166,6 @@ void mouseFunc(int button, int state, int x, int y)
     switch (button) {
         case GLUT_LEFT_BUTTON:
             if (state == GLUT_UP){
-                //Graph2D::insertVertex(x, y);
                 Graph2D::mouseClick(x, y);
             }
             cout << "Left button \t";

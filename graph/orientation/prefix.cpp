@@ -209,6 +209,10 @@ namespace Graph2D {
 		return invPfx;
 	}
 
+	string toString()
+	{
+		return "";
+	}
 
 			// omvandla alla:	summa = 1023
 		// VP, VN = 1 			0001 	0

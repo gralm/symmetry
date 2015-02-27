@@ -4,6 +4,7 @@
 #include <list>
 #include <vector>
 #include <iostream>
+#include <cstring>
 #include "./../../tm/vector3.h"
 
 #define COS30			0.86602540378444
@@ -83,6 +84,7 @@ namespace Graph2D {
 		Prefix operator*(const Prefix &A) const;
 
 		Prefix difference(Prefix A);
+		std::string toString();
 	};
 
 
