@@ -74,6 +74,32 @@ namespace Graph2D {
 		cout << ", " << getpoint();
 	}
 
+	string Point::toString() const 
+	{		
+		if (index == -1)
+			return "undef.";
+		stringstream ss;
+		switch(index)
+		{
+			case VERTEX_CENTERED:
+				ss << "VC";
+				break;
+			case EDGE_CENTERED:
+				ss << "EC";
+				break;
+			case FACE_CENTERED:
+				ss << "FC";
+				break;
+			default:
+				ss << index << "";
+				break;
+		}
+		ss << Pfx.toString();
+		//Pfx.print();
+		//ss << ", " << getpoint();
+		return ss.str();
+		//Point
+	}
 
 	Point::Point() {}
 
@@ -82,6 +108,7 @@ namespace Graph2D {
 		Pfx = Pfx_;
 		index = index_;
 	}
+
 
 	bool Point::equalTo(Point &A) {
 		Prefix subPfx = Pfx.difference(A.Pfx);

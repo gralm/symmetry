@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <cstring>
+#include <sstream>
 #include "./../../tm/vector3.h"
 
 #define COS30			0.86602540378444
@@ -84,7 +85,7 @@ namespace Graph2D {
 		Prefix operator*(const Prefix &A) const;
 
 		Prefix difference(Prefix A);
-		std::string toString();
+		std::string toString() const;
 	};
 
 
@@ -97,6 +98,7 @@ namespace Graph2D {
 		Point(Prefix Pfx_, int index_);
 		VEC getpoint() const;
 		void print() const;
+		std::string toString() const ;
 		bool equalTo(Point &A);
 	};
 	extern std::vector<VEC> V;

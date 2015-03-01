@@ -93,6 +93,7 @@ namespace Graph2D {
 		Edge(Prefix Pfx_, int index_) {Pfx = Pfx_; index = index_;}
 		void print() const;
 		bool isDefined() const;
+		std::string toString() const;
 	};
 
 	class Face {

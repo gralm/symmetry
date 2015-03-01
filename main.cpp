@@ -107,6 +107,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                      
                         break;
                     }
+                    case IDC_TEST1_BUTTON: {
+                        try1();
+                        break;
+                    }
                     case IDC_LISTBOX:{
                         int hiwParam = HIWORD(wParam);
                         // hiwParam = 1 om man väljer ett nytt element
@@ -215,7 +219,15 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
                     }
 
                     int rowId = vertexId<0? -vertexId-2: vertexId+3;
-                    addItemInListView(IDC_VERTICE_LISTVIEW, rowId, returned);
+                    addItemInListView(IDC_VERTICE_LISTVIEW, returned);
+                    msg.destroy();
+                    break;}
+                case COMM_MSGTYP_UPDATE_FACE:{
+                    list<string> returned = stringSplit((const char*) msg.data, msg.dataSiz, ',');
+                    for (list<string>::iterator itstr = returned.begin(); itstr != returned.end(); itstr++)
+                        cout << "UPDATE FACE: " << *itstr << endl;
+                    
+                    //addItemInListView(IDC_FACE_LISTVIEW, rowId, returned);
                     msg.destroy();
                     break;}
 

@@ -50,6 +50,17 @@ namespace Graph2D {
 		Pfx.print();
 	}
 
+	string Edge::toString() const
+	{
+		if (index == -1)
+			return "undef.";
+
+		stringstream ss;
+		ss << index;
+		ss << Pfx.toString();
+		return ss.str();
+	}
+
 	bool Edge::isDefined() const
 	{
 		return index != -1;
@@ -179,6 +190,28 @@ namespace Graph2D {
 		//pfx->R.clear();
 		return false;
 	}
+
+	/*string edge::toString() const 
+	{
+		stringstream ss;
+
+		ss << "\tPoint fr = ";
+		ss << fr.index << fr.Pfx.toString();
+		//fr.print();
+		ss << endl << "\tPoint to = ";
+		to.print();
+		cout << endl;
+
+		cout << "\tEdge next = ";
+		next.print();
+		cout << endl << "\tEdge prev = ";
+		prev.print();
+		cout << endl << "\tEdge oppo = ";
+		oppo.print();
+		cout << endl;
+
+		return ss.str();
+	}*/
 
 
 	face::face()
@@ -1071,12 +1104,23 @@ namespace Graph2D {
 		snprintf(strToSend, 200, "%d,%d,%d,%d,0.0", F.size()-1, E.size() - sizE, sizE, (sluten == 2? -1: sluten));
 		cout << "detta skickas when face skapas: " << strToSend << endl;
 
+		//COMM_MSGTYP_UPDATE_EDGE
+
+		CommMsg nyttFace(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_UPDATE_FACE, 0, strlen(strToSend), strToSend);
+		commSendMsg(&nyttFace);
+		nyttFace.destroy();
+
 		int fNum = F.size()-1;
 		for (int e=F[fNum].fr; e<F[fNum].fr+F[fNum].edges; e++)
 		{
-			snprintf(strToSend, 200, "%d,%d%s,%d%s,%d,0.0", e, E[e].fr.index, E[e].fr.Pfx.toString(), );
+				// id, fr, to, next, prev, oppo, face, len, k, d, len0, theta
+			/*snprintf(strToSend, 200, "%d,%d%s,%d%s,%d,0.0", e, E[e].fr.index, 
+				E[e].fr.Pfx.toString(), E[e].to.Pfx.index, E[e].to.Pfx.toString());*/
+			snprintf(strToSend, 200, "%d, %s, %s, %s, %s, %s, %d, 0.0", e, E[e].fr.toString().c_str(), 
+				E[e].to.toString().c_str(), E[e].next.toString().c_str(),
+				E[e].prev.toString().c_str(), E[e].oppo.toString().c_str(), 
+				fNum);
 			cout << strToSend << endl;
-
 		}
 
 

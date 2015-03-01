@@ -180,15 +180,57 @@ HWND createListView(HWND hwnd, const char* text, int left, int width, int top, i
 		(HMENU)IDB_RADIO2, hInstance, NULL);
 }*/
 
-void addItemInListView(int listViewType, int rowId, list<string> cellValue)
+
+void changeItemInListView(HWND hwndObject, int rowId, list<string> &cellValue) {
+	LVITEM lv = {0};
+	lv.iItem = rowId;	
+
+	if (hwndObject == 0)
+		cout << "denna hwnd is not defined" << endl;
+
+	ListView_SetItem(hwndObject, &lv);
+	int colVal = 0;
+	char cellValueCopy[100];
+
+	for (list<string>::iterator itstr = cellValue.begin(); itstr != cellValue.end(); itstr++)
+	{
+		strcpy(cellValueCopy, itstr->c_str());
+		ListView_SetItemText(hwndObject, rowId, colVal++, cellValueCopy);
+	}
+}
+
+void addItemInListView(HWND hwndObject, int rowId, list<string> &cellValue) {
+	LVITEM lv = {0};
+	lv.iItem = rowId;
+
+
+	if (hwndObject == 0)
+		cout << "denna hwnd is not defined" << endl;
+
+	ListView_InsertItem(hwndObject, &lv);
+	
+	int colVal = 0;
+	char cellValueCopy[100];
+
+	for (list<string>::iterator itstr = cellValue.begin(); itstr != cellValue.end(); itstr++)
+	{
+		strcpy(cellValueCopy, itstr->c_str());
+		ListView_SetItemText(hwndObject, rowId, colVal++, cellValueCopy);
+	}
+}
+
+	// https://msdn.microsoft.com/en-us/library/windows/desktop/ff485960(v=vs.85).aspx 
+void addItemInListView(int listViewType, list<string> &cellValue)
 {
 
 	HWND hwndObject;
+	int itemNum = -1;
 	switch(listViewType)
 	{
-		case IDC_VERTICE_LISTVIEW:
+		case IDC_VERTICE_LISTVIEW: {
 			hwndObject = hwndVertexListView;
 			break;
+		}
 		case IDC_EDGE_LISTVIEW:
 			hwndObject = hwndEdgeListView;
 			break;
@@ -200,31 +242,75 @@ void addItemInListView(int listViewType, int rowId, list<string> cellValue)
 			return;
 	}
 
+
+	list<string>::const_iterator cellValueIterator = cellValue.begin();
+	string firstString = *cellValueIterator;
+	const char firstChar = firstString[0];
+	if (listViewType == IDC_VERTICE_LISTVIEW)
+	{
+		switch(firstChar)
+		{
+			case 'V':
+				changeItemInListView(hwndObject, 0, cellValue);
+				break;
+			case 'E':
+				changeItemInListView(hwndObject, 1, cellValue);
+				break;
+			case 'F':
+				changeItemInListView(hwndObject, 2, cellValue);
+				break;
+			default: {
+				int numOfRows = ListView_GetItemCount(hwndObject);
+				itemNum = atoi(firstString.c_str());
+				char LVtexten[5];
+				int LVtextenAsInt;
+
+				for (int rowNum=3; rowNum<numOfRows; rowNum++)
+				{
+					ListView_GetItemText(hwndObject, rowNum, 0, LVtexten, 5);
+					LVtextenAsInt = atoi(LVtexten);
+					if (LVtextenAsInt == itemNum) {
+						changeItemInListView(hwndObject, rowNum, cellValue);
+						return;
+					} else if (LVtextenAsInt > itemNum) {
+						addItemInListView(hwndObject, rowNum-1, cellValue);
+						return;
+					}
+				}
+				addItemInListView(hwndObject, numOfRows, cellValue);
+			}
+		}
+	} else { 
+		int numOfRows = ListView_GetItemCount(hwndObject);
+		itemNum = atoi(cellValueIterator->c_str());
+		char LVtexten[5];
+		int LVtextenAsInt;
+
+		for (int rowNum=0; rowNum<numOfRows; rowNum++)
+		{
+			ListView_GetItemText(hwndObject, rowNum, 0, LVtexten, 5);
+			LVtextenAsInt = atoi(LVtexten);
+			if (LVtextenAsInt == itemNum) {
+				changeItemInListView(hwndObject, rowNum, cellValue);
+				return;
+			} else if (LVtextenAsInt > itemNum) {
+				addItemInListView(hwndObject, rowNum-1, cellValue);
+				return;
+			}
+		}
+		addItemInListView(hwndObject, numOfRows, cellValue);
+		//itemNum = atoi(cellValueIterat->c_str());
+	}
+
+		// VC, EC, FC
+
 	//cout << "num = " << hwndObject.getAdapter().getCount() << endl;
 	//cout << "num of rows = " << ListView_GetItemCount(hwndObject) << endl;
 
 
-	LVITEM lv = {0};
-	lv.iItem = rowId;
 
-
-	if (hwndObject == 0)
-		cout << "denna hwnd is not defined" << endl;
-
-	if (ListView_GetItemCount(hwndObject) > rowId)
-		ListView_SetItem(hwndObject, &lv);
-	else
-		ListView_InsertItem(hwndObject, &lv);
-	
-	int colVal = 0;
-	char cellValueCopy[100];
-
-	for (list<string>::iterator itstr = cellValue.begin(); itstr != cellValue.end(); itstr++)
-	{
-		strcpy(cellValueCopy, itstr->c_str());
-		ListView_SetItemText(hwndObject, rowId, colVal++, cellValueCopy);
-	}
 }
+
 
 
 void changeGuiMode(HWND hwnd, int presentMode, int newMode)
@@ -262,17 +348,15 @@ void changeGuiMode(HWND hwnd, int presentMode, int newMode)
 
 		list<string> val;
 		val.push_back("VC");
-		addItemInListView(IDC_VERTICE_LISTVIEW, numOfVerticeRows++, val);
+		addItemInListView(IDC_VERTICE_LISTVIEW, val);
 
 		val.clear();
 		val.push_back("EC");
-		addItemInListView(IDC_VERTICE_LISTVIEW, numOfVerticeRows++, val);
+		addItemInListView(IDC_VERTIC E_LISTVIEW, val);
 
 		val.clear();
 		val.push_back("FC");
-		addItemInListView(IDC_VERTICE_LISTVIEW, numOfVerticeRows++, val);
-
-
+		addItemInListView(IDC_VERTICE_LISTVIEW, val);
 
         /*columnNames.clear();
         columnNames.push_back(ListViewColumn("id", 50));
@@ -284,7 +368,10 @@ void changeGuiMode(HWND hwnd, int presentMode, int newMode)
 
 
         createEdit(hwnd, "tjej", 250, 100, 50, 24, IDC_TEXT);
-        createButton(hwnd, "hej", 350, 100, 50, 24, IDC_MAIN_BUTTON);
+        createButton(hwnd, "#Mess in Cue", 350, 100, 50, 24, IDC_MAIN_BUTTON);
+        createButton(hwnd, "Testa 1", 250, 100, 75	, 24, IDC_TEST1_BUTTON);
+        //createButton(hwnd, "#Mess in Cue", 350, 100, 50, 24, IDC_MAIN_BUTTON);
+        
         //createCheckbox(hwnd, "vertex-centered", 0, 200, 150, 30, IDC_CHECK_BOX_1);
         //createCheckbox(hwnd, "edge-centered", 0, 200, 180, 30, IDC_CHECK_BOX_2);
         //createCheckbox(hwnd, "face-centered", 0, 200, 210, 30, IDC_CHECK_BOX_3);
@@ -299,3 +386,18 @@ void changeGuiMode(HWND hwnd, int presentMode, int newMode)
 		ShowWindow(GetDlgItem(hwnd, IDC_MAIN_BUTTON), SW_SHOW);
 	}
 }
+
+void try1()
+{
+	char texten[100];
+	cout << "try1"  << endl;
+	int itemCount = ListView_GetItemCount(hwndVertexListView);
+	cout << "item Count: " << itemCount << endl;
+
+	//VOID ListView_SetItemText(HWND hwnd,int i,int iSubItem,LPCTSTR pszText);
+	ListView_GetItemText(hwndVertexListView, 1, 1, texten, 100);
+	cout << "texten: " << texten << endl;
+
+}
+
+// https://msdn.microsoft.com/en-us/library/windows/desktop/ff485960(v=vs.85).aspx 

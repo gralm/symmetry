@@ -24,6 +24,9 @@
 #define IDC_PREV_BUTTON         181
 #define IDC_DEL_BUTTON          182
 
+#define IDC_TEST1_BUTTON		301
+#define IDC_TEST2_BUTTON		302
+#define IDC_TEST3_BUTTON		303
 
 #define IDC_VERTICE_LISTVIEW	201
 #define IDC_EDGE_LISTVIEW		202
@@ -45,8 +48,9 @@ void createCheckbox(HWND hwnd, const char* text, int left, int width, int top, i
 void changeGuiMode(HWND hwnd, int presentMode, int newMode);
 
 
-void addItemInListView(int listViewType, int rowId, std::list<std::string> cellValue);
-
+void addItemInListView(int listViewType, std::list<std::string> &cellValue);
+void addItemInListView(HWND hwndObject, int rowId, std::list<std::string> &cellValue);
+void try1();
 
 std::list<std::string> stringSplit(const char *str, int len, char splitChar);
 std::list<std::string> stringSplit(std::string str, char splitChar);

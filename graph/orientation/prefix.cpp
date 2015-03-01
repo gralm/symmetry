@@ -103,6 +103,7 @@ namespace Graph2D {
 
 	void Prefix::print() const
 	{
+			/*
 		cout << "Pfx [";
 		for (list<TYP>::const_iterator it = R.begin(); it != R.end(); it++)
 		{
@@ -126,6 +127,8 @@ namespace Graph2D {
 			}
 		}
 		cout << "]";// << endl;
+		*/
+		cout << toString();
 	}
 
 
@@ -209,9 +212,33 @@ namespace Graph2D {
 		return invPfx;
 	}
 
-	string toString()
+	string Prefix::toString() const
 	{
-		return "";
+		stringstream returnString;
+		returnString << "[";
+		for (list<TYP>::const_iterator it = R.begin(); it != R.end(); it++)
+		{
+			if (it != R.begin())
+				returnString << " ";
+
+			switch(*it)
+			{
+				case VP:
+					returnString << "VP";
+					break;
+				case VN:
+					returnString << "VN";
+					break;
+				case FP:
+					returnString << "FP";
+					break;
+				case FN:
+					returnString << "FN";
+					break;
+			}
+		}
+		returnString << "]";// << endl;
+		return returnString.str();
 	}
 
 			// omvandla alla:	summa = 1023
