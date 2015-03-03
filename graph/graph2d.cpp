@@ -1101,7 +1101,7 @@ namespace Graph2D {
 			// uppdatera GUI:et
 		char strToSend[200];
 			// id, first edge, num of edges, type, görasigplatt-styrka
-		snprintf(strToSend, 200, "%d,%d,%d,%d,0.0", F.size()-1, E.size() - sizE, sizE, (sluten == 2? -1: sluten));
+		snprintf(strToSend, 200, "%d,%d,%d,%d", F.size()-1, sizE, E.size() - sizE, (sluten == 2? -1: sluten));
 		cout << "detta skickas when face skapas: " << strToSend << endl;
 
 		//COMM_MSGTYP_UPDATE_EDGE
@@ -1110,18 +1110,41 @@ namespace Graph2D {
 		commSendMsg(&nyttFace);
 		nyttFace.destroy();
 
+
 		int fNum = F.size()-1;
-		for (int e=F[fNum].fr; e<F[fNum].fr+F[fNum].edges; e++)
+		int e = 0;
+		for (int f=0; f<F.size(); f++)
+		{
+			for (int e=F[f].fr; e<F[f].fr + F[f].edges; e++)
+			{
+					// id, fr, to, next, prev, oppo, face, len, k, d, len0, theta
+				snprintf(strToSend, 200, "%d, %s, %s, %s, %s, %s, %d", e, E[e].fr.toString().c_str(), 
+					E[e].to.toString().c_str(), E[e].next.toString().c_str(),
+					E[e].prev.toString().c_str(), E[e].oppo.toString().c_str(), 
+					f);
+				cout << strToSend << endl;
+
+				CommMsg nyttEdge(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_UPDATE_EDGE, 0, strlen(strToSend), strToSend);
+				commSendMsg(&nyttEdge);
+				nyttEdge.destroy();
+			}
+		}
+		
+
+		/*
+		for (int e=0; e<E.size(); e++)
 		{
 				// id, fr, to, next, prev, oppo, face, len, k, d, len0, theta
-			/*snprintf(strToSend, 200, "%d,%d%s,%d%s,%d,0.0", e, E[e].fr.index, 
-				E[e].fr.Pfx.toString(), E[e].to.Pfx.index, E[e].to.Pfx.toString());*/
-			snprintf(strToSend, 200, "%d, %s, %s, %s, %s, %s, %d, 0.0", e, E[e].fr.toString().c_str(), 
+			snprintf(strToSend, 200, "%d, %s, %s, %s, %s, %s, %d", e, E[e].fr.toString().c_str(), 
 				E[e].to.toString().c_str(), E[e].next.toString().c_str(),
 				E[e].prev.toString().c_str(), E[e].oppo.toString().c_str(), 
 				fNum);
 			cout << strToSend << endl;
-		}
+
+			CommMsg nyttEdge(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_UPDATE_EDGE, 0, strlen(strToSend), strToSend);
+			commSendMsg(&nyttEdge);
+			nyttEdge.destroy();
+		}*/
 
 
 		E_ToBe.clear();
@@ -1501,7 +1524,7 @@ namespace Graph2D {
 		Prefix diff;
 		edge edgeA, edgeB;
 
-		edgeA.fr.index = 0;
+		/*edgeA.fr.index = 0;
 		edgeA.fr.Pfx;
 		edgeA.to.index = FACE_CENTERED;
 		edgeA.to.Pfx.rotate(FN);
@@ -1509,12 +1532,22 @@ namespace Graph2D {
 		edgeB.fr.index = FACE_CENTERED;
 		edgeB.fr.Pfx.rotate(FN);
 		edgeB.to.index = 0;
-		edgeB.to.Pfx.rotate(FN);
+		edgeB.to.Pfx.rotate(FN);*/
+
+		
+		edgeA.fr.index = 0;
+		edgeA.fr.Pfx;
+		edgeA.to.index = 0;
+		edgeA.to.Pfx.rotate(FN);
+		edgeA.to.Pfx.rotate(VN);
 
 
+		cout << "edgeA: ";
+		 edgeA.print();
+		 cout << endl;
+		//cout << "edgeB: " << edgeB.toString() << endl;
 
-
-		if (edgeA.isOppositeOf(edgeB, &diff))
+		if (edgeA.isOppositeOf(edgeA, &diff))
 		{
 			cout << "is opposite: ";
 			diff.print();

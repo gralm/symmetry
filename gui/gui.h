@@ -48,7 +48,7 @@ void createCheckbox(HWND hwnd, const char* text, int left, int width, int top, i
 void changeGuiMode(HWND hwnd, int presentMode, int newMode);
 
 
-void addItemInListView(int listViewType, std::list<std::string> &cellValue);
+void setItemInListView(int listViewType, std::list<std::string> &cellValue);
 void addItemInListView(HWND hwndObject, int rowId, std::list<std::string> &cellValue);
 void try1();
 

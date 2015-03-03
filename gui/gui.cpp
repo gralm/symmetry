@@ -185,6 +185,7 @@ void changeItemInListView(HWND hwndObject, int rowId, list<string> &cellValue) {
 	LVITEM lv = {0};
 	lv.iItem = rowId;	
 
+	//cout << "B: " << endl;
 	if (hwndObject == 0)
 		cout << "denna hwnd is not defined" << endl;
 
@@ -195,6 +196,7 @@ void changeItemInListView(HWND hwndObject, int rowId, list<string> &cellValue) {
 	for (list<string>::iterator itstr = cellValue.begin(); itstr != cellValue.end(); itstr++)
 	{
 		strcpy(cellValueCopy, itstr->c_str());
+		//cout << "rowId: " << rowId << ", colVal: " << colVal << ", cellValueCopy: " << cellValueCopy << endl;
 		ListView_SetItemText(hwndObject, rowId, colVal++, cellValueCopy);
 	}
 }
@@ -203,6 +205,7 @@ void addItemInListView(HWND hwndObject, int rowId, list<string> &cellValue) {
 	LVITEM lv = {0};
 	lv.iItem = rowId;
 
+	//cout << "C: " << endl;
 
 	if (hwndObject == 0)
 		cout << "denna hwnd is not defined" << endl;
@@ -215,12 +218,13 @@ void addItemInListView(HWND hwndObject, int rowId, list<string> &cellValue) {
 	for (list<string>::iterator itstr = cellValue.begin(); itstr != cellValue.end(); itstr++)
 	{
 		strcpy(cellValueCopy, itstr->c_str());
+		//cout << "rowId: " << rowId << ", colVal: " << colVal << ", cellValueCopy: " << cellValueCopy << endl;
 		ListView_SetItemText(hwndObject, rowId, colVal++, cellValueCopy);
 	}
 }
 
 	// https://msdn.microsoft.com/en-us/library/windows/desktop/ff485960(v=vs.85).aspx 
-void addItemInListView(int listViewType, list<string> &cellValue)
+void setItemInListView(int listViewType, list<string> &cellValue)
 {
 
 	HWND hwndObject;
@@ -234,9 +238,26 @@ void addItemInListView(int listViewType, list<string> &cellValue)
 		case IDC_EDGE_LISTVIEW:
 			hwndObject = hwndEdgeListView;
 			break;
-		case IDC_FACE_LISTVIEW:
+		case IDC_FACE_LISTVIEW: {
 			hwndObject = hwndFaceListView;
+			list<string>::iterator itstr = cellValue.begin();
+			itstr++;
+			itstr++;
+			itstr++;
+			switch(atoi(itstr->c_str()))
+			{
+				case -2:
+					*itstr = "VC";
+					break;
+				case -3:
+					*itstr = "EC";
+					break;
+				case -4:
+					*itstr = "FC";
+					break;
+			}
 			break;
+		}
 		default:
 			cout << "fel listViewType param" << endl;
 			return;
@@ -246,21 +267,38 @@ void addItemInListView(int listViewType, list<string> &cellValue)
 	list<string>::const_iterator cellValueIterator = cellValue.begin();
 	string firstString = *cellValueIterator;
 	const char firstChar = firstString[0];
+	//cout << "first char: " << firstChar << endl;
+	int numOfRows = ListView_GetItemCount(hwndObject);
 	if (listViewType == IDC_VERTICE_LISTVIEW)
 	{
 		switch(firstChar)
 		{
-			case 'V':
-				changeItemInListView(hwndObject, 0, cellValue);
+			case 'V': {
+				if (numOfRows < 3)
+					addItemInListView(hwndObject, 0, cellValue);
+				else
+					changeItemInListView(hwndObject, 0, cellValue);
 				break;
-			case 'E':
-				changeItemInListView(hwndObject, 1, cellValue);
+			}
+
+			case 'E': {
+				if (numOfRows < 3)
+					addItemInListView(hwndObject, 1, cellValue);
+				else
+					changeItemInListView(hwndObject, 1, cellValue);
 				break;
-			case 'F':
-				changeItemInListView(hwndObject, 2, cellValue);
+			}
+
+			case 'F': {
+				if (numOfRows < 3)
+					addItemInListView(hwndObject, 2, cellValue);
+				else
+					changeItemInListView(hwndObject, 2, cellValue);
 				break;
+			}
+
 			default: {
-				int numOfRows = ListView_GetItemCount(hwndObject);
+				//int numOfRows = ListView_GetItemCount(hwndObject);
 				itemNum = atoi(firstString.c_str());
 				char LVtexten[5];
 				int LVtextenAsInt;
@@ -281,15 +319,16 @@ void addItemInListView(int listViewType, list<string> &cellValue)
 			}
 		}
 	} else { 
-		int numOfRows = ListView_GetItemCount(hwndObject);
 		itemNum = atoi(cellValueIterator->c_str());
 		char LVtexten[5];
 		int LVtextenAsInt;
+		//cout << "A: " << endl;
 
 		for (int rowNum=0; rowNum<numOfRows; rowNum++)
 		{
 			ListView_GetItemText(hwndObject, rowNum, 0, LVtexten, 5);
 			LVtextenAsInt = atoi(LVtexten);
+			//cout << "LVtextenAsInt: " << LVtextenAsInt << "\titemNum: " << itemNum << endl;
 			if (LVtextenAsInt == itemNum) {
 				changeItemInListView(hwndObject, rowNum, cellValue);
 				return;
@@ -331,6 +370,19 @@ void changeGuiMode(HWND hwnd, int presentMode, int newMode)
 		columnNames.push_back(ListViewColumn("m", 55));
         hwndVertexListView = createListView(hwnd, "comesing", 0, 250, 0, 150, IDC_VERTICE_LISTVIEW, columnNames);
 
+		list<string> val;
+		val.push_back("VC");
+		setItemInListView(IDC_VERTICE_LISTVIEW, val);
+
+		val.clear();
+		val.push_back("EC");
+		setItemInListView(IDC_VERTICE_LISTVIEW, val);
+
+		val.clear();
+		val.push_back("FC");
+		setItemInListView(IDC_VERTICE_LISTVIEW, val);
+
+
         columnNames.clear();
         columnNames.push_back(ListViewColumn("id", 30));
 		columnNames.push_back(ListViewColumn("fr", 40));
@@ -344,27 +396,16 @@ void changeGuiMode(HWND hwnd, int presentMode, int newMode)
 		columnNames.push_back(ListViewColumn("d", 40));
 		columnNames.push_back(ListViewColumn("l0", 40));
 		columnNames.push_back(ListViewColumn("theta", 40));
-        hwndEdgeListView = createListView(hwnd, "comesing", 0, 450, 150, 100, IDC_EDGE_LISTVIEW, columnNames);
+        hwndEdgeListView = createListView(hwnd, "comesing", 0, 450, 150, 150, IDC_EDGE_LISTVIEW, columnNames);
 
-		list<string> val;
-		val.push_back("VC");
-		addItemInListView(IDC_VERTICE_LISTVIEW, val);
 
-		val.clear();
-		val.push_back("EC");
-		addItemInListView(IDC_VERTIC E_LISTVIEW, val);
-
-		val.clear();
-		val.push_back("FC");
-		addItemInListView(IDC_VERTICE_LISTVIEW, val);
-
-        /*columnNames.clear();
+        columnNames.clear();
         columnNames.push_back(ListViewColumn("id", 50));
-		columnNames.push_back(ListViewColumn("fr", 30));
-		columnNames.push_back(ListViewColumn("len", 30));
-		columnNames.push_back(ListViewColumn("type", 30));
-		columnNames.push_back(ListViewColumn("flat", 30));
-        createMultiEdit2(hwnd, "comesing", 200, 200, 0, 100, IDC_FACE_LISTVIEW, columnNames);*/
+		columnNames.push_back(ListViewColumn("fr", 40));
+		columnNames.push_back(ListViewColumn("len", 40));
+		columnNames.push_back(ListViewColumn("type", 40));
+		columnNames.push_back(ListViewColumn("flat", 40));
+        hwndFaceListView = createListView(hwnd, "comesing", 0, 350, 300, 110, IDC_FACE_LISTVIEW, columnNames);
 
 
         createEdit(hwnd, "tjej", 250, 100, 50, 24, IDC_TEXT);
@@ -380,8 +421,23 @@ void changeGuiMode(HWND hwnd, int presentMode, int newMode)
         
         createButton(hwnd, "<< Prev", 250, 100, 100, 24, IDC_PREV_BUTTON);
         createButton(hwnd, "Next >>", 350, 100, 100, 24, IDC_NEXT_BUTTON);
+
+
+		HWND hGrpButtons = CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON","Select Process Mode:", 
+		                    WS_VISIBLE | WS_CHILD|BS_GROUPBOX,  // Styles 
+		                    10,280,350,100, hwnd, NULL, GetModuleHandle(NULL), NULL);
+		CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON", "Batch Process Mode", 
+		                    WS_VISIBLE | WS_CHILD|BS_AUTORADIOBUTTON,  // Styles 
+		                    10,20,300,20, hGrpButtons, (HMENU)1, GetModuleHandle(NULL), NULL);
+		CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON","Single Process Mode (Preview Mode)", 
+		                    WS_VISIBLE | WS_CHILD|BS_AUTORADIOBUTTON,  // Styles 
+		                    10,45,300,20, hGrpButtons, (HMENU)2, GetModuleHandle(NULL), NULL);
+
+
+
 	} else if (newMode == 1) {
 		ShowWindow(GetDlgItem(hwnd, IDC_MAIN_BUTTON), SW_HIDE);
+
 	} else if (newMode == 2) {
 		ShowWindow(GetDlgItem(hwnd, IDC_MAIN_BUTTON), SW_SHOW);
 	}

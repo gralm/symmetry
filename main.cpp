@@ -219,15 +219,24 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
                     }
 
                     int rowId = vertexId<0? -vertexId-2: vertexId+3;
-                    addItemInListView(IDC_VERTICE_LISTVIEW, returned);
+                    setItemInListView(IDC_VERTICE_LISTVIEW, returned);
                     msg.destroy();
                     break;}
+                case COMM_MSGTYP_UPDATE_EDGE:{
+                    list<string> returned = stringSplit((const char*) msg.data, msg.dataSiz, ',');
+                    //for (list<string>::iterator itstr = returned.begin(); itstr != returned.end(); itstr++)
+                    //    cout << "UPDATE EDGE: " << *itstr << endl;
+                    
+                    setItemInListView(IDC_EDGE_LISTVIEW, returned);
+                    msg.destroy();
+                    break;}
+
                 case COMM_MSGTYP_UPDATE_FACE:{
                     list<string> returned = stringSplit((const char*) msg.data, msg.dataSiz, ',');
-                    for (list<string>::iterator itstr = returned.begin(); itstr != returned.end(); itstr++)
-                        cout << "UPDATE FACE: " << *itstr << endl;
+                    //for (list<string>::iterator itstr = returned.begin(); itstr != returned.end(); itstr++)
+                    //    cout << "UPDATE FACE: " << *itstr << endl;
                     
-                    //addItemInListView(IDC_FACE_LISTVIEW, rowId, returned);
+                    setItemInListView(IDC_FACE_LISTVIEW, returned);
                     msg.destroy();
                     break;}
 
