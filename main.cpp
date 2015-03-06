@@ -51,6 +51,7 @@ void joinThreads(pthread_t *thread)
 // Step 4: the Window Procedure
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    cout << ".";
     switch(msg)
     {      
         case WM_KEYDOWN: {
@@ -164,6 +165,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             PostQuitMessage(0);
             break;
         default:
+            cout << "wParam: " << wParam << "\t msg: " << msg << endl;
             return DefWindowProc(hwnd, msg, wParam, lParam);
     }
     return 0;
@@ -356,7 +358,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         MessageBox(NULL, "Window Creation Failed!", "Error!", MB_ICONEXCLAMATION | MB_OK);
         return 0;
     }
-    SetWindowPos(hwnd, NULL, 100, 100, 500, 450, SWP_NOACTIVATE);
+    SetWindowPos(hwnd, NULL, 100, 100, 500, 600, SWP_NOACTIVATE);
     
     SetTimer(hwnd, 0, UI_UPDATE_TIME, checkMainThreads);
 

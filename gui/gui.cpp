@@ -345,9 +345,6 @@ void setItemInListView(int listViewType, list<string> &cellValue)
 
 	//cout << "num = " << hwndObject.getAdapter().getCount() << endl;
 	//cout << "num of rows = " << ListView_GetItemCount(hwndObject) << endl;
-
-
-
 }
 
 
@@ -423,15 +420,19 @@ void changeGuiMode(HWND hwnd, int presentMode, int newMode)
         createButton(hwnd, "Next >>", 350, 100, 100, 24, IDC_NEXT_BUTTON);
 
 
-		HWND hGrpButtons = CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON","Select Process Mode:", 
+		HWND hGrpButtons = CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON","Symmetrymode:", 
 		                    WS_VISIBLE | WS_CHILD|BS_GROUPBOX,  // Styles 
-		                    10,280,350,100, hwnd, NULL, GetModuleHandle(NULL), NULL);
-		CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON", "Batch Process Mode", 
+		                    10,450,350,100, hwnd, NULL, GetModuleHandle(NULL), NULL);
+		CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON", "Tetrahedral", 
 		                    WS_VISIBLE | WS_CHILD|BS_AUTORADIOBUTTON,  // Styles 
-		                    10,20,300,20, hGrpButtons, (HMENU)1, GetModuleHandle(NULL), NULL);
-		CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON","Single Process Mode (Preview Mode)", 
+		                    10,20,300,20, hGrpButtons, (HMENU)1231, GetModuleHandle(NULL), NULL);
+		CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON","Octahedral", 
 		                    WS_VISIBLE | WS_CHILD|BS_AUTORADIOBUTTON,  // Styles 
-		                    10,45,300,20, hGrpButtons, (HMENU)2, GetModuleHandle(NULL), NULL);
+		                    10,45,300,20, hGrpButtons, (HMENU)1232, GetModuleHandle(NULL), NULL);
+		CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON", "Icosahedral", 
+		                    WS_VISIBLE | WS_CHILD|BS_AUTORADIOBUTTON,  // Styles 
+		                    10,70,300,20, hGrpButtons, (HMENU)1233, GetModuleHandle(NULL), NULL);
+		
 
 
 
