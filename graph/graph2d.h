@@ -128,7 +128,7 @@ namespace Graph2D {
 		bool isOppositeOf(const edge &e, Prefix *pfx);	// returns true if it is opposite. If pfx != null, pfx
 	};
 
-
+ 
 ////////////////////////////////////
 		// AB är koordinater på skärmen, pixelposition
 	VEC fromABtoXY(int x, int y);
