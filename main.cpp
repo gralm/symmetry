@@ -51,7 +51,7 @@ void joinThreads(pthread_t *thread)
 // Step 4: the Window Procedure
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    cout << ".";
+    //cout << ".";
     switch(msg)
     {      
         case WM_KEYDOWN: {
@@ -110,6 +110,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                     }
                     case IDC_TEST1_BUTTON: {
                         try1();
+
+                        cout << "radiobutton: " << getSymmetryValue() << endl;
                         break;
                     }
                     case IDC_LISTBOX:{
@@ -130,6 +132,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                        break;}
 
                     case IDC_NEXT_BUTTON: {
+                        if (mode == 2) {
+                            int chosenSymmetry = getSymmetryValue();
+                            cout << "chosen radiobutton: " << chosenSymmetry << endl;
+                            CommMsg symmetryMsg(COMM_THREAD_MAIN, COMM_THREAD_GLUT, COMM_MSGTYP_SET_SYMMETRY_VALUE, 0, sizeof(int), (char*) &chosenSymmetry);
+                            commSendMsg(&symmetryMsg);
+                        }
+
                         cout << "Det klickas på next" << endl;
                         int newMode = mode+1;
                         CommMsg ChangeMode(COMM_THREAD_MAIN, COMM_THREAD_GLUT, COMM_MSGTYP_SET_MODE, 0, sizeof(int), (char*) &newMode);
@@ -150,6 +159,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 }
                 break;    
             }
+        case WM_NOTIFY:
+            cout << "NOFITFY: " << "msg: " << msg << "\twParam: " << wParam << "\tlParam: " << lParam <<  endl;
+            break;
 
         /*case WM_TIMER: {
             //cout << "|" << endl;
@@ -165,7 +177,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             PostQuitMessage(0);
             break;
         default:
-            cout << "wParam: " << wParam << "\t msg: " << msg << endl;
+            //cout << "wParam: " << wParam << "\t msg: " << msg << endl;
             return DefWindowProc(hwnd, msg, wParam, lParam);
     }
     return 0;

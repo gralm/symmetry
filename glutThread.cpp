@@ -76,7 +76,15 @@ void checkThreads()
             commSendMsg(&changeMode);
             //}
 
-            delete val;
+            delete[] val;
+            break;
+        }
+        case COMM_MSGTYP_SET_SYMMETRY_VALUE: {
+         
+            int *val = (int*)(msg.data);
+            cout << "nu is symmetry valt: " << *val << endl;
+            Graph2D::symmetryType = *val;
+            delete[] val;
             break;
         }
         default:

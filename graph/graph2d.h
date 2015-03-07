@@ -37,6 +37,7 @@ namespace Graph2D {
 	//class point;
 	struct edge;
 
+	extern int symmetryType;
 	
 	extern const VEC vertexCenteredPoint;//(.0, .0);
 	extern const VEC edgeCenteredPoint;//(.25, SIN60*.5);

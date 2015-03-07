@@ -6,6 +6,11 @@ HWND hwndVertexListView = 0;
 HWND hwndEdgeListView = 0;
 HWND hwndFaceListView = 0;
 
+HWND hGrpButtonsSymmetry[3];
+//HWND hGrpButtons = 0;
+//HWND hGrpButtons2 = 0;
+//HWND hGrpButtons3 = 0;
+
 int numOfVerticeRows = 0;
 int numOfEdgeRows = 0;
 int numOfFaceRows = 0;
@@ -347,6 +352,29 @@ void setItemInListView(int listViewType, list<string> &cellValue)
 	//cout << "num of rows = " << ListView_GetItemCount(hwndObject) << endl;
 }
 
+int getSymmetryValue()
+{
+
+	for (int i=0; i<3; i++)
+	{
+		switch(Button_GetState(hGrpButtonsSymmetry[i]))
+		{
+			case BST_CHECKED:
+				return i;
+				break;
+			default:
+				continue;
+				break;
+		}
+	}
+	return -1;
+	/*
+
+	cout << Button_GetState(hGrpButtons) << ". ";
+	cout << Button_GetState(hGrpButtons2) << ". ";
+	cout << Button_GetState(hGrpButtons3) << ". ";
+	hGrpButtonsSymmety[0]*/
+}
 
 
 void changeGuiMode(HWND hwnd, int presentMode, int newMode)
@@ -420,19 +448,28 @@ void changeGuiMode(HWND hwnd, int presentMode, int newMode)
         createButton(hwnd, "Next >>", 350, 100, 100, 24, IDC_NEXT_BUTTON);
 
 
-		HWND hGrpButtons = CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON","Symmetrymode:", 
-		                    WS_VISIBLE | WS_CHILD|BS_GROUPBOX,  // Styles 
-		                    10,450,350,100, hwnd, NULL, GetModuleHandle(NULL), NULL);
+		/*hGrpButtons = CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON","Symmetrymode:", 
+		                    WS_VISIBLE | WS_CHILD | BS_GROUPBOX,  // Styles 
+		                    10,450,350,100, hwnd, (HMENU)1230, GetModuleHandle(NULL), NULL);
 		CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON", "Tetrahedral", 
-		                    WS_VISIBLE | WS_CHILD|BS_AUTORADIOBUTTON,  // Styles 
+		                    WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,  // Styles 
 		                    10,20,300,20, hGrpButtons, (HMENU)1231, GetModuleHandle(NULL), NULL);
 		CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON","Octahedral", 
-		                    WS_VISIBLE | WS_CHILD|BS_AUTORADIOBUTTON,  // Styles 
+		                    WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,  // Styles 
 		                    10,45,300,20, hGrpButtons, (HMENU)1232, GetModuleHandle(NULL), NULL);
-		CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON", "Icosahedral", 
-		                    WS_VISIBLE | WS_CHILD|BS_AUTORADIOBUTTON,  // Styles 
-		                    10,70,300,20, hGrpButtons, (HMENU)1233, GetModuleHandle(NULL), NULL);
-		
+		hGrpButtons2 = CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON", "Icosahedral", 
+		                    WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,  // Styles 
+		                    10,70,300,20, hGrpButtons, (HMENU)1233, GetModuleHandle(NULL), NULL);*/
+
+		hGrpButtonsSymmetry[0] = CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON", "Tetrahedral", 
+		                    WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,  // Styles 
+		                    20,470,300,20, hwnd, (HMENU)1231, GetModuleHandle(NULL), NULL);
+		hGrpButtonsSymmetry[1] = CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON","Octahedral", 
+		                    WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,  // Styles 
+		                    20,495,300,20, hwnd, (HMENU)1232, GetModuleHandle(NULL), NULL);
+		hGrpButtonsSymmetry[2] = CreateWindowEx(WS_EX_WINDOWEDGE, "BUTTON", "Icosahedral", 
+		                    WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,  // Styles 
+		                    20,520,300,20, hwnd, (HMENU)1233, GetModuleHandle(NULL), NULL);
 
 
 
@@ -451,10 +488,22 @@ void try1()
 	int itemCount = ListView_GetItemCount(hwndVertexListView);
 	cout << "item Count: " << itemCount << endl;
 
-	//VOID ListView_SetItemText(HWND hwnd,int i,int iSubItem,LPCTSTR pszText);
 	ListView_GetItemText(hwndVertexListView, 1, 1, texten, 100);
 	cout << "texten: " << texten << endl;
 
+	//int htjena7 = Button_GetState(hGrpButtons);// == BST_CHECKED
+	
+		/*cout << Button_GetState(hGrpButtons) << ". ";
+		cout << Button_GetState(hGrpButtons2) << ". ";
+		cout << Button_GetState(hGrpButtons3) << ". ";*/
+	/*UINT tjena = IsDlgButtonChecked(hGrpButtons, i);
+	cout << ". " << tjena;
+	tjena = IsDlgButtonChecked(hGrpButtons2, i);
+	cout << ". " << tjena;
+	tjena = IsDlgButtonChecked(hGrpButtons3, i);
+	cout << ". " << tjena;
+	}
+	cout << endl;*/
 }
 
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ff485960(v=vs.85).aspx 

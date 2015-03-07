@@ -18,6 +18,9 @@ namespace Graph2D {
 	bool edgePointActive = false;
 	bool vertexPointActive = false;
 
+
+	int symmetryType = 0;
+
 	int mouseX = -100;
 	int mouseY = -100;
 

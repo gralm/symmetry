@@ -9,6 +9,9 @@
 #include <list>
 #include <cstring>
 #include <commctrl.h>		// WC_LISTVIEW is defined here
+#include <Winuser.h>
+#include <winuser.h>
+#include <Windowsx.h>
 
 
 
@@ -51,6 +54,8 @@ void changeGuiMode(HWND hwnd, int presentMode, int newMode);
 void setItemInListView(int listViewType, std::list<std::string> &cellValue);
 void addItemInListView(HWND hwndObject, int rowId, std::list<std::string> &cellValue);
 void try1();
+
+int getSymmetryValue();
 
 std::list<std::string> stringSplit(const char *str, int len, char splitChar);
 std::list<std::string> stringSplit(std::string str, char splitChar);
