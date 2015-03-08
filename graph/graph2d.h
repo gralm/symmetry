@@ -27,6 +27,8 @@
 #define TAN60			1.73205080756887
 
 
+
+
 namespace Graph2D {
 
 	extern const unsigned char 	SP;		// positiv rotation i triangeln
@@ -163,7 +165,23 @@ namespace Graph2D {
 	void test();
 
 }
+
+
+class SymmetryObject 
+{
+protected:
+	std::vector<VEC> V;
+	std::vector<Graph2D::edge> E;
+	std::vector<Graph2D::face> F;
+
+public:
+
+};	
+
+
 #endif
+
+
 
 
 // todo
