@@ -7,7 +7,7 @@ using namespace std;
 
 	//std::list<TYP> R;
 
-namespace Graph2D {
+//namespace Graph2D {
 
 
 		// Root orientation
@@ -258,5 +258,5 @@ namespace Graph2D {
 		// FP VN FN = FP FP FN VN FN = 					FN VP
 		// FN VP FP = FN VP FP VP VN = FN FN VN = 		FP VN
 		// FN VN FP = FN VN FP FP FN = FN VN FN FN = 	VP FN
-}
+
 

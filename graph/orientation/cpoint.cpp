@@ -4,12 +4,12 @@ using namespace std;
 
 
 
-namespace Graph2D {
+//namespace Graph2D {
 
 
-	const VEC vertexCenteredPoint(.0, .0);
-	const VEC edgeCenteredPoint(.25, SIN60*.5);
-	const VEC faceCenteredPoint(.5, .25/COS30);
+	const VEC Graph2D::vertexCenteredPoint = VEC(.0, .0);
+	const VEC Graph2D::edgeCenteredPoint = VEC(.25, SIN60*.5);
+	const VEC Graph2D::faceCenteredPoint = VEC(.5, .25/COS30);
 
 	VEC Point::getpoint() const
 	{
@@ -18,13 +18,13 @@ namespace Graph2D {
 			switch (index)
 			{
 				case VERTEX_CENTERED:
-					rootpoint_ = vertexCenteredPoint;
+					rootpoint_ = Graph2D::vertexCenteredPoint;
 					break;
 				case EDGE_CENTERED:
-					rootpoint_ = edgeCenteredPoint;
+					rootpoint_ = Graph2D::edgeCenteredPoint;
 					break;
 				case FACE_CENTERED:
-					rootpoint_ = faceCenteredPoint;
+					rootpoint_ = Graph2D::faceCenteredPoint;
 					break;
 				default:
 					cout << "it became default o det ska det inte" << endl;
@@ -194,5 +194,3 @@ namespace Graph2D {
 
 		return (subPfx.getSize() == 0);
 	}
-
-}

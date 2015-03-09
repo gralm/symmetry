@@ -51,6 +51,12 @@ git push origin master
 
 git push -f origin branch
 
+	för att spara på annan remote branch som finns på github:
+git push origin master:SymmetryObject
+git remote -v visar fortfarande usrpungsbranchen.
+och ditt lokala branchnamn kan också fortfarande vara ursprungsbranchen master.
+
+
 git status
 git ls-files
 
@@ -58,3 +64,7 @@ git ls-files
 
 ???
 [23:20:36] Anders: git checkout master; git merge subdivision;
+
+
+
+make > hi.txt 2>&1

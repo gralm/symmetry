@@ -3,7 +3,7 @@
 using namespace std;
 
 
-namespace Graph2D {
+//namespace Graph2D {
 
 	bool definedVec(const VEC A)
 	{
@@ -98,7 +98,6 @@ namespace Graph2D {
 				break;
 		}
 	}
-}
 /*
 	Icosaedral symmetri:
 	VP X0 = X1

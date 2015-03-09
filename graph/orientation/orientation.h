@@ -49,58 +49,188 @@
 		// FN VP FP = FN VP FP VP VN = FN FN VN = 		FP VN
 		// FN VN FP = FN VN FP FP FN = FN VN FN FN = 	VP FN
 
-namespace Graph2D {
+//namespace Graph2D {
 
-	struct Edge;
+struct Edge;
 
-	class Face;
+class Face;
 
-	class face;
+class face;
 
-	struct edge;
+struct edge;
 
 
-	bool definedVec(VEC x);
 
+class Prefix {
+public:
+	std::list<TYP> R;
+	
+	Prefix();
+
+	int findInList();
+	void simplify();
+	void print() const;
+	bool rotate(TYP r);
+	bool rotate(const Prefix &r);
+	int getSize();
+	Prefix getInverse() const;
+
+	TYP operator[](int i);
+	Prefix operator*(const Prefix &A) const;
+
+	Prefix difference(Prefix A);
+	std::string toString() const;
+};
+
+
+
+
+//struct Point;
+struct Point {
+	Prefix Pfx;
+	int index;
+
+	Point();
+	Point(Prefix Pfx_, int index_);
+	VEC getpoint() const;
+	void print() const;
+	std::string toString() const ;
+	bool equalTo(Point &A);
+};
+
+
+bool definedVec(VEC x);
+
+/*
 	extern const VEC vertexCenteredPoint;//(.0, .0);
 	extern const VEC edgeCenteredPoint;//(.25, SIN60*.5);
 	extern const VEC faceCenteredPoint;//(.5, .25/COS30);
+*/
 
 
-	class Prefix {
-	public:
-		std::list<TYP> R;
-		
-		Prefix();
 
-		int findInList();
-		void simplify();
-		void print() const;
-		bool rotate(TYP r);
-		bool rotate(const Prefix &r);
-		int getSize();
-		Prefix getInverse() const;
+//struct edge;
+struct Edge {
+	Prefix Pfx;
+	int index;
 
-		TYP operator[](int i);
-		Prefix operator*(const Prefix &A) const;
+	Edge() {}
+	Edge(Prefix Pfx_, int index_) {Pfx = Pfx_; index = index_;}
+	void print() const;
+	bool isDefined() const;
+	std::string toString() const;
+};
 
-		Prefix difference(Prefix A);
-		std::string toString() const;
-	};
+class Face {
+	Prefix P;
+	int fr;
+	int mode;
+};
+
+class face {
+public:
+	int fr;
+	int edges;
+	int type;
+
+	face();
+	face(int fr_, int edges_, int type_);
+
+	void print();
+
+};
+
+struct edge {
+	Point fr;
+	Point to;
+
+	Edge next;
+	Edge prev;
+	Edge oppo;
+
+	void print() const;
+	bool isOppositeOf(const edge &e, Prefix *pfx);	// returns true if it is opposite. If pfx != null, pfx
+};
+
+class Graph2D {
+public:
+
+	static const unsigned char 	SP;		// positiv rotation i triangeln
+	static const unsigned char 	SN;		// negativ rotation i triangeln
+	static const unsigned char 	RP;		// positiv rotation till nästa triangel
+	static const unsigned char 	RN;		// negativ rotation tlil föregående triangel
+
+	//class point;
+//	struct edge;
+
+	static const VEC vertexCenteredPoint;//(.0, .0);
+	static const VEC edgeCenteredPoint;//(.25, SIN60*.5);
+	static const VEC faceCenteredPoint;//(.5, .25/COS30);
+
+	//class face;
+
+	std::vector<VEC> V;
+	std::vector<edge> E;
+	std::vector<face> F;
 
 
-	//struct Point;
-	struct Point {
-		Prefix Pfx;
-		int index;
+	//extern prefix preE_ToBe;
+	static std::vector<edge> E_ToBe;
 
-		Point();
-		Point(Prefix Pfx_, int index_);
-		VEC getpoint() const;
-		void print() const;
-		std::string toString() const ;
-		bool equalTo(Point &A);
-	};
+		// mode = 0:	Skapa Vertex
+		// mode = 1:	Skapa Edges -> Faces
+		// mode = 2:	Val av symmetri
+		// mode = 3:	Välj energinivåer för relax 1.
+		// mode = 4:	Kör relax 1.
+		// mode = 5:	Välj energinivåer för relax 2.
+		// mode = 6:	Kör relax 2.
+		// mode = 7:	Resultat och Spara.
+
+
+
+////////////////////////////////////
+		// AB är koordinater på skärmen, pixelposition
+	VEC fromABtoXY(int x, int y);
+		//XY är transformerade koordinater, edgelängden = 1.0
+	void fromXYtoAB(VEC XY, int *ABx, int *ABy);
+		// returnerar 
+		// 0 om det är felaktigt
+		// 1 om det är ok men icke sluten
+		// 2 om face är ok.
+	int checkE_ToBe();		// returnerar true om face är slutet.
+	int getEnclosedPoints(VEC *A, std::list<Point> &PntList);
+	bool addFaceToBe(int sluten);
+	int mouseOverIndex(VEC co_);
+	// returns -1 if over none, radius = pixel-radius
+	Point mouseOverPoint(VEC co_);
+	Prefix getPrefix(VEC coord);
+	VEC getRootpoint(VEC coord);
+	void setMousePosition(int x, int y);
+	void mouseClick(int x, int y);
+	int insertVertex(VEC coord_);
+	void insertLine(int x, int y);
+	void drawPoint(VEC _P);
+	void drawCircle(VEC _P, bool filled);
+	void drawBrade();
+	void drawedge(edge &e);
+	void drawfaces();
+	void getAllFromRoots(const VEC vRoot_, VEC *vAll_);
+	void setColorOfVertex(int vert_, TYP str_);
+	int setMode(int newModeVal);
+	void display();
+
+	void printAll();
+	void drawFace(face &F_);
+	void drawFaces();
+	void setColorOfVertex(int vert_, double str_);
+
+	static void test();
+
+};
+
+
+
+
 	extern std::vector<VEC> V;
 	extern std::vector<edge> E;
 	extern std::vector<face> F;
@@ -124,6 +254,6 @@ namespace Graph2D {
 
 	void rotationPrint(TYP);
 
-}
+//}
 
 #endif

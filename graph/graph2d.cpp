@@ -3,7 +3,26 @@
 
 using namespace std;
 
-namespace Graph2D {
+/*
+extern bool facePointActive;
+extern bool edgePointActive;
+extern bool vertexPointActive;
+
+extern int scrWidth;
+extern int scrHeight;
+
+extern double xMin;
+extern double xMax;
+extern double yMin;
+extern double yMax;
+
+extern int mouseX;
+extern int mouseY;
+
+extern int indexChosen;
+extern int indexMouseOver;
+*/
+
 
 	int mode = 0;
 
@@ -18,18 +37,23 @@ namespace Graph2D {
 	bool edgePointActive = false;
 	bool vertexPointActive = false;
 
+	const unsigned char 	SP = 2;		// positiv rotation i triangeln
+	const unsigned char 	SN = 3;		// negativ rotation i triangeln
+	const unsigned char 	RP = 4;		// positiv rotation till nästa triangel
+	const unsigned char 	RN = 5;		// negativ rotation tlil föregående triangel
+
 
 	int symmetryType = 0;
 
 	int mouseX = -100;
 	int mouseY = -100;
 
-	std::vector<VEC> V;
-	std::vector<edge> E;
-	std::vector<face> F;
+	//std::vector<VEC> Graph2D::V;
+	//std::vector<edge> Graph2D::E;
+	//std::vector<face> Graph2D::F;
 
-	Prefix preE_ToBe;
-	vector<edge> E_ToBe;
+	//Prefix Graph2D::preE_ToBe;
+	vector<edge> Graph2D::E_ToBe;
 
 	
 	int indexChosen = -1;
@@ -254,8 +278,10 @@ namespace Graph2D {
 	}
 
 
+
+
 		// AB är koordinater på skärmen, pixelposition
-	VEC fromABtoXY(int x, int y)
+	VEC Graph2D::fromABtoXY(int x, int y)
 	{
 		return VEC(
 			xMin + x*(xMax - xMin)/scrWidth,
@@ -264,7 +290,7 @@ namespace Graph2D {
 	}
 
 		//XY är transformerade koordinater, edgelängden = 1.0
-	void fromXYtoAB(VEC XY, int *ABx, int *ABy)
+	void Graph2D::fromXYtoAB(VEC XY, int *ABx, int *ABy)
 	{
 		*ABx = scrWidth*(XY.x + 0.5)*2.0/3.0;
 		*ABy = scrHeight*(XY.y + 1.0)*COS30;
@@ -278,7 +304,7 @@ namespace Graph2D {
 		// 0 om det är felaktigt
 		// 1 om det är ok men icke sluten
 		// 2 om face är ok.
-	int checkE_ToBe()
+	int Graph2D::checkE_ToBe()
 	{
 
 		int siz = E_ToBe.size();
@@ -589,7 +615,7 @@ namespace Graph2D {
 	}
 
 		// A måste vara en array med tre element. I PntList appendas alla inneslutna Points
-	int getEnclosedPoints(VEC *A, list<Point> &PntList)
+	int Graph2D::getEnclosedPoints(VEC *A, list<Point> &PntList)
 	{
 		Prefix pfx[3];
 		vector<Prefix> relPfxToControl;
@@ -652,7 +678,7 @@ namespace Graph2D {
 	}
 
 
-	int mouseOverIndex(VEC co_)
+	int Graph2D::mouseOverIndex(VEC co_)
 	{
 		double radius2 = 20.0 / (scrHeight + scrHeight);
 		radius2 *= radius2;
@@ -677,7 +703,7 @@ namespace Graph2D {
 
 	// returns -1 if over none, radius = pixel-radius
 
-	Point mouseOverPoint(VEC co_)
+	Point Graph2D::mouseOverPoint(VEC co_)
 	{
 			
 		Point P_;
@@ -765,7 +791,7 @@ namespace Graph2D {
 	}
 
 
-	Prefix getPrefix(VEC coord)
+	Prefix Graph2D::getPrefix(VEC coord)
 	{
 		Prefix pfx;
 		Orientation ori;
@@ -806,7 +832,7 @@ namespace Graph2D {
 		return pfx;		
 	}
 
-	VEC getRootpoint(VEC coord)
+	VEC Graph2D::getRootpoint(VEC coord)
 	{
 		Prefix pfx = getPrefix(coord);
 		Orientation ori;
@@ -820,14 +846,14 @@ namespace Graph2D {
 		//return asdf;
 	}
 
-	void setMousePosition(int x, int y)
+	void Graph2D::setMousePosition(int x, int y)
 	{
 		mouseX = x;
 		mouseY = y;
 		indexMouseOver = mouseOverIndex(getRootpoint(fromABtoXY(x, y)));
 	}
 
-	void mouseClick(int x, int y)
+	void Graph2D::mouseClick(int x, int y)
 	{
 		cout << "here klickas it: " << fromABtoXY(x, y) << endl;
 
@@ -962,7 +988,7 @@ namespace Graph2D {
 		}
 	}
 
-	void printAll()
+	void Graph2D::printAll()
 	{
 		cout << "\t" << "Edges" << endl;
 		for (int i=0; i<E.size(); i++)
@@ -981,7 +1007,7 @@ namespace Graph2D {
 		}
 	}
 
-	bool addFaceToBe(int sluten)
+	bool Graph2D::addFaceToBe(int sluten)
 	{
 		cout << "i addfacetobe so is sluten = " << sluten << endl;
 				//vector<edge>::iterator ite = E_ToBe.end();
@@ -1154,7 +1180,7 @@ namespace Graph2D {
 		printAll();
 	}
 
-	int insertVertex(VEC coord_)
+	int Graph2D::insertVertex(VEC coord_)
 	{
 		int index_ = V.size();
 		V.push_back(coord_);
@@ -1164,7 +1190,7 @@ namespace Graph2D {
 		return index_;
 	}
 
-	void insertLine(int x, int y)
+	void Graph2D::insertLine(int x, int y)
 	{
 		static edge e_[10];
 		static int numOfEdges_ = 0;
@@ -1172,7 +1198,7 @@ namespace Graph2D {
     	coord_ = getRootpoint(coord_);
 	}
 
-	void drawPoint(VEC _P)
+	void Graph2D::drawPoint(VEC _P)
 	{
 		int siz_ = 10;	// 10 pixlar hög och 10 pixlar bred punkt
 		double delta_ = siz_ *(xMax - xMin)*0.5/scrWidth;
@@ -1190,7 +1216,7 @@ namespace Graph2D {
 		glEnd();
 	}
 
-	void drawCircle(VEC _P, bool filled)	// egentligen en hexagon
+	void Graph2D::drawCircle(VEC _P, bool filled)	// egentligen en hexagon
 	{
 		int siz_ = 10;	// 10 pixlar hög och 10 pixlar bred punkt
 		double delta_ = siz_ *(xMax - xMin)*0.5/scrWidth;
@@ -1210,7 +1236,7 @@ namespace Graph2D {
 		glEnd();
 	}
 
-	void drawBrade()
+	void Graph2D::drawBrade()
 	{
 		glColor3f(.2,.2,.2);
 		glBegin(GL_LINE_STRIP);
@@ -1228,7 +1254,7 @@ namespace Graph2D {
 		glEnd();	
 	}
 
-	void drawedge(edge &e)
+	void Graph2D::drawedge(edge &e)
 	{
 		VEC fr[9];
 		VEC to[9];
@@ -1254,7 +1280,7 @@ namespace Graph2D {
 	}
 
 
-	void drawFace(face &F_)
+	void Graph2D::drawFace(face &F_)
 	{
 		static VEC V_[200];
 		int fVertices = F_.edges;
@@ -1329,13 +1355,13 @@ namespace Graph2D {
 		glEnd();				
 	}
 
-	void drawFaces() {
+	void Graph2D::drawFaces() {
 		for (int f=0; f<F.size(); f++)
 			drawFace(F[f]);
 	}
 
 
-	void getAllFromRoots(const VEC vRoot_, VEC *vAll_)
+	void Graph2D::getAllFromRoots(const VEC vRoot_, VEC *vAll_)
 	{
 		//if (vRoot_.y <= -100)
 		//if (!vRoot_.defined())
@@ -1362,7 +1388,7 @@ namespace Graph2D {
 		}
 	}	
 
-	void setColorOfVertex(int vert_, double str_)
+	void Graph2D::setColorOfVertex(int vert_, double str_)
 	{
 		    // vald, över eller inte = vit
 		    // över, men icke vald = turkos
@@ -1378,7 +1404,7 @@ namespace Graph2D {
 
 		
 
-	void display()
+	void Graph2D::display()
 	{
 		VEC vAll_[9];
 
@@ -1472,7 +1498,7 @@ namespace Graph2D {
 	    glutSwapBuffers();
 	}
  
-	int setMode(int newModeVal)		// returnerar det satta värdet
+	int Graph2D::setMode(int newModeVal)		// returnerar det satta värdet
 	{
 		switch(newModeVal) {
 			case 0: {
@@ -1521,7 +1547,7 @@ namespace Graph2D {
 	}
 
 
-	void test()
+	void Graph2D::test()
 	{
 
 		Prefix diff;
@@ -1559,4 +1585,4 @@ namespace Graph2D {
 			cout << "not opposite" << endl;
 		}
 	}
-}
+
