@@ -3,7 +3,7 @@ INC_DIR = "C:\MinGW\freeglut\include"
 VPATH = object/ bitmap/ graphic/ tm/
 
 OBJPATH = obj/
-OBJFLAGS = -c -pthread -o
+OBJFLAGS = -c -pthread -Wall -o
 EXEFILE = symmetry
 TESTFILE = testfile.exe
 

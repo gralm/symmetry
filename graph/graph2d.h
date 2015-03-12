@@ -74,19 +74,22 @@ void mouseClick(int x, int y);
 
 
 
-// todo
+/* todo
 
-/*
-1.	Byt namn på RP,RN,SP,SN till VCPR VCNR, FCPR, FCNR
-	= Vertice/Face-Centered-Positive/Negative-Rotation
+orientation/		symmetryObject/symmetryBaseClasses/
+	cpoint.cpp			point.cpp
+	prefix.cpp			prefix.cpp
+	orientation.h 		symmetryBaseClasses.h
+	orientetaion.cpp	orientation.cpp
 
-2. 	
+					symmetryObject/
+class.Graph2D			symmetricObject.cpp
+						symmetricGraphicalObject.cpp
+						symmetricSimulationObject.cpp
 
-3.	Dela upp struktarna i olika filer så att graph2d blir
-	något mer läsbar.
 
-4.	
+
+
+
+
 */
-
-
-
