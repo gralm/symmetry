@@ -11,42 +11,8 @@ using namespace std;
 	const VEC Graph2D::edgeCenteredPoint = VEC(.25, SIN60*.5);
 	const VEC Graph2D::faceCenteredPoint = VEC(.5, .25/COS30);
 
-	VEC Point::getpoint() const
-	{
-		VEC rootpoint_;
-		if (index < 0) {
-			switch (index)
-			{
-				case VERTEX_CENTERED:
-					rootpoint_ = Graph2D::vertexCenteredPoint;
-					break;
-				case EDGE_CENTERED:
-					rootpoint_ = Graph2D::edgeCenteredPoint;
-					break;
-				case FACE_CENTERED:
-					rootpoint_ = Graph2D::faceCenteredPoint;
-					break;
-				default:
-					cout << "it became default o det ska det inte" << endl;
-					rootpoint_ = VEC(-100, -100);
-					break;
-			}
-		} else if (index >= V.size()) {
-			//cout << "hit skulle den ju inte komma ju ju ju " << endl;
-			return VEC(-100, -100);
-		} else {
-			rootpoint_ = V[index];
-		}
-
-		Orientation ori_;
-		VEC rotatedpoint_ = ori_.getOCFromWC(rootpoint_);
-		ori_.rotate(Pfx);
-		rotatedpoint_ = ori_.getWCFromOC(rotatedpoint_);
-		return rotatedpoint_;
-		
-		// niclas nosch 11-12
-		// erik är från combitech
-	}
+/*
+*/
 
 	void Point::print() const
 	{
@@ -71,7 +37,7 @@ using namespace std;
 		}
 		cout << "), ";
 		Pfx.print();
-		cout << ", " << getpoint();
+		//cout << ", " << getpoint();
 	}
 
 	string Point::toString() const 

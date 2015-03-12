@@ -28,6 +28,7 @@
 
 
 
+extern Graph2D symmetryObject;
 
 extern bool facePointActive;
 extern bool edgePointActive;
@@ -55,9 +56,18 @@ extern int mode;
 extern int symmetryType;
 
 
+int setMode(int newModeVal);
+void setMousePosition(int x, int y);
+VEC getRootpoint(VEC coord);
+VEC fromABtoXY(int x, int y);
+	//XY är transformerade koordinater, edgelängden = 1.0
+void fromXYtoAB(VEC XY, int *ABx, int *ABy);
 
 
 
+
+Prefix getPrefix(VEC coord);
+void mouseClick(int x, int y);
 
 #endif
 

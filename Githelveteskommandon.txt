@@ -53,6 +53,7 @@ git push -f origin branch
 
 	för att spara på annan remote branch som finns på github:
 git push origin master:SymmetryObject
+git pull origin SymmetryObject		här använder man INTE master av någon outgrundlig anledning som jag inte 										fattar, men det är bara att googla och kopiera.
 git remote -v visar fortfarande usrpungsbranchen.
 och ditt lokala branchnamn kan också fortfarande vara ursprungsbranchen master.
 

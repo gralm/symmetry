@@ -61,14 +61,14 @@ void checkThreads()
         case COMM_MSGTYP_CHOOSE_VERTEX:{
             int *val = (int*)(msg.data);
             cout << "nu ska en vertex choooosas: " << *val << endl;
-            Graph2D::indexChosen = *val;
+            indexChosen = *val;
             delete[] val;
             break;}
         case COMM_MSGTYP_SET_MODE: {
             int *val = (int*)(msg.data);
             cout << "nu choooosas ett nytt val i glutThread.cpp: " << *val << endl;
             //Graph2D::mode = *val;
-            int newVal = Graph2D::setMode(*val);
+            int newVal = setMode(*val);
             //if (newVal != *val) // gick icke att sätta det värdet, därför måste allt ställas tillbaka
             //{
             CommMsg changeMode(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_SET_MODE, 0, sizeof(newVal), (char*)&newVal);
@@ -82,7 +82,7 @@ void checkThreads()
          
             int *val = (int*)(msg.data);
             cout << "nu is symmetry valt: " << *val << endl;
-            Graph2D::symmetryType = *val;
+            symmetryType = *val;
             delete[] val;
             break;
         }
@@ -163,7 +163,7 @@ void mouseMotionFunc(int x, int y)
 
 void mousePassiveMotionFunc(int x, int y)
 {
-    Graph2D::setMousePosition(x, y);
+    setMousePosition(x, y);
 
 }
 
@@ -173,7 +173,7 @@ void mouseFunc(int button, int state, int x, int y)
     switch (button) {
         case GLUT_LEFT_BUTTON:
             if (state == GLUT_UP){
-                Graph2D::mouseClick(x, y);
+                mouseClick(x, y);
             }
             cout << "Left button \t";
             break;
@@ -227,9 +227,14 @@ void keyboardFunc(unsigned char key, int x, int y)
 
 void reshapeFunc(int width, int height)
 {
-    Graph2D::scrWidth = width;
-    Graph2D::scrHeight = height;
+    scrWidth = width;
+    scrHeight = height;
     glViewport(0,0,width,height);
+}
+
+void display()
+{
+    symmetryObject.display();
 }
 
 void *glutThreadFunc(void *threadid)
@@ -242,8 +247,8 @@ void *glutThreadFunc(void *threadid)
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(600, 600);
-    Graph2D::scrWidth = 300;
-    Graph2D::scrHeight = 300;
+    scrWidth = 300;
+    scrHeight = 300;
 
     glutInitWindowPosition(600, 100);
     glutCreateWindow("Hej");
@@ -262,7 +267,7 @@ void *glutThreadFunc(void *threadid)
     init();
     glutIdleFunc(idleFunc);
     //glutDisplayFunc(display);
-    glutDisplayFunc(Graph2D::display);
+    glutDisplayFunc(display);
     cout << "before main loop" << endl;
     glutMainLoop();
     cout << "den lyckades avsluta glutMainLoop()" << endl;

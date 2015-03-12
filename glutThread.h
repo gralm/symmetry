@@ -21,3 +21,4 @@
 
 //void *waitar(void *threadid);
 void *glutThreadFunc(void *threadid);
+

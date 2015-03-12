@@ -24,6 +24,8 @@ extern int indexMouseOver;
 */
 
 
+Graph2D symmetryObject;
+
 	int mode = 0;
 
 	double xMin = 0;
@@ -59,6 +61,30 @@ extern int indexMouseOver;
 	int indexChosen = -1;
 	int indexMouseOver = -1;
 
+
+	void setMousePosition(int x, int y)
+	{
+		mouseX = x;
+		mouseY = y;
+		indexMouseOver = symmetryObject.mouseOverIndex(getRootpoint(fromABtoXY(x, y)));
+	}
+
+
+		// AB är koordinater på skärmen, pixelposition
+	VEC fromABtoXY(int x, int y)
+	{
+		return VEC(
+			xMin + x*(xMax - xMin)/scrWidth,
+			yMax - y*(yMax - yMin)/scrHeight);
+		
+	}
+
+		//XY är transformerade koordinater, edgelängden = 1.0
+	void fromXYtoAB(VEC XY, int *ABx, int *ABy)
+	{
+		*ABx = scrWidth*(XY.x + 0.5)*2.0/3.0;
+		*ABy = scrHeight*(XY.y + 1.0)*COS30;
+	}
 
 
 	void Edge::print() const
@@ -280,22 +306,10 @@ extern int indexMouseOver;
 
 
 
-		// AB är koordinater på skärmen, pixelposition
-	VEC Graph2D::fromABtoXY(int x, int y)
-	{
-		return VEC(
-			xMin + x*(xMax - xMin)/scrWidth,
-			yMax - y*(yMax - yMin)/scrHeight);
-		
-	}
+Graph2D::Graph2D()
+{
 
-		//XY är transformerade koordinater, edgelängden = 1.0
-	void Graph2D::fromXYtoAB(VEC XY, int *ABx, int *ABy)
-	{
-		*ABx = scrWidth*(XY.x + 0.5)*2.0/3.0;
-		*ABy = scrHeight*(XY.y + 1.0)*COS30;
-	}
-
+}
 
 
 		// 	detta är en fullständig test som kollar inte 
@@ -323,14 +337,15 @@ extern int indexMouseOver;
 
 
 			// kolla om den roterar i positiv z-riktning
-		VEC fr_ = E_ToBe[0].fr.getpoint();
-		VEC to_ = E_ToBe[0].to.getpoint();
+		VEC fr_ = getVec(E_ToBe[0].fr);
+		//VEC fr_ = E_ToBe[0].fr.getpoint();
+		VEC to_ = getVec(E_ToBe[0].to);
 		VEC edge0_ = to_ - fr_;
 		VEC edge1_;
 		for (int i=1; i<siz-1; i++)
 		{
 			fr_ = to_;
-			to_ = E_ToBe[i].to.getpoint();
+			to_ = getVec(E_ToBe[i].to);
 			edge1_ = to_ - fr_;
 
 			if ((~edge0_ * edge1_) < 0.0)
@@ -352,10 +367,10 @@ extern int indexMouseOver;
 		{
 			for (int j=0; j<i-1; j++)
 			{
-				VEC Afr_ = E_ToBe[j].fr.getpoint();
-				VEC Ato_ = E_ToBe[j].to.getpoint();
-				VEC Bfr_ = E_ToBe[i].fr.getpoint();
-				VEC Bto_ = E_ToBe[i].to.getpoint();
+				VEC Afr_ = getVec(E_ToBe[j].fr);
+				VEC Ato_ = getVec(E_ToBe[j].to);
+				VEC Bfr_ = getVec(E_ToBe[i].fr);
+				VEC Bto_ = getVec(E_ToBe[i].to);
 				
 				VEC P_ = ~(Afr_ - Bfr_);
 				VEC Q_ = Ato_ - Afr_;
@@ -379,11 +394,11 @@ extern int indexMouseOver;
 			// kontrollera att inga Points är inkapslade av markeringen.
 		list<Point> enclosedPoints;
 		VEC A[3];
-		A[0] = E_ToBe[0].fr.getpoint();
+		A[0] = getVec(E_ToBe[0].fr);
 		for (int i=2; i<siz; i++)
 		{
-			A[1] = E_ToBe[i-1].fr.getpoint();
-			A[2] = E_ToBe[i].fr.getpoint();
+			A[1] = getVec(E_ToBe[i-1].fr);
+			A[2] = getVec(E_ToBe[i].fr);
 			getEnclosedPoints(A, enclosedPoints);
 		}
 		
@@ -432,8 +447,8 @@ extern int indexMouseOver;
 				Orientation ori;
 				ori.rotate(E_ToBe[0].fr.Pfx);
 				VEC A[3];
-				A[0] = E_ToBe[0].fr.getpoint();
-				A[1] = E_ToBe[siz-1].fr.getpoint();
+				A[0] = getVec(E_ToBe[0].fr);
+				A[1] = getVec(E_ToBe[siz-1].fr);
 				A[2] = ori.getWCFromOC(VEC(0,0));
 				list<Point> enclosedPoints;
 				getEnclosedPoints(A, enclosedPoints);
@@ -461,7 +476,7 @@ extern int indexMouseOver;
 					// man exempelvis INTE bygger 10 edgeiga faces
 					// i ikosaeder-symmetri, utan istället bygger
 					// snorspetsiga fula trianglar. Men skyll dig själv!
-				A[0] = E_ToBe[1].fr.getpoint();
+				A[0] = getVec(E_ToBe[1].fr);
 				A[2] = ori.getOCFromWC(A[0]);
 				ori.rotate(VP);
 				A[2] = ori.getWCFromOC(A[2]);
@@ -490,8 +505,8 @@ extern int indexMouseOver;
 				A[2] = ori.getOCFromWC(faceCenteredPoint);
 
 				ori.rotate(E_ToBe[0].fr.Pfx);
-				A[0] = E_ToBe[0].fr.getpoint();
-				A[1] = E_ToBe[siz-1].fr.getpoint();
+				A[0] = getVec(E_ToBe[0].fr);
+				A[1] = getVec(E_ToBe[siz-1].fr);
 				A[2] = ori.getWCFromOC(A[2]);
 
 				list<Point> enclosedPoints;
@@ -523,7 +538,7 @@ extern int indexMouseOver;
 					// man exempelvis INTE bygger 10 edgeiga faces
 					// i ikosaeder-symmetri, utan istället bygger
 					// snorspetsiga fula trianglar. Men skyll dig själv!
-				A[0] = E_ToBe[1].fr.getpoint();
+				A[0] = getVec(E_ToBe[1].fr);
 				A[2] = ori.getOCFromWC(A[0]);
 				ori.rotate(FP);
 				A[2] = ori.getWCFromOC(A[2]);
@@ -575,8 +590,8 @@ extern int indexMouseOver;
 
 				for (int k=0; k<siz-1; k++)
 				{
-					A[1] = E_ToBe[k].fr.getpoint();
-					A[2] = E_ToBe[k+1].fr.getpoint();
+					A[1] = getVec(E_ToBe[k].fr);
+					A[2] = getVec(E_ToBe[k+1].fr);
 					getEnclosedPoints(A, enclosedPoints);
 				}
 
@@ -594,7 +609,7 @@ extern int indexMouseOver;
 				}
 
 					// nästa punkt i serien kommer bli A[]
-				A[0] = A[0]*2.0 - E_ToBe[1].fr.getpoint();
+				A[0] = A[0]*2.0 - getVec(E_ToBe[1].fr);
 
 
 				cout << "kille0: " << A[0] << endl;
@@ -791,7 +806,7 @@ extern int indexMouseOver;
 	}
 
 
-	Prefix Graph2D::getPrefix(VEC coord)
+	Prefix getPrefix(VEC coord)
 	{
 		Prefix pfx;
 		Orientation ori;
@@ -832,7 +847,7 @@ extern int indexMouseOver;
 		return pfx;		
 	}
 
-	VEC Graph2D::getRootpoint(VEC coord)
+	VEC getRootpoint(VEC coord)
 	{
 		Prefix pfx = getPrefix(coord);
 		Orientation ori;
@@ -846,14 +861,8 @@ extern int indexMouseOver;
 		//return asdf;
 	}
 
-	void Graph2D::setMousePosition(int x, int y)
-	{
-		mouseX = x;
-		mouseY = y;
-		indexMouseOver = mouseOverIndex(getRootpoint(fromABtoXY(x, y)));
-	}
 
-	void Graph2D::mouseClick(int x, int y)
+	void mouseClick(int x, int y)
 	{
 		cout << "here klickas it: " << fromABtoXY(x, y) << endl;
 
@@ -862,13 +871,13 @@ extern int indexMouseOver;
     		VEC coord_(fromABtoXY(x, y));
     		coord_ = getRootpoint(coord_);
 
-    		indexMouseOver = mouseOverIndex(coord_);
+    		indexMouseOver = symmetryObject.mouseOverIndex(coord_);
     		cout << "mode = 0, mouseklick: [" << coord_.x << ", " << coord_.y << "] = " << indexMouseOver << endl;
     	
 	    	if (indexMouseOver < 0) {
 	    		indexChosen = indexMouseOver;
 	    		if (indexMouseOver == -1) {
-	    			indexChosen = indexMouseOver = insertVertex(coord_);
+	    			indexChosen = indexMouseOver = symmetryObject.insertVertex(coord_);
 	    		}
 	    		int msgtyp;
 	    		switch(indexMouseOver)
@@ -876,19 +885,19 @@ extern int indexMouseOver;
 	    			case VERTEX_CENTERED:
 	    				//msgtyp = vertexPointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
 	    				msgtyp = vertexPointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_VERTEX;
-	    				coord_ = vertexCenteredPoint;
+	    				coord_ = Graph2D::vertexCenteredPoint;
 	    				vertexPointActive = true;
 	    				break;
 	    			case EDGE_CENTERED:
 						//msgtyp = edgePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
 	    				msgtyp = edgePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_VERTEX;
-	    				coord_  = edgeCenteredPoint;
+	    				coord_  = Graph2D::edgeCenteredPoint;
 	    				edgePointActive = true;
 	    				break;
 	    			case FACE_CENTERED:
 						//msgtyp = facePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
 	    				msgtyp = facePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_VERTEX;
-	    				coord_ = faceCenteredPoint;
+	    				coord_ = Graph2D::faceCenteredPoint;
 	    				facePointActive = true;
 	    				break;
 	    			default:
@@ -914,7 +923,7 @@ extern int indexMouseOver;
 			}
 		} else if (mode == 1 && indexMouseOver != -1) {
 
-			Point nyPunkt = mouseOverPoint(fromABtoXY(x, y));
+			Point nyPunkt = symmetryObject.mouseOverPoint(fromABtoXY(x, y));
 	
     		//point coord_(fromABtoXY(x, y));
     		//Point nyPunkt = getRootpoint2(coord_);
@@ -928,23 +937,23 @@ extern int indexMouseOver;
     		cout << endl;
 
 			cout << "nu startar man ritande over vertex" << endl;
-			int len = E_ToBe.size();
+			int len = symmetryObject.E_ToBe.size();
 			edge e_;
 			if (len == 0) {
 				e_.fr = nyPunkt;
 			} else {
-				E_ToBe[len-1].to = e_.fr = nyPunkt;
+				symmetryObject.E_ToBe[len-1].to = e_.fr = nyPunkt;
 			}
-			E_ToBe.push_back(e_);
-			len = E_ToBe.size();
+			symmetryObject.E_ToBe.push_back(e_);
+			len = symmetryObject.E_ToBe.size();
 			for (int i=0; i<len; i++)
 			{
 				cout << "Edge[" << i << "]" << endl;
-				E_ToBe[i].print();
+				symmetryObject.E_ToBe[i].print();
 				cout << endl;
 			}
 
-			int sluten = checkE_ToBe();
+			int sluten = symmetryObject.checkE_ToBe();
 			cout << "sluten: " << sluten << endl;
 
 			switch(sluten)
@@ -967,7 +976,7 @@ extern int indexMouseOver;
 			{
 				case 0:
 					cout << "Det bidde error nostans." << endl;
-					E_ToBe.clear();
+					symmetryObject.E_ToBe.clear();
 					break;
 				case 1:
 					cout << "Den is icke fardig just nu men on god way" << endl;
@@ -978,7 +987,7 @@ extern int indexMouseOver;
 				case FACE_CENTERED:
 					cout << "Den ska vara sluten nu" << endl;
 
-					cout << (addFaceToBe(sluten)? "gick bra att adda": "gick icke laya too");
+					cout << (symmetryObject.addFaceToBe(sluten)? "gick bra att adda": "gick icke laya too");
 					cout << endl;
 					break;
 				default:
@@ -1261,8 +1270,8 @@ extern int indexMouseOver;
 
 
 
-		getAllFromRoots(e.fr.getpoint(), fr);
-		getAllFromRoots(e.to.getpoint(), to);
+		getAllFromRoots(getVec(e.fr), fr);
+		getAllFromRoots(getVec(e.to), to);
 
 		glBegin(GL_LINES);
 
@@ -1289,9 +1298,9 @@ extern int indexMouseOver;
 		int numOfCopies = 9;
 
 		for (int v=0; v<fVertices; v++)
-			V_[numOfCopies*v] = E[F_.fr + v].fr.getpoint();
+			V_[numOfCopies*v] = getVec(E[F_.fr + v].fr);
 		
-		V_[numOfCopies*fVertices] = E[F_.fr + fVertices - 1].to.getpoint();
+		V_[numOfCopies*fVertices] = getVec(E[F_.fr + fVertices - 1].to);
 		fVertices++;
 		
 		switch(F_.type) {
@@ -1467,7 +1476,7 @@ extern int indexMouseOver;
 			glBegin(GL_LINE_STRIP);
 			for (int i=0; i<len; i++)
 			{
-				VEC p_ = E_ToBe[i].fr.getpoint();
+				VEC p_ = getVec(E_ToBe[i].fr);
 				glVertex3f(p_.x, p_.y, 0.0);
 			}
 			glVertex3f(coords_.x, coords_.y, 0.0);
@@ -1498,22 +1507,25 @@ extern int indexMouseOver;
 	    glutSwapBuffers();
 	}
  
-	int Graph2D::setMode(int newModeVal)		// returnerar det satta värdet
+	int setMode(int newModeVal)		// returnerar det satta värdet
 	{
 		switch(newModeVal) {
 			case 0: {
 				cout << "Mode = 0, skapa vertice mode" << endl;
 				break;}
 			case 1:
-				if (V.size() == 0)
+				/*if (V.size() == 0)
 				{
 					cout << "V.len = 0, kan inte ta sig till next step" << endl;
 					return mode;
-				}
+				}*/
+				cout << "Här måste tester göras för att det ska gå o släppa vidare till step 1.";
 				cout << "Mode = 1, skapa face/edges mode" << endl;
 				break;
 			case 2: {
-				if (E.size() == 0)
+
+				cout << "Här måste tester göras för att det ska gå o släppa vidare till step 2.";
+				/*if (E.size() == 0)
 				{
 					cout << "Mode cannot be 2, no edges exist." << endl;
 					return mode;
@@ -1526,7 +1538,7 @@ extern int indexMouseOver;
 						cout << "edge[" << e << "].oppo is not yet defined" << endl;
 						return mode;
 					}
-				}
+				}*/
 
 				cout << "Mode = 2, choose symmetry" << endl;
 				break;
@@ -1584,5 +1596,41 @@ extern int indexMouseOver;
 		} else {
 			cout << "not opposite" << endl;
 		}
+	}
+
+
+	VEC Graph2D::getVec(Point P_)
+	{
+		//VEC Point::getpoint() const {
+		VEC rootpoint_;
+		if (P_.index < 0) {
+			switch (P_.index)
+			{
+				case VERTEX_CENTERED:
+					rootpoint_ = vertexCenteredPoint;
+					break;
+				case EDGE_CENTERED:
+					rootpoint_ = edgeCenteredPoint;
+					break;
+				case FACE_CENTERED:
+					rootpoint_ = faceCenteredPoint;
+					break;
+				default:
+					cout << "it became default o det ska det inte" << endl;
+					rootpoint_ = VEC(-100, -100);
+					break;
+			}
+		} else if (P_.index >= V.size()) {
+			//cout << "hit skulle den ju inte komma ju ju ju " << endl;
+			return VEC(-100, -100);
+		} else {
+			rootpoint_ = V[P_.index];
+		}
+
+		Orientation ori_;
+		VEC rotatedpoint_ = ori_.getOCFromWC(rootpoint_);
+		ori_.rotate(P_.Pfx);
+		rotatedpoint_ = ori_.getWCFromOC(rotatedpoint_);
+		return rotatedpoint_;	
 	}
 

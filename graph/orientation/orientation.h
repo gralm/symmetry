@@ -92,7 +92,7 @@ struct Point {
 
 	Point();
 	Point(Prefix Pfx_, int index_);
-	VEC getpoint() const;
+	//VEC getpoint() const;
 	void print() const;
 	std::string toString() const ;
 	bool equalTo(Point &A);
@@ -174,6 +174,8 @@ public:
 	std::vector<face> F;
 
 
+	Graph2D();
+
 	//extern prefix preE_ToBe;
 	static std::vector<edge> E_ToBe;
 
@@ -190,9 +192,7 @@ public:
 
 ////////////////////////////////////
 		// AB är koordinater på skärmen, pixelposition
-	VEC fromABtoXY(int x, int y);
-		//XY är transformerade koordinater, edgelängden = 1.0
-	void fromXYtoAB(VEC XY, int *ABx, int *ABy);
+
 		// returnerar 
 		// 0 om det är felaktigt
 		// 1 om det är ok men icke sluten
@@ -203,10 +203,6 @@ public:
 	int mouseOverIndex(VEC co_);
 	// returns -1 if over none, radius = pixel-radius
 	Point mouseOverPoint(VEC co_);
-	Prefix getPrefix(VEC coord);
-	VEC getRootpoint(VEC coord);
-	void setMousePosition(int x, int y);
-	void mouseClick(int x, int y);
 	int insertVertex(VEC coord_);
 	void insertLine(int x, int y);
 	void drawPoint(VEC _P);
@@ -216,13 +212,15 @@ public:
 	void drawfaces();
 	void getAllFromRoots(const VEC vRoot_, VEC *vAll_);
 	void setColorOfVertex(int vert_, TYP str_);
-	int setMode(int newModeVal);
+
 	void display();
 
 	void printAll();
 	void drawFace(face &F_);
 	void drawFaces();
 	void setColorOfVertex(int vert_, double str_);
+
+	VEC getVec(Point P_);
 
 	static void test();
 

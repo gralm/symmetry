@@ -14,7 +14,7 @@ using namespace std;
 
 const char g_szClassName[] = "myWindowClass";
 
-int mode = 0;
+int mainMode = 0;
 
 /*
 void printFunc(const char *str, long tid)
@@ -75,7 +75,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             break; 
         case WM_CREATE: {
 
-                changeGuiMode(hwnd, -1, mode);
+                changeGuiMode(hwnd, -1, mainMode);
 
             }
             break;
@@ -132,7 +132,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                        break;}
 
                     case IDC_NEXT_BUTTON: {
-                        if (mode == 2) {
+                        if (mainMode == 2) {
                             int chosenSymmetry = getSymmetryValue();
                             cout << "chosen radiobutton: " << chosenSymmetry << endl;
                             CommMsg symmetryMsg(COMM_THREAD_MAIN, COMM_THREAD_GLUT, COMM_MSGTYP_SET_SYMMETRY_VALUE, 0, sizeof(int), (char*) &chosenSymmetry);
@@ -140,7 +140,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                         }
 
                         cout << "Det klickas på next" << endl;
-                        int newMode = mode+1;
+                        int newMode = mainMode+1;
                         CommMsg ChangeMode(COMM_THREAD_MAIN, COMM_THREAD_GLUT, COMM_MSGTYP_SET_MODE, 0, sizeof(int), (char*) &newMode);
                         commSendMsg(&ChangeMode);
                         
@@ -148,7 +148,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                     }
                     case IDC_PREV_BUTTON:{
                         cout << "Det klickas på prev" << endl;
-                        int newMode = mode-1;
+                        int newMode = mainMode-1;
                         CommMsg ChangeMode(COMM_THREAD_MAIN, COMM_THREAD_GLUT, COMM_MSGTYP_SET_MODE, 0, sizeof(int), (char*) &newMode);
                         commSendMsg(&ChangeMode);
                         break;
@@ -256,10 +256,10 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
 
                 case COMM_MSGTYP_SET_MODE: {
                     int newMode = *((int*)(msg.data));
-                    cout << "mode i GUIt = " << mode << endl;
+                    cout << "mainMode i GUIt = " << mainMode << endl;
 
-                    changeGuiMode(hwnd, mode, newMode);
-                    mode = newMode;
+                    changeGuiMode(hwnd, mainMode, newMode);
+                    mainMode = newMode;
                     
                     delete msg.data;
                     break;
