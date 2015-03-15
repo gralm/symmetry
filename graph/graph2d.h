@@ -1,7 +1,8 @@
 #ifndef GRAPHIC_HPP
 #define GRAPHIC_HPP
 
-#include "./orientation/orientation.h"
+#include "../symmetryObject/objs.h"
+#include "../publicDefines.h"
 
 #include <cmath>
 #include <iostream>
@@ -16,15 +17,6 @@
 #include <GL/glut.h>
 #include <GL/freeglut_ext.h>
 
-
-#define COS30			0.86602540378444
-#define SIN30			0.5
-#define COS60			0.5
-#define SIN60			0.86602540378444
-#define COS120			(-0.5)
-#define SIN120			0.86602540378444
-#define TAN30			0.57735026918962
-#define TAN60			1.73205080756887
 
 
 
@@ -51,6 +43,14 @@ extern int indexChosen;
 extern int indexMouseOver;
 
 
+		// mode = 0:	Skapa Vertex
+		// mode = 1:	Skapa Edges -> Faces
+		// mode = 2:	Val av symmetri
+		// mode = 3:	Välj energinivåer för relax 1.
+		// mode = 4:	Kör relax 1.
+		// mode = 5:	Välj energinivåer för relax 2.
+		// mode = 6:	Kör relax 2.
+		// mode = 7:	Resultat och Spara.
 extern int mode;
 
 extern int symmetryType;
@@ -86,10 +86,6 @@ orientation/		symmetryObject/symmetryBaseClasses/
 class.Graph2D			symmetricObject.cpp
 						symmetricGraphicalObject.cpp
 						symmetricSimulationObject.cpp
-
-
-
-
 
 
 */
