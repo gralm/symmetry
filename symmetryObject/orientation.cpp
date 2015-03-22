@@ -20,9 +20,9 @@ using namespace std;
 		F = VEC(.5, COS30/3.);
 	}
 
-	void Orientation::rotate(Prefix p_)
+	void Orientation::rotate(const Prefix &p_)
 	{
-		for (list<TYP>::iterator it = p_.R.begin(); (it != p_.R.end()); it++) 
+		for (list<TYP>::const_iterator it = p_.R.begin(); (it != p_.R.end()); it++) 
 			rotate(*it);
 	}
 

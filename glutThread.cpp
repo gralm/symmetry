@@ -1,6 +1,5 @@
 #include "glutThread.h"
-#include "comm/comm.h"
-#include "graph/graph2d.h"
+
 
 using namespace std;
 
@@ -25,7 +24,7 @@ void init(void)
     yMin = -.5;
     yMax = 1.;
 
-    Graph2D::test();
+    //Graph2D::test();
 
     glOrtho(xMin, xMax, yMin, yMax, -1.0, 1.0);
 
@@ -234,7 +233,8 @@ void reshapeFunc(int width, int height)
 
 void display()
 {
-    symmetryObject.display();
+    graphDisplay();
+    //symmetryObject.display();
 }
 
 void *glutThreadFunc(void *threadid)

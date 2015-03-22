@@ -1,8 +1,9 @@
 #ifndef GRAPHIC_HPP
 #define GRAPHIC_HPP
 
-#include "../symmetryObject/objs.h"
+
 #include "../publicDefines.h"
+#include "../symmetryObject/objs.h"
 
 #include <cmath>
 #include <iostream>
@@ -18,13 +19,26 @@
 #include <GL/freeglut_ext.h>
 
 
+class SymmetryDrawable: public Graph2D {
+public:
+	// public methods only!
+	SymmetryDrawable();
+	void drawPoint(VEC _P);
+	void drawCircle(VEC _P, bool filled);
+	void drawBrade();
+	void drawedge(edge &e);
+	void drawfaces();
+	void drawFace(face &F_);
+	void drawFaces();
+	void setColorOfVertex(int vert_, double str_);
+	void display();
+
+};
 
 
-extern Graph2D symmetryObject;
-
-extern bool facePointActive;
-extern bool edgePointActive;
-extern bool vertexPointActive;
+//extern Graph2D symmetryObject;
+extern SymmetryDrawable symmetryObject;
+//SymmetryDrawable
 
 
 extern int scrWidth;
@@ -58,16 +72,15 @@ extern int symmetryType;
 
 int setMode(int newModeVal);
 void setMousePosition(int x, int y);
-VEC getRootpoint(VEC coord);
+//VEC getRootpoint(VEC coord);
 VEC fromABtoXY(int x, int y);
 	//XY är transformerade koordinater, edgelängden = 1.0
 void fromXYtoAB(VEC XY, int *ABx, int *ABy);
+void graphDisplay();
 
-
-
-
-Prefix getPrefix(VEC coord);
 void mouseClick(int x, int y);
+
+
 
 #endif
 

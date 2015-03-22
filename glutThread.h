@@ -1,7 +1,14 @@
+#ifndef GLUTTHREAD_H
+#define GLUTTHREAD_H
+
 #include <iostream>
 #include <pthread.h>
 #include <time.h>
 #include <cmath>
+
+#include "symmetryObject/objs.h"
+#include "comm/comm.h"
+#include "graph/graph2d.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
@@ -22,3 +29,4 @@
 //void *waitar(void *threadid);
 void *glutThreadFunc(void *threadid);
 
+#endif 

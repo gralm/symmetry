@@ -6,8 +6,17 @@
 #include <iostream>
 #include <cstring>
 #include <sstream>
+#include <stdio.h>
 #include "./../tm/vector3.h"
 #include "../publicDefines.h"
+//#include "../graph/graph2d.h"
+
+
+	// de här måste förflyttas sen
+/*#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+#include <GL/freeglut_ext.h>*/
 
 /*
 #define COS30			0.86602540378444
@@ -130,6 +139,11 @@ public:
 	static const VEC edgeCenteredPoint;//(.25, SIN60*.5);
 	static const VEC faceCenteredPoint;//(.5, .25/COS30);
 
+
+	bool facePointActive;
+	bool edgePointActive;
+	bool vertexPointActive;
+
 	std::vector<VEC> V;
 	std::vector<edge> E;
 	std::vector<face> F;
@@ -150,30 +164,35 @@ public:
 	int checkE_ToBe();		// returnerar true om face är slutet.
 	int getEnclosedPoints(VEC *A, std::list<Point> &PntList);
 	bool addFaceToBe(int sluten);
-	int mouseOverIndex(VEC co_);
+	//int vecOverIndex(VEC co_, );
+
+
+
 	// returns -1 if over none, radius = pixel-radius
-	Point mouseOverPoint(VEC co_);
-	int insertVertex(VEC coord_);
-	void insertLine(int x, int y);
-	void drawPoint(VEC _P);
-	void drawCircle(VEC _P, bool filled);
-	void drawBrade();
-	void drawedge(edge &e);
-	void drawfaces();
+	Point getClosestPoint(VEC co_);
+	//Point getClosestPoint2(VEC co_);
+	int insertVertex(VEC coord_);	//vertex, vector, point, position, coordinate-> använd vettiga beteckningar 
+	//void insertLine(int x, int y);
+
 	void getAllFromRoots(const VEC vRoot_, VEC *vAll_);
-	void setColorOfVertex(int vert_, TYP str_);
+	//void setColorOfVertex(int vert_, TYP str_);
 
 	void display();
 
 	void printAll();
+	/*void drawPoint(VEC _P);
+	void drawCircle(VEC _P, bool filled);
+	void drawBrade();
+	void drawedge(edge &e);
+	void drawfaces();
 	void drawFace(face &F_);
 	void drawFaces();
-	void setColorOfVertex(int vert_, double str_);
+	void setColorOfVertex(int vert_, double str_);*/
 
 	VEC getVec(Point P_);
-
+		// ta bort detta och skapa en hel ärvd klass
+		// som testar allt senare
 	static void test();
-
 };
 
 
@@ -185,7 +204,7 @@ public:
 
 	Orientation();
 
-	void rotate(Prefix p_);
+	void rotate(const Prefix &p_);
 	void rotate(TYP);
 	VEC getOCFromWC(VEC A);		// get orientation coordinates from world coordinates
 	VEC getWCFromOC(VEC A);		// get world coordinates from orientation coordinates
@@ -196,5 +215,7 @@ public:
 };
 
 void rotationPrint(TYP);
+Prefix getPrefix(VEC coord);
+VEC getRootpoint(VEC coord);
 
 #endif
