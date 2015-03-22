@@ -330,19 +330,19 @@ void mouseClick(int x, int y)
     			case VERTEX_CENTERED:
     				//msgtyp = vertexPointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
     				msgtyp = symmetryObject.vertexPointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_VERTEX;
-    				coord_ = Graph2D::vertexCenteredPoint;
+    				coord_ = SymmetryObject::vertexCenteredPoint;
     				symmetryObject.vertexPointActive = true;
     				break;
     			case EDGE_CENTERED:
 					//msgtyp = edgePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
     				msgtyp = symmetryObject.edgePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_VERTEX;
-    				coord_  = Graph2D::edgeCenteredPoint;
+    				coord_  = SymmetryObject::edgeCenteredPoint;
     				symmetryObject.edgePointActive = true;
     				break;
     			case FACE_CENTERED:
 					//msgtyp = facePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
     				msgtyp = symmetryObject.facePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_VERTEX;
-    				coord_ = Graph2D::faceCenteredPoint;
+    				coord_ = SymmetryObject::faceCenteredPoint;
     				symmetryObject.facePointActive = true;
     				break;
     			default:

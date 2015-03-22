@@ -133,7 +133,7 @@ struct edge {
 	bool isOppositeOf(const edge &e, Prefix *pfx);	// returns true if it is opposite. If pfx != null, pfx
 };
 
-class Graph2D {
+class SymmetryObject {
 public:
 	static const VEC vertexCenteredPoint;//(.0, .0);
 	static const VEC edgeCenteredPoint;//(.25, SIN60*.5);
@@ -148,7 +148,7 @@ public:
 	std::vector<edge> E;
 	std::vector<face> F;
 
-	Graph2D();
+	SymmetryObject();
 
 	static std::vector<edge> E_ToBe;
 

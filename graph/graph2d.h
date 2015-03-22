@@ -19,7 +19,7 @@
 #include <GL/freeglut_ext.h>
 
 
-class SymmetryDrawable: public Graph2D {
+class SymmetryDrawable: public SymmetryObject {
 public:
 	// public methods only!
 	SymmetryDrawable();

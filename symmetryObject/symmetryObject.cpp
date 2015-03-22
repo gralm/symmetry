@@ -3,9 +3,9 @@
 using namespace std;
 
 
-vector<edge> Graph2D::E_ToBe;
+vector<edge> SymmetryObject::E_ToBe;
 
-Graph2D::Graph2D()
+SymmetryObject::SymmetryObject()
 {
 	facePointActive = false;
 	edgePointActive = false;
@@ -19,7 +19,7 @@ Graph2D::Graph2D()
 	// 0 om det är felaktigt
 	// 1 om det är ok men icke sluten
 	// 2 om face är ok.
-int Graph2D::checkE_ToBe()
+int SymmetryObject::checkE_ToBe()
 {
 
 	int siz = E_ToBe.size();
@@ -331,7 +331,7 @@ int Graph2D::checkE_ToBe()
 }
 
 	// A måste vara en array med tre element. I PntList appendas alla inneslutna Points
-int Graph2D::getEnclosedPoints(VEC *A, list<Point> &PntList)
+int SymmetryObject::getEnclosedPoints(VEC *A, list<Point> &PntList)
 {
 	Prefix pfx[3];
 	vector<Prefix> relPfxToControl;
@@ -395,7 +395,7 @@ int Graph2D::getEnclosedPoints(VEC *A, list<Point> &PntList)
 
 
 // gör om den här funktionen och få bort jävla r2 o trams
-Point Graph2D::getClosestPoint(VEC co_)
+Point SymmetryObject::getClosestPoint(VEC co_)
 {
 		
 	Point P_;
@@ -506,7 +506,7 @@ Point Graph2D::getClosestPoint(VEC co_)
 }
 
 
-void Graph2D::printAll()
+void SymmetryObject::printAll()
 {
 	cout << "\t" << "Edges" << endl;
 	for (int i=0; i<E.size(); i++)
@@ -525,7 +525,7 @@ void Graph2D::printAll()
 	}
 }
 
-bool Graph2D::addFaceToBe(int sluten)
+bool SymmetryObject::addFaceToBe(int sluten)
 {
 	cout << "i addfacetobe so is sluten = " << sluten << endl;
 			//vector<edge>::iterator ite = E_ToBe.end();
@@ -684,7 +684,7 @@ bool Graph2D::addFaceToBe(int sluten)
 	printAll();
 }
 
-int Graph2D::insertVertex(VEC coord_)
+int SymmetryObject::insertVertex(VEC coord_)
 {
 	int index_ = V.size();
 	V.push_back(coord_);
@@ -694,7 +694,7 @@ int Graph2D::insertVertex(VEC coord_)
 	return index_;
 }
 
-/*void Graph2D::insertLine(int x, int y)
+/*void SymmetryObject::insertLine(int x, int y)
 {
 	static edge e_[10];
 	static int numOfEdges_ = 0;
@@ -704,7 +704,7 @@ int Graph2D::insertVertex(VEC coord_)
 
 
 
-void Graph2D::getAllFromRoots(const VEC vRoot_, VEC *vAll_)
+void SymmetryObject::getAllFromRoots(const VEC vRoot_, VEC *vAll_)
 {
 	//if (vRoot_.y <= -100)
 	//if (!vRoot_.defined())
@@ -734,7 +734,7 @@ void Graph2D::getAllFromRoots(const VEC vRoot_, VEC *vAll_)
 
 	
 
-void Graph2D::test()
+void SymmetryObject::test()
 {
 
 	Prefix diff;
@@ -774,7 +774,7 @@ void Graph2D::test()
 }
 
 
-VEC Graph2D::getVec(Point P_)
+VEC SymmetryObject::getVec(Point P_)
 {
 	//VEC Point::getpoint() const {
 	VEC rootpoint_;

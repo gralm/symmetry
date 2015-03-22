@@ -2,9 +2,9 @@
 
 using namespace std;
 
-const VEC Graph2D::vertexCenteredPoint = VEC(.0, .0);
-const VEC Graph2D::edgeCenteredPoint = VEC(.25, SIN60*.5);
-const VEC Graph2D::faceCenteredPoint = VEC(.5, .25/COS30);
+const VEC SymmetryObject::vertexCenteredPoint = VEC(.0, .0);
+const VEC SymmetryObject::edgeCenteredPoint = VEC(.25, SIN60*.5);
+const VEC SymmetryObject::faceCenteredPoint = VEC(.5, .25/COS30);
 
 
 void Point::print() const
