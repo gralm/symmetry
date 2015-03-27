@@ -253,7 +253,7 @@ int SymmetryObject::checkE_ToBe()
 		}
 
 			// kolla om det är en edge-centered face
-		if (pfxDiff.getSize() == 2 && (pfxDiff[0]^pfxDiff[1] == 6))
+		if (pfxDiff.getSize() == 2 && ((pfxDiff[0]^pfxDiff[1]) == 6))
 		{
 			cout << "   *******    \n Det is en FN rotation detta :) " << endl;
 			
@@ -361,15 +361,15 @@ int SymmetryObject::getEnclosedPoints(VEC *A, list<Point> &PntList)
 	}
 
 	VEC *V_OC = new VEC[V.size()];
-	for (int j=0; j<V.size(); j++)
+	for (unsigned int j=0; j<V.size(); j++)
 		V_OC[j] = ori.getOCFromWC(V[j]);
 
 
-	for (int k=0; k<relPfxToControl.size(); k++) {
+	for (unsigned int k=0; k<relPfxToControl.size(); k++) {
 		ori.rotate(relPfxToControl[k]);
 		PointToAdd.Pfx.rotate(relPfxToControl[k]);
 
-		for (int i=0; i<V.size(); i++)
+		for (unsigned int i=0; i<V.size(); i++)
 		{
 			VEC V_WC = ori.getWCFromOC(V_OC[i]);
 
@@ -463,7 +463,7 @@ Point SymmetryObject::getClosestPoint(VEC co_)
 		}
 	}
 
-	for (int v=0; v<V.size(); v++)
+	for (unsigned int v=0; v<V.size(); v++)
 	{
 		newDistance = (V[v] - co2_) * (V[v] - co2_);
 		if (newDistance < smallestDistanceSquare)
@@ -475,7 +475,7 @@ Point SymmetryObject::getClosestPoint(VEC co_)
 	}
 
 		// här är alla V vridna med rot1
-	for (int v=0; v<V.size(); v++)
+	for (unsigned int v=0; v<V.size(); v++)
 	{
 		newDistance = (V[v] - co21_) * (V[v] - co21_);
 		if (newDistance < smallestDistanceSquare)
@@ -488,7 +488,7 @@ Point SymmetryObject::getClosestPoint(VEC co_)
 	}
 
 		// här är alla V vridna med rot2;
-	for (int v=0; v<V.size(); v++)
+	for (unsigned int v=0; v<V.size(); v++)
 	{
 		newDistance = (V[v] - co22_) * (V[v] - co22_);
 		if (newDistance < smallestDistanceSquare)
@@ -509,7 +509,7 @@ Point SymmetryObject::getClosestPoint(VEC co_)
 void SymmetryObject::printAll()
 {
 	cout << "\t" << "Edges" << endl;
-	for (int i=0; i<E.size(); i++)
+	for (unsigned int i=0; i<E.size(); i++)
 	{
 		cout << i << ":" << endl;
 		E[i].print();
@@ -517,7 +517,7 @@ void SymmetryObject::printAll()
 	}
 
 	cout << "\t" << "Faces: " << endl;
-	for (int i=0; i<F.size(); i++)
+	for (unsigned int i=0; i<F.size(); i++)
 	{
 		cout << i << ": ";
 		F[i].print();
@@ -525,9 +525,9 @@ void SymmetryObject::printAll()
 	}
 }
 
-bool SymmetryObject::addFaceToBe(int sluten)
+bool SymmetryObject::addFaceToBe(Centered sluten)
 {
-	cout << "i addfacetobe so is sluten = " << sluten << endl;
+	//cout << "i addfacetobe so is sluten = " << sluten << endl;
 			//vector<edge>::iterator ite = E_ToBe.end();
 	int sizE = E.size();
 
@@ -539,7 +539,7 @@ bool SymmetryObject::addFaceToBe(int sluten)
 	draBortPfxInv.print();
 	draBortPfxInv = draBortPfxInv.getInverse();
 
-	for (int i=0; i<E_ToBe.size()-1; i++)
+	for (unsigned int i=0; i<E_ToBe.size()-1; i++)
 	{
 		edge edgeToPushBack;
 
@@ -557,10 +557,10 @@ bool SymmetryObject::addFaceToBe(int sluten)
 
 		Prefix PfxNext;
 		Prefix PfxPrev;
-		if (sluten == 2) {
+		if (sluten == NotCentered) {
 			edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
 			edgeToPushBack.prev = Edge(PfxPrev, (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
-		} else if (sluten == VERTEX_CENTERED) {
+		} else if (sluten == VertexCentered) {
 
 			if (i==0)
 				PfxPrev.rotate(VN);
@@ -570,9 +570,9 @@ bool SymmetryObject::addFaceToBe(int sluten)
 			edgeToPushBack.prev = Edge(PfxPrev, i==0? sizE + E_ToBe.size() - 2: sizE + i - 1);
 			//edgeToPushBack.next = (i==E_ToBe.size()-2? Edge(Pfx, sizE): Edge(Prefix(), sizE + i + 1));
 			
-		} else if (sluten == EDGE_CENTERED) {
-			PfxNext;
-			PfxPrev;
+		} else if (sluten == EdgeCentered) {
+			//PfxNext;
+			//PfxPrev;
 			Prefix cpPrefixHelvete;
 
 			cpPrefixHelvete = E_ToBe[E_ToBe.size()-1].fr.Pfx;			
@@ -593,7 +593,7 @@ bool SymmetryObject::addFaceToBe(int sluten)
 
 			edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
 			edgeToPushBack.prev = Edge(PfxPrev, (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
-		} else if (sluten == FACE_CENTERED) {
+		} else if (sluten == FaceCentered) {
 			Prefix PfxNext;
 			Prefix PfxPrev;
 
@@ -609,6 +609,7 @@ bool SymmetryObject::addFaceToBe(int sluten)
 		cout << endl;
 		//int kortastePrefix = 10000000;
 		edgeToPushBack.oppo.index = -1;
+		//edgeToPushBack.
 
 
 
@@ -616,7 +617,7 @@ bool SymmetryObject::addFaceToBe(int sluten)
 
 			// kolla genom om man kan hitta någon opposite, IGEN
 		if (edgeToPushBack.oppo.index == -1) {
-			for (int j=0; j<E.size(); j++)
+			for (unsigned int j=0; j<E.size(); j++)
 			{
 				Prefix oppositeOfPrefix;
 				//if (E[j].isOppositeOf(E_ToBe[i], &oppositeOfPrefix)) {
@@ -642,13 +643,13 @@ bool SymmetryObject::addFaceToBe(int sluten)
 		E.push_back(edgeToPushBack);
 	}
 
-	F.push_back(face(sizE, E.size() - sizE, sluten == 2? -1: sluten));
+	F.push_back(face(sizE, E.size() - sizE, sluten));
 	cout << "          *****************************************            " << endl;
 	cout << "tjena nu is jag here" << endl;
 		// uppdatera GUI:et
 	char strToSend[200];
 		// id, first edge, num of edges, type, görasigplatt-styrka
-	snprintf(strToSend, 200, "%d,%d,%d,%d", F.size()-1, sizE, E.size() - sizE, (sluten == 2? -1: sluten));
+	snprintf(strToSend, 200, "%d,%d,%d,%d", F.size()-1, sizE, E.size() - sizE, (sluten == NotCentered? -1: (int)sluten));
 	cout << "detta skickas when face skapas: " << strToSend << endl;
 
 	//COMM_MSGTYP_UPDATE_EDGE
@@ -682,6 +683,7 @@ bool SymmetryObject::addFaceToBe(int sluten)
 
 	E_ToBe.clear();
 	printAll();
+	return true;
 }
 
 int SymmetryObject::insertVertex(VEC coord_)
@@ -752,7 +754,7 @@ void SymmetryObject::test()
 
 	
 	edgeA.fr.index = 0;
-	edgeA.fr.Pfx;
+	//edgeA.fr.Pfx;
 	edgeA.to.index = 0;
 	edgeA.to.Pfx.rotate(FN);
 	edgeA.to.Pfx.rotate(VN);
@@ -795,7 +797,7 @@ VEC SymmetryObject::getVec(Point P_)
 				rootpoint_ = VEC(-100, -100);
 				break;
 		}
-	} else if (P_.index >= V.size()) {
+	} else if (P_.index >= (int)V.size()) {
 		//cout << "hit skulle den ju inte komma ju ju ju " << endl;
 		return VEC(-100, -100);
 	} else {

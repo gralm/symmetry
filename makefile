@@ -18,6 +18,7 @@ bygg:
 	make -s $(OBJPATH)comm.o
 	make -s $(OBJPATH)symmetryObject.o
 	make -s $(OBJPATH)glutThread.o
+	make -s $(OBJPATH)others.o
 	$(CC) -o $(EXEFILE).exe $(OBJPATH)*.o -L "C:\MinGW\freeglut\lib" -l freeglut -lgdi32 -lopengl32 -lglu32 -lpthreadGC2
 
 $(OBJPATH)main.o: main.cpp
@@ -50,6 +51,8 @@ $(OBJPATH)orientation.o: symmetryObject/orientation.cpp
 $(OBJPATH)symmetryObject.o: symmetryObject/symmetryObject.cpp
 	$(CC) $(OBJFLAGS) $(OBJPATH)symmetryObject.o symmetryObject/symmetryObject.cpp -I $(INC_DIR)
 
+$(OBJPATH)others.o: symmetryObject/others.cpp
+	$(CC) $(OBJFLAGS) $(OBJPATH)others.o symmetryObject/others.cpp -I $(INC_DIR)
 
 
 onlyglut:

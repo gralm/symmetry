@@ -81,14 +81,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             break;
         case WM_SIZE:
             {
-                HWND hEdit;
-                RECT rcClient;
+                //HWND hEdit;
+                //RECT rcClient;
 
-                GetClientRect(hwnd, &rcClient);
+                //GetClientRect(hwnd, &rcClient);
                 //cout << "left, top, right, bottom: " << rcClient.left << ", ";
                 //cout << rcClient.top << ", " << rcClient.right << ", " << rcClient.bottom << endl;
 
-                hEdit = GetDlgItem(hwnd, IDC_MAIN_EDIT);
+                //hEdit = GetDlgItem(hwnd, IDC_MAIN_EDIT);
                 //SetWindowPos(hEdit, NULL, 0, 0, rcClient.right, rcClient.bottom, SWP_NOZORDER);
             }
             break;
@@ -116,12 +116,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                     }
                     case IDC_LISTBOX:{
                         int hiwParam = HIWORD(wParam);
-                        // hiwParam = 1 om man väljer ett nytt element
+                        // hiwParam = 1 om man vÃ¤ljer ett nytt element
                         // hiwParam = 4 om listboxen blir aktiv
                         // hiwParam = 5 om listboxen bli inaktiv 
                         if (hiwParam != 1)
                         {
-                            cout << "nu hände någonting annat än ett val i listboxen: " << hiwParam << endl;
+                            cout << "nu hÃ¤nde nÃ¥gonting annat Ã¤n ett val i listboxen: " << hiwParam << endl;
                             break;
                         }
 
@@ -139,7 +139,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                             commSendMsg(&symmetryMsg);
                         }
 
-                        cout << "Det klickas på next" << endl;
+                        cout << "Det klickas pÃ¥ next" << endl;
                         int newMode = mainMode+1;
                         CommMsg ChangeMode(COMM_THREAD_MAIN, COMM_THREAD_GLUT, COMM_MSGTYP_SET_MODE, 0, sizeof(int), (char*) &newMode);
                         commSendMsg(&ChangeMode);
@@ -147,7 +147,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                         break;
                     }
                     case IDC_PREV_BUTTON:{
-                        cout << "Det klickas på prev" << endl;
+                        cout << "Det klickas pÃ¥ prev" << endl;
                         int newMode = mainMode-1;
                         CommMsg ChangeMode(COMM_THREAD_MAIN, COMM_THREAD_GLUT, COMM_MSGTYP_SET_MODE, 0, sizeof(int), (char*) &newMode);
                         commSendMsg(&ChangeMode);
@@ -199,7 +199,7 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
             switch(msg.msgTyp)
             {
                 case COMM_MSGTYP_EXIT:
-                    //cout << "MAIN - nu ska mainThreaden dödas" << endl;
+                    //cout << "MAIN - nu ska mainThreaden dÃ¶das" << endl;
                     quitAfter = true;
                     PostQuitMessage(0);
                     break;
@@ -232,7 +232,7 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
                             break;
                     }
 
-                    int rowId = vertexId<0? -vertexId-2: vertexId+3;
+                    //int rowId = vertexId<0? -vertexId-2: vertexId+3;
                     setItemInListView(IDC_VERTICE_LISTVIEW, returned);
                     msg.destroy();
                     break;}
@@ -292,13 +292,13 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
                     break;
                     }
                 default:
-                    cout << "MAIN - nu ska mainThreaden göra något annat" << endl;
+                    cout << "MAIN - nu ska mainThreaden gÃ¶ra nÃ¥got annat" << endl;
                     break;
             }
             break;
         }
         case COMM_RET_ID_MISSING:
-            // om det inte finns några inkomna meddelanden
+            // om det inte finns nÃ¥gra inkomna meddelanden
             //cout << "MAIN - *" << endl;
             break;
         default:
@@ -315,25 +315,13 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    int g[8], h;
-    h = 0;
-    g[0] = 477 + 484;
-    g[1] = 283 + 481 + 486;
-    g[2] = 170 + 286 + 481 + 283;
-    g[3] = 241 + 238;
-    g[4] = 242 + 282 + 240 + 171 + 190 + 240;
-    g[5] = 240 + 283 + 251 + 285;
-    g[6] = 492 + 350;
-    g[7] = 284;
-    for (int i=0; i<8; i++){
-        cout << i << ": " << g[i] << endl;
-        h += g[i];
-    }
-    cout << "sum: " << h << endl;
-
     pthread_t glutThread;
-    long t;
-    int rc = pthread_create(&glutThread, NULL, glutThreadFunc, (void *)t);
+    long t = 0;
+    if (pthread_create(&glutThread, NULL, glutThreadFunc, (void *)t))
+    {
+    	cout << "problem med att starta thread" << endl;
+    	return 1;
+    }
 
     WNDCLASSEX wc;
     HWND hwnd;

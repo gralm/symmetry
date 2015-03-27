@@ -20,13 +20,12 @@
 #define FP		((TYP)4)	// 100
 #define FN		((TYP)5)	// 101
 
+enum Centered {NotCentered=-100, VertexCentered=-2, EdgeCentered=-3, FaceCentered=-4, UndefinedCentered=-1};
 
-
+#define NOT_CENTERED		(-1)
 #define VERTEX_CENTERED		(-2)
 #define EDGE_CENTERED		(-3)
 #define FACE_CENTERED		(-4)
-
-
 
 
 #endif

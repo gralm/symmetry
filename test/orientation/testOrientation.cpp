@@ -1,8 +1,8 @@
+/*
 #include <iostream>
 #include <list>
 #include <vector>
 
-#include "../../graph/orientation/orientation.h"
 #include "../../graph/graph2d.h"
 
 using namespace Graph2D;
@@ -32,5 +32,5 @@ int main()
 	}
 	
 	return 0;
-}
+}*/
 

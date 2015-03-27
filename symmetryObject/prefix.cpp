@@ -132,13 +132,13 @@ void Prefix::print() const
 }
 
 
-bool Prefix::rotate(TYP r)
+void Prefix::rotate(TYP r)
 {
 	if (r & (VP|FP))
 	R.push_back(r);
 }
 
-bool Prefix::rotate(const Prefix &r)
+void Prefix::rotate(const Prefix &r)
 {
 	list<TYP>::const_iterator itr;
 	itr = r.R.begin();
@@ -151,7 +151,7 @@ bool Prefix::rotate(const Prefix &r)
 
 TYP Prefix::operator[](int i)
 {
-	if (i<0 || i>=R.size())
+	if (i<0 || i>=(int)R.size())
 		return 0;
 
 	for (list<TYP>::iterator itR = R.begin(); itR != R.end(); itR++)

@@ -64,246 +64,6 @@ void fromXYtoAB(VEC XY, int *ABx, int *ABy)
 }
 
 
-void Edge::print() const
-{
-	cout << "index (";
-	switch(index)
-	{
-		case -1:
-			cout << "undef.";
-			break;
-		default:
-			cout << index;
-			break;
-	}
-	cout << "), ";
-	Pfx.print();
-}
-
-string Edge::toString() const
-{
-	if (index == -1)
-		return "undef.";
-
-	stringstream ss;
-	ss << index;
-	ss << Pfx.toString();
-	return ss.str();
-}
-
-bool Edge::isDefined() const
-{
-	return index != -1;
-}
-
-
-
-void edge::print() const
-{
-	cout << "\tPoint fr = ";
-	fr.print();
-	cout << endl << "\tPoint to = ";
-	to.print();
-	cout << endl;
-
-	cout << "\tEdge next = ";
-	next.print();
-	cout << endl << "\tEdge prev = ";
-	prev.print();
-	cout << endl << "\tEdge oppo = ";
-	oppo.print();
-	cout << endl;
-}
-
-	// returns true if e is opposite edge. If pfx != null, pfx
-bool edge::isOppositeOf(const edge &e, Prefix *pfx)
-{
-		// avsluta om inte ens punkterna stämmer
-	if (fr.index != e.to.index || to.index != e.fr.index)
-		return false;
-
-	Prefix X;
-
-		//
-	cout << " ** drive isOppositeOf" << endl;
-	cout << "this: " << endl;
-	this->print();
-	cout << endl << "edge e: " << endl;
-	e.print();
-
-
-	switch(fr.index)
-	{
-		case VERTEX_CENTERED: {
-			cout << "a" << endl;
-
-				// fr = X e.to
-			X = fr.Pfx;
-			X.rotate(e.to.Pfx.getInverse());
-			Point e_fr(X * e.fr.Pfx, e.fr.index);				
-			if (to.equalTo(e_fr))	{*pfx = X;	return true;}
-			
-				// fr [VP] = X e.to 			
-			X = fr.Pfx;
-			X.rotate(VP);
-			X.rotate(e.to.Pfx.getInverse());
-			e_fr = Point(X * e.fr.Pfx, e.fr.index);				
-			if (to.equalTo(e_fr))	{*pfx = X;	return true;}
-			
-				// fr [VN] = X e.to
-			X = fr.Pfx;
-			X.rotate(VN);
-			X.rotate(e.to.Pfx.getInverse());
-			e_fr = Point(X * e.fr.Pfx, e.fr.index);				
-			if (to.equalTo(e_fr))	{*pfx = X;	return true;}
-
-			cout << "a" << endl;
-			break;
-		}
-		case EDGE_CENTERED: {
-			cout << "b" << endl;
-
-			X = fr.Pfx;
-			X.rotate(e.to.Pfx.getInverse());
-			Point e_fr(X * e.fr.Pfx, e.fr.index);				
-			if (to.equalTo(e_fr))	{*pfx = X;	return true;}
-			
-				// fr [VP] = X e.to 			
-			X = fr.Pfx;
-			X.rotate(VP);
-			X.rotate(FP);
-			X.rotate(e.to.Pfx.getInverse());
-			e_fr = Point(X * e.fr.Pfx, e.fr.index);				
-			if (to.equalTo(e_fr))	{*pfx = X;	return true;}
-
-			break;
-		}
-		case FACE_CENTERED: {	
-			cout << "c" << endl;
-
-				// fr = X e.to
-			X = fr.Pfx;
-			X.rotate(e.to.Pfx.getInverse());
-			Point e_fr(X * e.fr.Pfx, e.fr.index);				
-			if (to.equalTo(e_fr))	{*pfx = X;	return true;}
-			
-				// fr [FP] = X e.to 			
-			X = fr.Pfx;
-			X.rotate(FP);
-			X.rotate(e.to.Pfx.getInverse());
-			e_fr = Point(X * e.fr.Pfx, e.fr.index);				
-			if (to.equalTo(e_fr))	{*pfx = X;	return true;}
-			
-				// fr [FN] = X e.to
-			X = fr.Pfx;
-			X.rotate(FN);
-			X.rotate(e.to.Pfx.getInverse());
-			e_fr = Point(X * e.fr.Pfx, e.fr.index);				
-			if (to.equalTo(e_fr))	{*pfx = X;	return true;}
-
-			cout << "c" << endl;
-			break;
-		}
-		default: {
-
-			cout << "D" << endl;
-			X = fr.Pfx;
-			X.rotate(e.to.Pfx.getInverse());
-			Point e_fr(X * e.fr.Pfx, e.fr.index);				
-			if (to.equalTo(e_fr))	{*pfx = X;	return true;}
-			cout << "D" << endl;
-			break;
-		}
-	}
-
-
-	//pfx->R.clear();
-	return false;
-}
-
-
-face::face()
-{
-	fr = -1;
-	edges = 0;
-}
-
-face::face(int fr_, int edges_, int type_)
-{
-	fr = fr_;
-	edges = edges_;
-	type = type_;
-}
-
-void face::print()
-{
-	cout << "from: " << fr << "\t len: " << edges << "\t typ: ";
-	switch(type)
-	{
-		case -1:
-			cout << "Not-Centered";
-			break;
-		case VERTEX_CENTERED:
-			cout << "Vertex-Centered";
-			break;
-		case EDGE_CENTERED:
-			cout << "Edge-Centered";
-			break;
-		case FACE_CENTERED:
-			cout << "Face-Centered";
-			break;
-		default:
-			cout << "Felaktig";
-			break;
-	}
-}
-
-
-
-
-/*Prefix getPrefix(VEC coord)
-{
-	Prefix pfx;
-	Orientation ori;
-
-	if (coord.y > 0)
-	{
-		if (!(coord * VEC(COS30, -SIN30) > 0 && coord.x>0)){
-			ori.rotate(VP);
-			pfx.rotate(VP);
-		}
-	} else {
-		ori.rotate(VN);
-		pfx.rotate(VN);
-	}
-
-	VEC vertexpoint_[3];
-	double dist[3];
-	vertexpoint_[0] = ori.getWCFromOC(VEC(0, 0)) - coord;
-	vertexpoint_[1] = ori.getWCFromOC(VEC(COS30, -SIN30)) - coord;
-	vertexpoint_[2] = ori.getWCFromOC(VEC(COS30, SIN30)) - coord;
-
-	for (int i=0; i<3; i++)
-		dist[i] = vertexpoint_[i]*vertexpoint_[i];
-	
-
-	if (dist[1] < dist[0])
-		pfx.rotate((dist[2]<dist[1])? FN: FP);
-	else if (dist[2] < dist[0])
-		pfx.rotate(FN);
-
-
-	for (int i=0; i<3; i++)
-	{
-		if (ori.getOCFromWC(coord).x > COS30)
-			return Prefix();
-	}
-
-	return pfx;		
-}*/
-
-
-
 void mouseClick(int x, int y)
 {
 	cout << "here klickas it: " << fromABtoXY(x, y) << endl;
@@ -404,20 +164,29 @@ void mouseClick(int x, int y)
 
 		int sluten = symmetryObject.checkE_ToBe();
 		cout << "sluten: " << sluten << endl;
+		Centered hurSluten;
 
 		switch(sluten)
 		{
 			case 2:
+				hurSluten = NotCentered;
 				cout << "DET blev en vanlig FACE" << endl;
 				break;
 			case VERTEX_CENTERED:
+				hurSluten = VertexCentered;
 				cout << "DET blev en VERTEX FACE" << endl;
 				break;
 			case EDGE_CENTERED:
+				hurSluten = EdgeCentered;
 				cout << "DET blev en EDGE FACE" << endl;
 				break;
 			case FACE_CENTERED:
+				hurSluten = FaceCentered;
 				cout << "DET blev en FACE FACE" << endl;
+				break;
+			default:
+				hurSluten = UndefinedCentered;
+				cout << "Det blev jättefel här" << endl;
 				break;
 		}
 
@@ -436,7 +205,7 @@ void mouseClick(int x, int y)
 			case FACE_CENTERED:{
 				cout << "Den ska vara sluten nu" << endl;
 
-				cout << (symmetryObject.addFaceToBe(sluten)? "gick bra att adda": "gick icke laya too");
+				cout << (symmetryObject.addFaceToBe(hurSluten)? "gick bra att adda": "gick icke laya too");
 
 					// hämta nu senaste facet om det gick bra att adda face och skicka över det till guiet.
 				/*CommMsg nyttFace(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_UPDATE_FACE, 0, strlen(strToSend), strToSend);
@@ -690,7 +459,7 @@ void SymmetryDrawable::drawFace(face &F_)
 }
 
 void SymmetryDrawable::drawFaces() {
-	for (int f=0; f<F.size(); f++)
+	for (unsigned int f=0; f<F.size(); f++)
 		drawFace(F[f]);
 }
 
@@ -787,7 +556,7 @@ void SymmetryDrawable::display()
 
 		// rita alla vertices även om musen är över den:
 	glColor3f(.61, 0, .21);
-	for (int v = 0; v < V.size(); v++)
+	for (unsigned int v = 0; v < V.size(); v++)
 	{
 		
 		getAllFromRoots(V[v], vAll_);

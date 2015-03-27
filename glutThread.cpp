@@ -278,5 +278,6 @@ void *glutThreadFunc(void *threadid)
     pthread_exit(NULL);
 
     cout << "threadden är avslutad nu" << endl;
+    return 0;
 }
 

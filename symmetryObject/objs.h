@@ -1,5 +1,5 @@
-#ifndef TESTORIENTATION_H
-#define TESTORIENTATION_H
+#ifndef OBJS_H
+#define OBJS_H
 
 #include <list>
 #include <vector>
@@ -9,37 +9,9 @@
 #include <stdio.h>
 #include "./../tm/vector3.h"
 #include "../publicDefines.h"
-//#include "../graph/graph2d.h"
-
-
-	// de här måste förflyttas sen
-/*#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
-#include <GL/freeglut_ext.h>*/
-
-/*
-#define COS30			0.86602540378444
-#define SIN30			0.5
-#define COS60			0.5
-#define SIN60			0.86602540378444
-#define COS120			(-0.5)
-#define SIN120			0.86602540378444
-#define TAN30			0.57735026918962
-#define TAN60			1.73205080756887
-*/
 
 
 //namespace Graph2D {
-
-struct Edge;
-
-class Face;
-
-class face;
-
-struct edge;
-
 
 
 class Prefix {
@@ -51,8 +23,8 @@ public:
 	int findInList();
 	void simplify();
 	void print() const;
-	bool rotate(TYP r);
-	bool rotate(const Prefix &r);
+	void rotate(TYP r);
+	void rotate(const Prefix &r);
 	int getSize() const;
 	Prefix getInverse() const;
 
@@ -95,8 +67,8 @@ struct Edge {
 	Prefix Pfx;
 	int index;
 
-	Edge() {}
-	Edge(Prefix Pfx_, int index_) {Pfx = Pfx_; index = index_;}
+	Edge();
+	Edge(Prefix Pfx_, int index_);// {Pfx = Pfx_; index = index_;}
 	void print() const;
 	bool isDefined() const;
 	std::string toString() const;
@@ -112,16 +84,17 @@ class face {
 public:
 	int fr;
 	int edges;
-	int type;
+	Centered type;
 
 	face();
-	face(int fr_, int edges_, int type_);
+	face(int fr_, int edges_, Centered type_);
 
 	void print();
 
 };
 
 struct edge {
+public:
 	Point fr;
 	Point to;
 
@@ -129,6 +102,7 @@ struct edge {
 	Edge prev;
 	Edge oppo;
 
+	edge();
 	void print() const;
 	bool isOppositeOf(const edge &e, Prefix *pfx);	// returns true if it is opposite. If pfx != null, pfx
 };
@@ -163,32 +137,17 @@ public:
 		// 2 om face är ok.
 	int checkE_ToBe();		// returnerar true om face är slutet.
 	int getEnclosedPoints(VEC *A, std::list<Point> &PntList);
-	bool addFaceToBe(int sluten);
+	bool addFaceToBe(Centered sluten);
 	//int vecOverIndex(VEC co_, );
 
 
 
 	// returns -1 if over none, radius = pixel-radius
 	Point getClosestPoint(VEC co_);
-	//Point getClosestPoint2(VEC co_);
 	int insertVertex(VEC coord_);	//vertex, vector, point, position, coordinate-> använd vettiga beteckningar 
-	//void insertLine(int x, int y);
-
 	void getAllFromRoots(const VEC vRoot_, VEC *vAll_);
-	//void setColorOfVertex(int vert_, TYP str_);
-
 	void display();
-
 	void printAll();
-	/*void drawPoint(VEC _P);
-	void drawCircle(VEC _P, bool filled);
-	void drawBrade();
-	void drawedge(edge &e);
-	void drawfaces();
-	void drawFace(face &F_);
-	void drawFaces();
-	void setColorOfVertex(int vert_, double str_);*/
-
 	VEC getVec(Point P_);
 		// ta bort detta och skapa en hel ärvd klass
 		// som testar allt senare
