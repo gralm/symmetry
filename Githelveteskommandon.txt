@@ -50,6 +50,9 @@ git push origin master
 		http://www.github.com/gralm/symmetry.git
 	ändras med följande kommande:
 	git remote set-url origin git@github.com:gralm/symmetry.git
+		Ännu mera fel kan dyka upp när äckelgit börjar gnälla på "error: src refspec master does not match any". 
+	stackoverflow: 
+		git push origin HEAD:SymmetryObject
 
 git push -f origin branch
 
