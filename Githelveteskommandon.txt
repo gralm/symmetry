@@ -23,6 +23,16 @@ git clone git@github.com:gralm/NapalmBomber.git kan skrivas av någon out
 för att få hem specifik branch från github så måste man skriva:
 git clone -b SymmetryObject git@github.com:gralm/symmetry.git
 
+
+	Spara ändringar och förstöra ändringar
+git stash = lägg till ändringen i listan och ta bort ändringen
+git stash --keep-index = stasha allt som inte är addat.
+git stash list = hela listan av förändringar
+git stash apply = utför senaste i listan
+git stash drop = ta dän stash först i listan
+git stash pop = git stash apply && git stash drop
+git stash apply "stash@{1}" = utför specifik ändring, i listan
+
 	
 	Ta sig ur jävla idiotskiten
 escape 

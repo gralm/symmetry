@@ -5,6 +5,8 @@ using namespace std;
 
 vector<edge> SymmetryObject::E_ToBe;
 
+
+
 SymmetryObject::SymmetryObject()
 {
 	facePointActive = false;
@@ -12,6 +14,12 @@ SymmetryObject::SymmetryObject()
 	vertexPointActive = false;
 }
 
+
+
+SymmetryObject::SymmetryObject(const SymmetryObject *gammal)
+{
+
+}
 
 	// 	detta är en fullständig test som kollar inte 
 	//	bara sista tillagda edgen utan alla edges i facet
@@ -525,7 +533,7 @@ void SymmetryObject::printAll()
 	}
 }
 
-bool SymmetryObject::addFaceToBe(Centered sluten)
+bool SymmetryObject::addFaceToBe(int sluten)
 {
 	//cout << "i addfacetobe so is sluten = " << sluten << endl;
 			//vector<edge>::iterator ite = E_ToBe.end();
@@ -557,10 +565,10 @@ bool SymmetryObject::addFaceToBe(Centered sluten)
 
 		Prefix PfxNext;
 		Prefix PfxPrev;
-		if (sluten == NotCentered) {
+		if (sluten == NOT_CENTERED) {
 			edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
 			edgeToPushBack.prev = Edge(PfxPrev, (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
-		} else if (sluten == VertexCentered) {
+		} else if (sluten == VERTEX_CENTERED) {
 
 			if (i==0)
 				PfxPrev.rotate(VN);
@@ -570,7 +578,7 @@ bool SymmetryObject::addFaceToBe(Centered sluten)
 			edgeToPushBack.prev = Edge(PfxPrev, i==0? sizE + E_ToBe.size() - 2: sizE + i - 1);
 			//edgeToPushBack.next = (i==E_ToBe.size()-2? Edge(Pfx, sizE): Edge(Prefix(), sizE + i + 1));
 			
-		} else if (sluten == EdgeCentered) {
+		} else if (sluten == EDGE_CENTERED) {
 			//PfxNext;
 			//PfxPrev;
 			Prefix cpPrefixHelvete;
@@ -593,7 +601,7 @@ bool SymmetryObject::addFaceToBe(Centered sluten)
 
 			edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
 			edgeToPushBack.prev = Edge(PfxPrev, (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
-		} else if (sluten == FaceCentered) {
+		} else if (sluten == FACE_CENTERED) {
 			Prefix PfxNext;
 			Prefix PfxPrev;
 
@@ -649,7 +657,7 @@ bool SymmetryObject::addFaceToBe(Centered sluten)
 		// uppdatera GUI:et
 	char strToSend[200];
 		// id, first edge, num of edges, type, görasigplatt-styrka
-	snprintf(strToSend, 200, "%d,%d,%d,%d", F.size()-1, sizE, E.size() - sizE, (sluten == NotCentered? -1: (int)sluten));
+	snprintf(strToSend, 200, "%d,%d,%d,%d", F.size()-1, sizE, E.size() - sizE, sluten);
 	cout << "detta skickas when face skapas: " << strToSend << endl;
 
 	//COMM_MSGTYP_UPDATE_EDGE
@@ -696,21 +704,14 @@ int SymmetryObject::insertVertex(VEC coord_)
 	return index_;
 }
 
-/*void SymmetryObject::insertLine(int x, int y)
-{
-	static edge e_[10];
-	static int numOfEdges_ = 0;
-	VEC coord_(fromABtoXY(x, y));
-	coord_ = getRootpoint(coord_);
-}*/
 
-
-
-void SymmetryObject::getAllFromRoots(const VEC vRoot_, VEC *vAll_)
+void SymmetryObject::getAllFromRoots(VEC vRoot_, VEC *vAll_)
 {
 	//if (vRoot_.y <= -100)
 	//if (!vRoot_.defined())
-	if (!definedVec(vRoot_))
+
+	//if (!definedVec(vRoot_))
+	if (!IS_DEFINED(vRoot_))
 	{
 		for (int i=0; i<9; i++)
 			vAll_[i] = vRoot_;
@@ -793,7 +794,7 @@ VEC SymmetryObject::getVec(Point P_)
 				rootpoint_ = faceCenteredPoint;
 				break;
 			default:
-				cout << "it became default o det ska det inte" << endl;
+				cout << "SymmetryObject::getVec(Point) it became default o det ska det inte" << endl;
 				rootpoint_ = VEC(-100, -100);
 				break;
 		}

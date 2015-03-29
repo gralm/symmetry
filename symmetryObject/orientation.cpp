@@ -5,10 +5,11 @@ using namespace std;
 
 //namespace Graph2D {
 
+/*
 	bool definedVec(const VEC A)
 	{
 		return (A-VEC(100., 100.))*(A-VEC(100., 100.)) > .001;
-	}
+	}*/
 	/*bool point::defined() const
 	{
 		return (x+100.)*(x+100.) + (y+100.)*(y+100.) > .001;

@@ -46,6 +46,7 @@ struct Point {
 	Point();
 	Point(Prefix Pfx_, int index_);
 	//VEC getpoint() const;
+	bool isDefined() const;
 	void print() const;
 	std::string toString() const ;
 	bool equalTo(Point &A);
@@ -84,10 +85,10 @@ class face {
 public:
 	int fr;
 	int edges;
-	Centered type;
+	int type;
 
 	face();
-	face(int fr_, int edges_, Centered type_);
+	face(int fr_, int edges_, int type_);
 
 	void print();
 
@@ -123,6 +124,7 @@ public:
 	std::vector<face> F;
 
 	SymmetryObject();
+	SymmetryObject(const SymmetryObject *gammal);
 
 	static std::vector<edge> E_ToBe;
 
@@ -137,7 +139,7 @@ public:
 		// 2 om face är ok.
 	int checkE_ToBe();		// returnerar true om face är slutet.
 	int getEnclosedPoints(VEC *A, std::list<Point> &PntList);
-	bool addFaceToBe(Centered sluten);
+	bool addFaceToBe(int sluten);
 	//int vecOverIndex(VEC co_, );
 
 
@@ -145,7 +147,7 @@ public:
 	// returns -1 if over none, radius = pixel-radius
 	Point getClosestPoint(VEC co_);
 	int insertVertex(VEC coord_);	//vertex, vector, point, position, coordinate-> använd vettiga beteckningar 
-	void getAllFromRoots(const VEC vRoot_, VEC *vAll_);
+	void getAllFromRoots(VEC vRoot_, VEC *vAll_);
 	void display();
 	void printAll();
 	VEC getVec(Point P_);

@@ -33,6 +33,11 @@ void Point::print() const
 	//cout << ", " << getpoint();
 }
 
+bool Point::isDefined() const
+{
+	return index != -1;
+}
+
 string Point::toString() const 
 {		
 	if (index == -1)

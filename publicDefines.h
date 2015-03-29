@@ -11,6 +11,8 @@
 #define TAN60			1.73205080756887
 
 
+#define VEC0(S)   	(tmath::vectorn<S, 3>(0,0,0))
+#define VEC 		tmath::vectorn<double, 3>
 
 #define TYP		unsigned char
 #define INV_ROTATION(r)		(r^1)
@@ -20,12 +22,16 @@
 #define FP		((TYP)4)	// 100
 #define FN		((TYP)5)	// 101
 
-enum Centered {NotCentered=-100, VertexCentered=-2, EdgeCentered=-3, FaceCentered=-4, UndefinedCentered=-1};
+//enum Centered {NotCentered=-100, VertexCentered=-2, EdgeCentered=-3, FaceCentered=-4, UndefinedCentered=-1};
 
 #define NOT_CENTERED		(-1)
 #define VERTEX_CENTERED		(-2)
 #define EDGE_CENTERED		(-3)
 #define FACE_CENTERED		(-4)
 
+#define UNDEFINED_VEC		VEC(-100., -100.)
+//#define IS_DEFINED(X)		(((X)-UNDEFINED_VEC) * ((X)-UNDEFINED_VEC) < 0.001)
+#define IS_DEFINED(X)		(((X)-UNDEFINED_VEC) * ((X)-UNDEFINED_VEC) > 0.001)
+#define IS_DEFINED2(X)		(((X)*(X) - 200*((X).x + (X).y) + 20000) > 0.001)
 
 #endif

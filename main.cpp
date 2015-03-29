@@ -16,14 +16,6 @@ const char g_szClassName[] = "myWindowClass";
 
 int mainMode = 0;
 
-/*
-void printFunc(const char *str, long tid)
-{
-    int ret = pthread_mutex_lock(&mtxThread);
-    printf("Skriver nedan on egen hand, ret = %d\n", ret);
-    printf(str, tid);
-    pthread_mutex_unlock(&mtxThread);
-}*/
 
 void joinThreads(pthread_t *thread)
 {
@@ -102,15 +94,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                     case IDC_MAIN_BUTTON: {
                         cout << "nu ska det printas here:" << endl;
                         commPrintMsg();
-
-                        //int chosenIndex = SendDlgItemMessage(hwnd,IDC_LISTBOX,LB_SETCURSEL,1,0);
-                        //cout << "chosenIndex: " << chosenIndex << endl;
-                     
                         break;
                     }
                     case IDC_TEST1_BUTTON: {
                         try1();
-
                         cout << "radiobutton: " << getSymmetryValue() << endl;
                         break;
                     }
@@ -177,7 +164,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             PostQuitMessage(0);
             break;
         default:
-            //cout << "wParam: " << wParam << "\t msg: " << msg << endl;
             return DefWindowProc(hwnd, msg, wParam, lParam);
     }
     return 0;
@@ -238,18 +224,12 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
                     break;}
                 case COMM_MSGTYP_UPDATE_EDGE:{
                     list<string> returned = stringSplit((const char*) msg.data, msg.dataSiz, ',');
-                    //for (list<string>::iterator itstr = returned.begin(); itstr != returned.end(); itstr++)
-                    //    cout << "UPDATE EDGE: " << *itstr << endl;
-                    
                     setItemInListView(IDC_EDGE_LISTVIEW, returned);
                     msg.destroy();
                     break;}
 
                 case COMM_MSGTYP_UPDATE_FACE:{
                     list<string> returned = stringSplit((const char*) msg.data, msg.dataSiz, ',');
-                    //for (list<string>::iterator itstr = returned.begin(); itstr != returned.end(); itstr++)
-                    //    cout << "UPDATE FACE: " << *itstr << endl;
-                    
                     setItemInListView(IDC_FACE_LISTVIEW, returned);
                     msg.destroy();
                     break;}
@@ -288,7 +268,6 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
                             break;
                     }
                     msg.destroy();
-                    //delete msg.data;
                     break;
                     }
                 default:
@@ -347,9 +326,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         return 0;
     }
 
-    // Step 2: Creating the Window
-    /*hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, "The title of my window",
-        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 450, NULL, NULL, hInstance, NULL);*/
     hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, "The title of my window",
         WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 450, NULL, NULL, hInstance, NULL);
 
@@ -374,12 +350,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     joinThreads(&glutThread);
 
-    cout << "will destroyya mutexen " << endl;
     int err = pthread_mutex_destroy(&mtxThread);
     if (err)
         printf("Gick snett when destroyya mutexen, err = %d\n", err);
-    else 
-        printf("Det gick ok att kloosa mutexen\n");
 
     return Msg.wParam;
 }

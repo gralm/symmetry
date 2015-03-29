@@ -41,9 +41,17 @@ void setMousePosition(int x, int y)
 {
 	mouseX = x;
 	mouseY = y;
-	Point p = symmetryObject.getClosestPoint(fromABtoXY(x,y));
-	indexMouseOver = p.index;
-	//indexMouseOver = symmetryObject.vecOverIndex(getRootpoint(fromABtoXY(x, y)));
+	VEC coords = fromABtoXY(x, y);
+	Point p = symmetryObject.getClosestPoint(coords);
+	if (p.isDefined()) {
+		VEC closestVertex = symmetryObject.getVec(p);
+		
+		if ((closestVertex-coords)*(closestVertex-coords) < 0.0003)
+			indexMouseOver = p.index;
+		else
+			indexMouseOver = -1;
+	} else 
+		indexMouseOver = -1;
 }
 
 
@@ -74,14 +82,17 @@ void mouseClick(int x, int y)
 		coord_ = getRootpoint(coord_);
 
 		//indexMouseOver = symmetryObject.vecOverIndex(coord_);
-		Point pointMouseOver = symmetryObject.getClosestPoint(coord_); 
-		indexMouseOver = pointMouseOver.index;
+		/*Point pointMouseOver = symmetryObject.getClosestPoint(coord_); 
+		VEC closestVertex = symmetryObject.getVec(pointMouseOver);
+		indexMouseOver = pointMouseOver.index;*/
+
+
 		//indexMouseOver = symmetryObject.vecOverIndex(coord_);
 		cout << "mode = 0, mouseklick: [" << coord_.x << ", " << coord_.y << "] = " << indexMouseOver << endl;
 	
     	if (indexMouseOver < 0) {
     		indexChosen = indexMouseOver;
-    		if (indexMouseOver == -1) {
+    		if (indexMouseOver == NOT_CENTERED) {
     			indexChosen = indexMouseOver = symmetryObject.insertVertex(coord_);
     		}
     		int msgtyp;
@@ -164,28 +175,29 @@ void mouseClick(int x, int y)
 
 		int sluten = symmetryObject.checkE_ToBe();
 		cout << "sluten: " << sluten << endl;
-		Centered hurSluten;
+		int hurSluten;
 
 		switch(sluten)
 		{
 			case 2:
-				hurSluten = NotCentered;
-				cout << "DET blev en vanlig FACE" << endl;
+				hurSluten = NOT_CENTERED;
+				cout << "DET blev ett vanligt FACE" << endl;
 				break;
 			case VERTEX_CENTERED:
-				hurSluten = VertexCentered;
+				hurSluten = VERTEX_CENTERED;
 				cout << "DET blev en VERTEX FACE" << endl;
 				break;
 			case EDGE_CENTERED:
-				hurSluten = EdgeCentered;
+				hurSluten = EDGE_CENTERED;
 				cout << "DET blev en EDGE FACE" << endl;
 				break;
 			case FACE_CENTERED:
-				hurSluten = FaceCentered;
+				hurSluten = FACE_CENTERED;
 				cout << "DET blev en FACE FACE" << endl;
 				break;
 			default:
-				hurSluten = UndefinedCentered;
+				//hurSluten = UndefinedCentered;
+				hurSluten = -1000;
 				cout << "Det blev jättefel här" << endl;
 				break;
 		}
@@ -533,6 +545,8 @@ void SymmetryDrawable::display()
 
 	    	glColor3f(1, 1, 1);
 	    	drawPoint(coords_);
+  	  	} else {
+  	  		//cout << "mouse over: " << indexMouseOver << endl;
   	  	}
 	} else if (mode == 1) {
 		//scout << "nu is sizen on E_ToBe.size() = " << E_ToBe.size() << endl;

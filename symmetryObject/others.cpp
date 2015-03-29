@@ -186,10 +186,10 @@ face::face()
 {
 	fr = -1;
 	edges = 0;
-	type = UndefinedCentered;
+	type = NOT_CENTERED;
 }
 
-face::face(int fr_, int edges_, Centered type_)
+face::face(int fr_, int edges_, int type_)
 {
 	fr = fr_;
 	edges = edges_;
