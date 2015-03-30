@@ -109,15 +109,20 @@ public:
 };
 
 class SymmetryObject {
+private:
+
+protected:
+	bool facePointActive;
+	bool edgePointActive;
+	bool vertexPointActive;
+
+
+
 public:
 	static const VEC vertexCenteredPoint;//(.0, .0);
 	static const VEC edgeCenteredPoint;//(.25, SIN60*.5);
 	static const VEC faceCenteredPoint;//(.5, .25/COS30);
 
-
-	bool facePointActive;
-	bool edgePointActive;
-	bool vertexPointActive;
 
 	std::vector<VEC> V;
 	std::vector<edge> E;
@@ -146,8 +151,10 @@ public:
 
 	// returns -1 if over none, radius = pixel-radius
 	Point getClosestPoint(VEC co_);
+	void insertCenteredVertex(int index_);
 	int insertVertex(VEC coord_);	//vertex, vector, point, position, coordinate-> använd vettiga beteckningar 
 	void getAllFromRoots(VEC vRoot_, VEC *vAll_);
+	bool getCenteredActive(int whichCenteredIndex);
 	void display();
 	void printAll();
 	VEC getVec(Point P_);
@@ -178,5 +185,6 @@ public:
 void rotationPrint(TYP);
 Prefix getPrefix(VEC coord);
 VEC getRootpoint(VEC coord);
+Point getClosestCenteredPoint(VEC coord, double *distanceSquared);
 
 #endif

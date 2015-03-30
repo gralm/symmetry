@@ -9,16 +9,44 @@ vector<edge> SymmetryObject::E_ToBe;
 
 SymmetryObject::SymmetryObject()
 {
-	facePointActive = false;
+	/*facePointActive = false;
 	edgePointActive = false;
-	vertexPointActive = false;
+	vertexPointActive = false;*/
+
+
+	// test
+	facePointActive = true;
+	edgePointActive = true;
+	vertexPointActive = true;
+
+	V.push_back(VEC(.3, .14));
+
 }
 
+
+bool SymmetryObject::getCenteredActive(int whichCenteredIndex)
+{
+	switch(whichCenteredIndex)
+	{
+	case VERTEX_CENTERED:
+		return vertexPointActive;
+		break;
+	case EDGE_CENTERED:
+		return edgePointActive;
+		break;
+	case FACE_CENTERED:
+		return facePointActive;
+		break;
+	}
+	return false;
+}
 
 
 SymmetryObject::SymmetryObject(const SymmetryObject *gammal)
 {
-
+	facePointActive = false;
+	edgePointActive = false;
+	vertexPointActive = false;
 }
 
 	// 	detta är en fullständig test som kollar inte 
@@ -403,7 +431,7 @@ int SymmetryObject::getEnclosedPoints(VEC *A, list<Point> &PntList)
 
 
 // gör om den här funktionen och få bort jävla r2 o trams
-Point SymmetryObject::getClosestPoint(VEC co_)
+/*Point SymmetryObject::getClosestPoint(VEC co_)
 {
 		
 	Point P_;
@@ -413,10 +441,6 @@ Point SymmetryObject::getClosestPoint(VEC co_)
 	double smallestDistanceSquare = 100.0;
 
 
-
-	/*Orientation ori;
-	ori.rotate(P_.Pfx);
-	VEC coordsOC = ori.getOCFromWC(co_);*/
 	bool coLeftSide = (co2_.y > TAN30*co2_.x);
 
 	// om det är på right side jämför med alla coords på VP och FN, annars jämför med VN och FP
@@ -511,15 +535,93 @@ Point SymmetryObject::getClosestPoint(VEC co_)
 	P_.Pfx.simplify();
 
 	return P_;
+}*/
+
+
+Point SymmetryObject::getClosestPoint(VEC co_)
+{
+	Point P_;
+	Prefix startPrefix = getPrefix(co_);
+	VEC co2_ = getRootpoint(co_);
+	P_.index = -1;// mouseOverIndex(co2_);
+	double smallestDistanceSquare;
+
+
+	bool coLeftSide = (co2_.y > TAN30*co2_.x);
+
+	// om det är på right side jämför med alla coords på VP och FN, annars jämför med VN och FP
+	TYP rot1 = coLeftSide? VP: VN;
+	TYP rot2 = coLeftSide? FN: FP;
+
+	Orientation ori1;
+	VEC co21_ = ori1.getOCFromWC(co2_);
+	ori1.rotate(rot1);
+	co21_ = ori1.getWCFromOC(co21_);
+
+ 	Orientation ori2;
+	VEC co22_ = ori2.getOCFromWC(co2_);
+	ori2.rotate(rot2);
+	co22_ = ori2.getWCFromOC(co22_);
+
+	double newDistance;
+
+	P_ = getClosestCenteredPoint(co_, &smallestDistanceSquare);
+
+	for (unsigned int v=0; v<V.size(); v++)
+	{
+		newDistance = (V[v] - co2_) * (V[v] - co2_);
+		if (newDistance < smallestDistanceSquare)
+		{
+			smallestDistanceSquare = newDistance;
+			P_.index = v;
+			P_.Pfx = startPrefix;
+		}
+	}
+
+		// här är alla V vridna med rot1
+	for (unsigned int v=0; v<V.size(); v++)
+	{
+		newDistance = (V[v] - co21_) * (V[v] - co21_);
+		if (newDistance < smallestDistanceSquare)
+		{
+			smallestDistanceSquare = newDistance;
+			P_.index = v;
+			P_.Pfx = startPrefix;
+			P_.Pfx.rotate(rot1);
+		}
+	}
+
+		// här är alla V vridna med rot2;
+	for (unsigned int v=0; v<V.size(); v++)
+	{
+		newDistance = (V[v] - co22_) * (V[v] - co22_);
+		if (newDistance < smallestDistanceSquare)
+		{
+			smallestDistanceSquare = newDistance;
+			P_.index = v;
+			P_.Pfx = startPrefix;
+			P_.Pfx.rotate(rot2);
+		}
+	}
+
+	P_.Pfx.simplify();
+
+	return P_;
 }
 
 
 void SymmetryObject::printAll()
 {
-	cout << "\t" << "Edges" << endl;
+	cout << "\t" << "Vectors: " << endl;
+	for (unsigned int i=0; i<V.size(); i++)
+	{
+		cout << i << ":\t" << V[i] << endl;
+	}
+
+	cout << endl << "\t" << "Edges:" << endl;
 	for (unsigned int i=0; i<E.size(); i++)
 	{
-		cout << i << ":" << endl;
+		cout << i << ":";
 		E[i].print();
 		cout << endl;
 	}
@@ -692,6 +794,24 @@ bool SymmetryObject::addFaceToBe(int sluten)
 	E_ToBe.clear();
 	printAll();
 	return true;
+}
+
+void SymmetryObject::insertCenteredVertex(int index_)
+{
+	switch(index_)
+	{
+	case VERTEX_CENTERED:
+		vertexPointActive = true;
+		break;
+	case EDGE_CENTERED:
+		edgePointActive = true;
+		break;
+	case FACE_CENTERED:
+		facePointActive = true;
+		break;
+	default:
+		cout << "symmetryObject.cpp blev nog errorigt here" << endl;
+	}
 }
 
 int SymmetryObject::insertVertex(VEC coord_)
@@ -867,7 +987,103 @@ VEC getRootpoint(VEC coord)
 	return VEC(
 		OCcoords.x*COS30 - OCcoords.y*SIN30, 
 		OCcoords.x*SIN30 + OCcoords.y*COS30);
+}
 
-	//point asdf = Orientation::getWCRootFromOC(ori.getOCFromWC(coord));
-	//return asdf;
+
+
+
+// returnerar närmsta Centered-point
+Point getClosestCenteredPoint(VEC coord, double *distanceSquared)
+{
+
+	double distanceSquared_ = UNDEFINED_VEC*UNDEFINED_VEC;
+	//double distanceSquared_;
+	int index = -1;
+	Point P;
+	VEC x = VEC(0.5, 0.0);
+	VEC y = SymmetryObject::edgeCenteredPoint;
+
+	VEC cv[15];
+
+		//Vector-points
+	cv[0] = VEC(0., 0.);
+	cv[1] = 2*(y - x);
+	cv[2] = 2*y;
+	cv[3] = 2*x;
+	cv[4] = 2*(x - y);
+
+		// Edge-points
+	cv[5] = y;
+	cv[6] = x;
+	cv[7] = x + y;
+	cv[8] = y - x;
+	cv[9] = 2*y - x;
+	cv[10] = x - y;
+	cv[11] = 2*x - y;
+
+		// Face-points
+	cv[12] = 2.*(x + y)/3.;
+	cv[13] = 2.*(2*y - x) / 3.;
+	cv[14] = 2*(2*x - y) / 3.;
+
+	for (int i=0; i<15; i++)
+	{
+		double newDistance = (cv[i] - coord) * (cv[i] - coord);
+		if (newDistance < distanceSquared_) {
+			distanceSquared_ = newDistance;
+			index = i;
+		}
+	}
+
+	if (index > 11 )
+		P.index = FACE_CENTERED;
+	else if (index > 4)
+		P.index  = EDGE_CENTERED;
+	else if (index >= 0)
+		P.index = VERTEX_CENTERED;
+
+
+	switch (index)
+	{
+	case 1:
+	case 9:
+		P.Pfx.rotate(VP);
+		P.Pfx.rotate(FN);
+		break;
+	case 2:
+		P.Pfx.rotate(VP);
+		P.Pfx.rotate(FP);
+		break;
+	case 3:
+	case 6:
+		P.Pfx.rotate(FP);
+		break;
+	case 4:
+	case 10:
+		P.Pfx.rotate(VN);
+		P.Pfx.rotate(FP);
+		break;
+	case 8:
+	case 13:
+		P.Pfx.rotate(VP);
+		break;
+	case 7:
+		P.Pfx.rotate(FN);
+		break;
+	case 11:
+		P.Pfx.rotate(VN);
+		P.Pfx.rotate(FN);
+		break;
+	case 14:
+		P.Pfx.rotate(VN);
+		break;
+	default:
+		index = -1;
+		break;
+	}
+
+	if (distanceSquared != 0)
+		*distanceSquared = distanceSquared_;
+
+	return P;
 }

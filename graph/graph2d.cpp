@@ -31,6 +31,7 @@ int mouseY = -100;
 int indexChosen = -1;
 int indexMouseOver = -1;
 
+double minimumDistanceForMouseOverSquare = 0.0003;
 
 void graphDisplay()
 {
@@ -46,12 +47,22 @@ void setMousePosition(int x, int y)
 	if (p.isDefined()) {
 		VEC closestVertex = symmetryObject.getVec(p);
 		
-		if ((closestVertex-coords)*(closestVertex-coords) < 0.0003)
+		if ((closestVertex-coords)*(closestVertex-coords) < minimumDistanceForMouseOverSquare)
 			indexMouseOver = p.index;
 		else
 			indexMouseOver = -1;
 	} else 
 		indexMouseOver = -1;
+
+	if (indexMouseOver != -1)
+		return;
+
+	double distanceToCenteredSquare = 0;
+	p = getClosestCenteredPoint(coords, &distanceToCenteredSquare);
+	if (distanceToCenteredSquare < minimumDistanceForMouseOverSquare)
+	{
+		indexMouseOver = p.index;
+	}
 }
 
 
@@ -72,62 +83,68 @@ void fromXYtoAB(VEC XY, int *ABx, int *ABy)
 }
 
 
+
 void mouseClick(int x, int y)
 {
+
 	cout << "here klickas it: " << fromABtoXY(x, y) << endl;
+
+	VEC realCoord(fromABtoXY(x, y));
+	VEC rootCoord = getRootpoint(realCoord);
+
 
 	if (mode == 0)
 	{
-		VEC coord_(fromABtoXY(x, y));
-		coord_ = getRootpoint(coord_);
-
-		//indexMouseOver = symmetryObject.vecOverIndex(coord_);
-		/*Point pointMouseOver = symmetryObject.getClosestPoint(coord_); 
-		VEC closestVertex = symmetryObject.getVec(pointMouseOver);
-		indexMouseOver = pointMouseOver.index;*/
-
-
-		//indexMouseOver = symmetryObject.vecOverIndex(coord_);
-		cout << "mode = 0, mouseklick: [" << coord_.x << ", " << coord_.y << "] = " << indexMouseOver << endl;
+		cout << "mode = 0, mouseklick: [" << rootCoord.x << ", " << rootCoord.y << "] = " << indexMouseOver << endl;
 	
     	if (indexMouseOver < 0) {
     		indexChosen = indexMouseOver;
     		if (indexMouseOver == NOT_CENTERED) {
-    			indexChosen = indexMouseOver = symmetryObject.insertVertex(coord_);
+    			double distanceToCenteredVertex;
+    			Point P = getClosestCenteredPoint(realCoord, &distanceToCenteredVertex);
+
+    			if (distanceToCenteredVertex < minimumDistanceForMouseOverSquare) {
+    				symmetryObject.insertCenteredVertex(P.index);
+    			} else {
+    				indexChosen = indexMouseOver = symmetryObject.insertVertex(rootCoord);
+    			}
     		}
     		int msgtyp;
     		switch(indexMouseOver)
     		{
     			case VERTEX_CENTERED:
     				//msgtyp = vertexPointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
-    				msgtyp = symmetryObject.vertexPointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_VERTEX;
-    				coord_ = SymmetryObject::vertexCenteredPoint;
-    				symmetryObject.vertexPointActive = true;
+    				msgtyp = symmetryObject.getCenteredActive(VERTEX_CENTERED)? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_VERTEX;
+    				rootCoord = SymmetryObject::vertexCenteredPoint;
+    				symmetryObject.insertCenteredVertex(VERTEX_CENTERED);
+    				//symmetryObject.vertexPointActive = true;
     				break;
     			case EDGE_CENTERED:
 					//msgtyp = edgePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
-    				msgtyp = symmetryObject.edgePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_VERTEX;
-    				coord_  = SymmetryObject::edgeCenteredPoint;
-    				symmetryObject.edgePointActive = true;
+    				msgtyp = symmetryObject.getCenteredActive(EDGE_CENTERED)? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_VERTEX;
+    				rootCoord  = SymmetryObject::edgeCenteredPoint;
+    				symmetryObject.insertCenteredVertex(EDGE_CENTERED);
+    				//symmetryObject.edgePointActive = true;
     				break;
     			case FACE_CENTERED:
 					//msgtyp = facePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
-    				msgtyp = symmetryObject.facePointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_VERTEX;
-    				coord_ = SymmetryObject::faceCenteredPoint;
-    				symmetryObject.facePointActive = true;
+    				msgtyp = symmetryObject.getCenteredActive(FACE_CENTERED)? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_VERTEX;
+    				rootCoord = SymmetryObject::faceCenteredPoint;
+    				symmetryObject.insertCenteredVertex(FACE_CENTERED);
+    				//symmetryObject.facePointActive = true;
     				break;
     			default:
     				msgtyp = COMM_MSGTYP_ADD_VERTEX;//vertexPointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
     				break;
     		}
-    		cout << "vertexPointActive: " << (symmetryObject.vertexPointActive? "true": "false") << endl;
-    		cout << "edgePointActive: " << (symmetryObject.edgePointActive? "true": "false") << endl;
-    		cout << "facePointActive: " << (symmetryObject.facePointActive? "true": "false") << endl;
+    		cout << "vertexPointActive: " << (symmetryObject.getCenteredActive(VERTEX_CENTERED)? "true": "false") << endl;
+    		cout << "edgePointActive: " << (symmetryObject.getCenteredActive(EDGE_CENTERED)? "true": "false") << endl;
+    		cout << "facePointActive: " << (symmetryObject.getCenteredActive(FACE_CENTERED)? "true": "false") << endl;
 
     		char strMess[200];
 			//snprintf(strMess, 40, "%d: [%.3f, %.3f]", indexMouseOver, coord_.x, coord_.y);
 			cout << "msgtyp: " << msgtyp << endl;
-			snprintf(strMess, 200, "%d, %.3f, %.3f, %.3f, 0.000", indexMouseOver, coord_.x, coord_.y, coord_.z);
+			snprintf(strMess, 200, "%d, %.3f, %.3f, %.3f, 0.000", indexMouseOver, rootCoord.x, rootCoord.y, rootCoord.z);
 			cout << "Texten: " << strMess << endl;
 			CommMsg commMsgNewVertex(COMM_THREAD_GLUT, COMM_THREAD_MAIN, msgtyp, 0, strlen(strMess) + 1, strMess);
 			commSendMsg(&commMsgNewVertex);
@@ -139,17 +156,10 @@ void mouseClick(int x, int y)
 		}
 	} else if (mode == 1 && indexMouseOver != -1) {
 
+		Point nyPunkt = symmetryObject.getClosestPoint(realCoord);
 
-		VEC coord_(fromABtoXY(x, y));
-		coord_ = getRootpoint(coord_);
-		Point nyPunkt = symmetryObject.getClosestPoint(coord_);
-		//Point nyPunkt = symmetryObject.vecOverPoint(fromABtoXY(x, y));
 
-		//point coord_(fromABtoXY(x, y));
-		//Point nyPunkt = getRootpoint2(coord_);
-
-		//indexMouseOver = mouseOverIndex(V[nyPunkt.v].x, V[nyPunkt.v].y);
-		cout << "mode = 1, mouseklick: [";// << coord_.x << ", " << coord_.y << "] = " << indexMouseOver << endl;
+		cout << "mode = 1, mouseklick: [";
 
 
 		cout << "Point: ";
@@ -243,6 +253,8 @@ void mouseClick(int x, int y)
 						nyttEdge.destroy();
 					}
 				}*/
+				cout << "PRINT ALL:" << endl;
+				symmetryObject.printAll();
 
 				cout << endl;
 				break;}

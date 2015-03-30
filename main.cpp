@@ -147,7 +147,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 break;    
             }
         case WM_NOTIFY:
-            cout << "NOFITFY: " << "msg: " << msg << "\twParam: " << wParam << "\tlParam: " << lParam <<  endl;
+            //cout << "NOFITFY: " << "msg: " << msg << "\twParam: " << wParam << "\tlParam: " << lParam <<  endl;
             break;
 
         /*case WM_TIMER: {

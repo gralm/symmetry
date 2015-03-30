@@ -65,7 +65,9 @@ string Point::toString() const
 	//Point
 }
 
-Point::Point() {}
+Point::Point() {
+	index = -1;
+}
 
 Point::Point(Prefix Pfx_, int index_)
 {

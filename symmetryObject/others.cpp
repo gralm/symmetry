@@ -67,11 +67,11 @@ void edge::print() const
 	cout << endl;
 
 	cout << "\tEdge next = ";
-	//next.print();
+	next.print();
 	cout << endl << "\tEdge prev = ";
-	//prev.print();
+	prev.print();
 	cout << endl << "\tEdge oppo = ";
-	//oppo.print();
+	oppo.print();
 	cout << endl;
 }
 
