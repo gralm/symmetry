@@ -160,3 +160,23 @@ bool Point::equalTo(Point &A) {
 
 	return (subPfx.getSize() == 0);
 }
+
+void Point::simplify()
+{
+	Pfx.simplify();
+	switch(index)
+	{
+	case VERTEX_CENTERED:
+		// ta bort alla sistkommande TYP av värde VP och VN
+	case EDGE_CENTERED:
+		/*
+		 * VP FP = 1
+		 * FP VN = FN
+		 * FN VN = 1
+		 * */
+	case FACE_CENTERED:
+		// ta bort alla sistkommande TYP av värde FP och FN
+		cout << "Point::simplify() är inte färdigskriven" << endl;
+		break;
+	}
+}

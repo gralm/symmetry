@@ -932,7 +932,11 @@ VEC SymmetryObject::getVec(Point P_)
 	return rotatedpoint_;	
 }
 
-
+bool SymmetryObject::fullTest()
+{
+	cout << "make full test" << endl;
+	return false;
+}
 
 // non symmetryObjectFunctions
 

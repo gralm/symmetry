@@ -1,6 +1,15 @@
 #ifndef PUBLIC_DEFINES_H
 #define PUBLIC_DEFINES_H
 
+	// standard för alla processer
+#define UPD_GRAPH       25
+#define UPD_PHYS        100
+#define UPD_PRINT       1000
+#define UPD_THREAD      100
+
+
+
+	// Matematik
 #define COS30			0.86602540378444
 #define SIN30			0.5
 #define COS60			0.5
@@ -17,10 +26,10 @@
 #define TYP		unsigned char
 #define INV_ROTATION(r)		(r^1)
 
-#define VP		((TYP)2)	// 010
-#define VN		((TYP)3)	// 011
-#define FP		((TYP)4)	// 100
-#define FN		((TYP)5)	// 101
+#define VP		((TYP) 2)	// 010
+#define VN		((TYP) 3)	// 011
+#define FP		((TYP) 4)	// 100
+#define FN		((TYP) 5)	// 101
 
 //enum Centered {NotCentered=-100, VertexCentered=-2, EdgeCentered=-3, FaceCentered=-4, UndefinedCentered=-1};
 
@@ -38,6 +47,42 @@
 
 
 
+
+
+
+			/* COMMANDON FÖR TRÅDKOMMUNIKATION */
+	// för thread-id
+#define COMM_THREAD_MAIN		3
+#define COMM_THREAD_GLUT		4
+
+	// Message typ
+#define COMM_MSGTYP_EXIT					0
+#define COMM_MSGTYP_PAUSE					1
+#define COMM_MSGTYP_CHOOSE_VERTEX			2
+#define COMM_MSGTYP_ADD_VERTEX				3
+
+#define COMM_MSGTYP_ADD_CENTERED_VERTEX		4
+#define COMM_MSGTYP_SET_MODE				5
+#define COMM_MSGTYP_SET_SYMMETRY_VALUE		9
+
+#define COMM_MSGTYP_UPDATE_VERTEX			20
+#define COMM_MSGTYP_UPDATE_EDGE				21
+#define COMM_MSGTYP_UPDATE_FACE				22
+
+	// return values messages (msg)
+#define COMM_RET_ID_CREATED			11
+#define COMM_RET_ID_OVERWRITTEN		12
+#define COMM_RET_ID_MISSING			13
+#define COMM_RET_ERROR				14
+#define COMM_RET_ID_OK				15
+
+
+
+/*
+ * update vertex:	"COMM_MSGTYP_UPDATE_VERTEX, index, x, y, z"
+ * välj vertex: 	"COMM_MSGTYP_CHOOSE_VERTEX, index"
+ *
+ * */
 
 
 #endif

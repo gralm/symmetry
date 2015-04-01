@@ -31,9 +31,14 @@ void init(void)
     cout << "void init()" << endl;
 }
 
+CommMsg msgFromString(std::string str)
+{
+
+}
+
 void checkThreads()
 {
-    static CommMsg msg;
+    CommMsg msg;
     int val = commGetMsg(COMM_THREAD_GLUT, &msg);
 
     switch(val)
@@ -170,12 +175,17 @@ void mousePassiveMotionFunc(int x, int y)
 void mouseFunc(int button, int state, int x, int y)
 {
     switch (button) {
-        case GLUT_LEFT_BUTTON:
+        case GLUT_LEFT_BUTTON:{
             if (state == GLUT_UP){
-                mouseClick(x, y);
+                list<string> stringsToMain = mouseClick(x, y);
+                cout << "glutThread: it will sendas " << stringsToMain.size() << " strings till main" << endl;
+                int i=0;
+                for (list<string>::iterator itStr = stringsToMain.begin(); itStr != stringsToMain.end(); itStr++)
+                	cout << i++ << ":\t" << *itStr << endl;
             }
             cout << "Left button \t";
             break;
+        }
 
         case GLUT_MIDDLE_BUTTON:
             cout << "Middle button \t";

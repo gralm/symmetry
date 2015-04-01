@@ -84,10 +84,14 @@ void fromXYtoAB(VEC XY, int *ABx, int *ABy)
 
 
 
-void mouseClick(int x, int y)
-{
 
+
+list<string> mouseClick(int x, int y)
+{
+	list<string> commMsgList;
 	cout << "here klickas it: " << fromABtoXY(x, y) << endl;
+
+	static char strMess[200];
 
 	VEC realCoord(fromABtoXY(x, y));
 	VEC rootCoord = getRootpoint(realCoord);
@@ -96,8 +100,8 @@ void mouseClick(int x, int y)
 	if (mode == 0)
 	{
 		cout << "mode = 0, mouseklick: [" << rootCoord.x << ", " << rootCoord.y << "] = " << indexMouseOver << endl;
-	
     	if (indexMouseOver < 0) {
+
     		indexChosen = indexMouseOver;
     		if (indexMouseOver == NOT_CENTERED) {
     			double distanceToCenteredVertex;
@@ -105,6 +109,7 @@ void mouseClick(int x, int y)
 
     			if (distanceToCenteredVertex < minimumDistanceForMouseOverSquare) {
     				symmetryObject.insertCenteredVertex(P.index);
+    				indexChosen = indexMouseOver = P.index;
     			} else {
     				indexChosen = indexMouseOver = symmetryObject.insertVertex(rootCoord);
     			}
@@ -137,22 +142,16 @@ void mouseClick(int x, int y)
     				msgtyp = COMM_MSGTYP_ADD_VERTEX;//vertexPointActive? COMM_MSGTYP_CHOOSE_VERTEX: COMM_MSGTYP_ADD_CENTERED_VERTEX;
     				break;
     		}
-    		cout << "vertexPointActive: " << (symmetryObject.getCenteredActive(VERTEX_CENTERED)? "true": "false") << endl;
-    		cout << "edgePointActive: " << (symmetryObject.getCenteredActive(EDGE_CENTERED)? "true": "false") << endl;
-    		cout << "facePointActive: " << (symmetryObject.getCenteredActive(FACE_CENTERED)? "true": "false") << endl;
 
-    		char strMess[200];
-			//snprintf(strMess, 40, "%d: [%.3f, %.3f]", indexMouseOver, coord_.x, coord_.y);
-			cout << "msgtyp: " << msgtyp << endl;
-			snprintf(strMess, 200, "%d, %.3f, %.3f, %.3f, 0.000", indexMouseOver, rootCoord.x, rootCoord.y, rootCoord.z);
-			cout << "Texten: " << strMess << endl;
-			CommMsg commMsgNewVertex(COMM_THREAD_GLUT, COMM_THREAD_MAIN, msgtyp, 0, strlen(strMess) + 1, strMess);
-			commSendMsg(&commMsgNewVertex);
+    		cout << "msgtyp: " << msgtyp << endl;
+			snprintf(strMess, 200, "%d, %d, %.3f, %.3f, %.3f, 0.000", COMM_MSGTYP_UPDATE_VERTEX, indexMouseOver, rootCoord.x, rootCoord.y, rootCoord.z);
+			commMsgList.push_back(strMess);
+
+
 		} else {	// väljer en vertex som man klickat på.
 				indexChosen = indexMouseOver;
-				CommMsg nyttMess(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_CHOOSE_VERTEX, 0, sizeof(int), (char*)&indexChosen);
-				commSendMsg(&nyttMess);
-				nyttMess.destroy();
+				snprintf(strMess, 200, "%d, %d", COMM_MSGTYP_CHOOSE_VERTEX, indexChosen);
+				commMsgList.push_back(strMess);
 		}
 	} else if (mode == 1 && indexMouseOver != -1) {
 
@@ -206,7 +205,6 @@ void mouseClick(int x, int y)
 				cout << "DET blev en FACE FACE" << endl;
 				break;
 			default:
-				//hurSluten = UndefinedCentered;
 				hurSluten = -1000;
 				cout << "Det blev jättefel här" << endl;
 				break;
@@ -225,34 +223,29 @@ void mouseClick(int x, int y)
 			case VERTEX_CENTERED:
 			case EDGE_CENTERED:
 			case FACE_CENTERED:{
-				cout << "Den ska vara sluten nu" << endl;
 
-				cout << (symmetryObject.addFaceToBe(hurSluten)? "gick bra att adda": "gick icke laya too");
-
-					// hämta nu senaste facet om det gick bra att adda face och skicka över det till guiet.
-				/*CommMsg nyttFace(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_UPDATE_FACE, 0, strlen(strToSend), strToSend);
-				commSendMsg(&nyttFace);
-				nyttFace.destroy();
+					// Addera facet
+				snprintf(strMess, 200, "%d, %d, %d", COMM_MSGTYP_UPDATE_FACE, symmetryObject.F.size(), sluten);
+				commMsgList.push_back(strMess);
 
 
-				int fNum = F.size()-1;
+						// Addera alla edges
+				int fNum = symmetryObject.F.size()-1;
 				int e = 0;
-				for (int f=0; f<F.size(); f++)
+				for (int f=0; f<symmetryObject.F.size(); f++)
 				{
-					for (int e=F[f].fr; e<F[f].fr + F[f].edges; e++)
+					for (int e=symmetryObject.F[f].fr; e<symmetryObject.F[f].fr + symmetryObject.F[f].edges; e++)
 					{
 							// id, fr, to, next, prev, oppo, face, len, k, d, len0, theta
-						snprintf(strToSend, 200, "%d, %s, %s, %s, %s, %s, %d", e, E[e].fr.toString().c_str(), 
-							E[e].to.toString().c_str(), E[e].next.toString().c_str(),
-							E[e].prev.toString().c_str(), E[e].oppo.toString().c_str(), 
-							f);
-						cout << strToSend << endl;
+						snprintf(strMess, 200, "%d, %d, %s, %s, %s, %s, %s, %d", COMM_MSGTYP_UPDATE_EDGE, e, symmetryObject.E[e].fr.toString().c_str(),
+							symmetryObject.E[e].to.toString().c_str(), symmetryObject.E[e].next.toString().c_str(),
+							symmetryObject.E[e].prev.toString().c_str(), symmetryObject.E[e].oppo.toString().c_str(), f);
+						cout << strMess << endl;
 
-						CommMsg nyttEdge(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_UPDATE_EDGE, 0, strlen(strToSend), strToSend);
-						commSendMsg(&nyttEdge);
-						nyttEdge.destroy();
+						commMsgList.push_back(strMess);
 					}
-				}*/
+				}
+
 				cout << "PRINT ALL:" << endl;
 				symmetryObject.printAll();
 
@@ -263,6 +256,8 @@ void mouseClick(int x, int y)
 				break;
 		}
 	}
+
+	return commMsgList;
 }
 
 
@@ -385,8 +380,6 @@ void SymmetryDrawable::drawedge(edge &e)
 {
 	VEC fr[9];
 	VEC to[9];
-
-
 
 	getAllFromRoots(getVec(e.fr), fr);
 	getAllFromRoots(getVec(e.to), to);

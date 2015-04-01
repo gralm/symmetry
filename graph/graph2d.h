@@ -78,7 +78,7 @@ VEC fromABtoXY(int x, int y);
 void fromXYtoAB(VEC XY, int *ABx, int *ABy);
 void graphDisplay();
 
-void mouseClick(int x, int y);
+std::list<std::string> mouseClick(int x, int y);
 
 
 

@@ -7,6 +7,7 @@ pthread_mutex_t mtxThread = PTHREAD_MUTEX_INITIALIZER;
 
 list<CommMsg> msgList;
 
+
 int commSendMsg(const CommMsg *msg)
 {
 

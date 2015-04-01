@@ -22,6 +22,7 @@ public:
 
 	int findInList();
 	void simplify();
+	void simplify(int centered);
 	void print() const;
 	void rotate(TYP r);
 	void rotate(const Prefix &r);
@@ -48,6 +49,7 @@ struct Point {
 	//VEC getpoint() const;
 	bool isDefined() const;
 	void print() const;
+	void simplify();
 	std::string toString() const ;
 	bool equalTo(Point &A);
 };
@@ -157,6 +159,7 @@ public:
 	bool getCenteredActive(int whichCenteredIndex);
 	void display();
 	void printAll();
+	bool fullTest();
 	VEC getVec(Point P_);
 		// ta bort detta och skapa en hel ärvd klass
 		// som testar allt senare

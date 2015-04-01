@@ -4,36 +4,9 @@
 #include <pthread.h>
 #include <list>
 #include <iostream>
-
-	// för thread-id
-#define COMM_THREAD_MAIN		3
-#define COMM_THREAD_GLUT		4	
-
-	// Message typ
-#define COMM_MSGTYP_EXIT					0
-#define COMM_MSGTYP_PAUSE					1
-#define COMM_MSGTYP_CHOOSE_VERTEX			2
-#define COMM_MSGTYP_ADD_VERTEX				3
-//#define COMM_MSGTYP_ADD_EDGE				9
-//#define COMM_MSGTYP_ADD_FACE				10
-#define COMM_MSGTYP_ADD_CENTERED_VERTEX		4
-#define COMM_MSGTYP_SET_MODE				5
-#define COMM_MSGTYP_SET_SYMMETRY_VALUE		9
-
-#define COMM_MSGTYP_UPDATE_VERTEX			6
-#define COMM_MSGTYP_UPDATE_EDGE				7
-#define COMM_MSGTYP_UPDATE_FACE				8
-
-	// return values messages (msg)
-#define COMM_RET_ID_CREATED			11
-#define COMM_RET_ID_OVERWRITTEN		12
-#define COMM_RET_ID_MISSING			13
-#define COMM_RET_ERROR				14
-#define COMM_RET_ID_OK				15
-
+#include "../publicDefines.h"
 
 extern pthread_mutex_t mtxThread;
-
 
 struct CommMsg {
 	int fromId;		// från vilken thread som meddelande sänds från
@@ -45,7 +18,7 @@ struct CommMsg {
 
 	CommMsg() {}
 
-	CommMsg(int fromId_, int toId_, int msgTyp_) 
+	CommMsg(int fromId_, int toId_, int msgTyp_)
 	{
 		fromId = fromId_;	toId = toId_; 	msgTyp = msgTyp_;
 		time = 0;	dataSiz = 0; 	data = 0;

@@ -16,7 +16,13 @@ Prefix::Prefix()
 
 }
 
+
 void Prefix::simplify()
+{
+	simplify(NOT_CENTERED);
+}
+
+void Prefix::simplify(int centered)
 {
 	list<TYP>::iterator it1, it2;
 	unsigned char rots[3];
@@ -96,6 +102,26 @@ void Prefix::simplify()
 				}
 			}
 		}
+
+		switch(centered)
+		{
+		case VERTEX_CENTERED:
+			// VP = 1
+			// VN = 1
+			break;
+		case EDGE_CENTERED:
+			// VP FP = 1
+			// FP VN = FN
+			// FN VN = 1
+			break;
+		case FACE_CENTERED:
+			// FP VP = VN
+			// FN VN = VP
+			// FP = 1
+			// FN = 1
+			break;
+		}
+
 	} while(d >= 0);
 
 	return;
