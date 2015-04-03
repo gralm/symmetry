@@ -225,9 +225,21 @@ list<string> mouseClick(int x, int y)
 			case FACE_CENTERED:{
 
 					// Addera facet
-				snprintf(strMess, 200, "%d, %d, %d", COMM_MSGTYP_UPDATE_FACE, symmetryObject.F.size(), sluten);
+				// msgtyp, id, fr, len, type, flat
+				//snprintf(strMess, 200, "%d, %d, %d", COMM_MSGTYP_UPDATE_FACE, symmetryObject.F.size(), sluten);
+				snprintf(strMess, 200, "%d, %d, %d, %d, %d, 0.000", 
+					COMM_MSGTYP_UPDATE_FACE, symmetryObject.F.size(), 
+					symmetryObject.E.size(), SymmetryObject::E_ToBe.size(), 
+					sluten==2? NOT_CENTERED: sluten);
+
+
+				//snprintf(strToSend, 200, "%d,%d,%d,%d", 
+				//F.size()-1, sizE, E.size() - sizE,
+				// (sluten == 2? -1: sluten));
+
 				commMsgList.push_back(strMess);
 
+				symmetryObject.addFaceToBe(sluten==2? NOT_CENTERED: sluten);
 
 						// Addera alla edges
 				int fNum = symmetryObject.F.size()-1;
@@ -240,7 +252,10 @@ list<string> mouseClick(int x, int y)
 						snprintf(strMess, 200, "%d, %d, %s, %s, %s, %s, %s, %d", COMM_MSGTYP_UPDATE_EDGE, e, symmetryObject.E[e].fr.toString().c_str(),
 							symmetryObject.E[e].to.toString().c_str(), symmetryObject.E[e].next.toString().c_str(),
 							symmetryObject.E[e].prev.toString().c_str(), symmetryObject.E[e].oppo.toString().c_str(), f);
-						cout << strMess << endl;
+						cout << "graph2d.cpp, strMess: \t" << strMess << endl;
+						symmetryObject.E[e].print();
+						cout << endl;
+
 
 						commMsgList.push_back(strMess);
 					}

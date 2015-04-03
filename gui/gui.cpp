@@ -35,9 +35,27 @@ list<string> stringSplit(const char *str, int len, char splitChar)
 	return strList;
 }
 
-list<string> stringSplit(string str, char splitChar)
+/*list<string> stringSplit(string str, char splitChar)
 {
 	return stringSplit(str.c_str(), str.size(), splitChar);
+}*/
+list<string> stringSplit(const string &str, char splitChar)
+{
+	list<string> strList;
+	if (str.size() == 0)
+		return strList;
+
+	int oldPos = 0;
+	int newPos = str.find(splitChar);
+	while (oldPos != string::npos)
+	{
+		strList.push_back(str.substr(oldPos, newPos-oldPos));
+		oldPos = newPos + 1;
+		newPos = str.find(splitChar, newPos);
+	}
+
+	return strList;
+
 }
 
 void createEdit(HWND hwnd, const char* text, int left, int width, int top, int height, int id)
@@ -244,6 +262,9 @@ void setItemInListView(int listViewType, list<string> &cellValue)
 			hwndObject = hwndEdgeListView;
 			break;
 		case IDC_FACE_LISTVIEW: {
+			cout << "READ HEEEEER" << endl;
+			for (list<string>::iterator itStr = cellValue.begin(); itStr != cellValue.end(); itStr++)
+				cout << "\t" << *itStr << endl;
 			hwndObject = hwndFaceListView;
 			list<string>::iterator itstr = cellValue.begin();
 			itstr++;
@@ -251,13 +272,13 @@ void setItemInListView(int listViewType, list<string> &cellValue)
 			itstr++;
 			switch(atoi(itstr->c_str()))
 			{
-				case -2:
+				case VERTEX_CENTERED:
 					*itstr = "VC";
 					break;
-				case -3:
+				case EDGE_CENTERED:
 					*itstr = "EC";
 					break;
-				case -4:
+				case FACE_CENTERED:
 					*itstr = "FC";
 					break;
 			}

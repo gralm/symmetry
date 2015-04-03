@@ -21,6 +21,6 @@
 
 void *glutThreadFunc(void *threadid);
 
-CommMsg msgFromString(std::string str);
+void convertAndSendMsgFromString(std::string str);
 
 #endif 

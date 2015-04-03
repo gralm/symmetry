@@ -31,9 +31,30 @@ void init(void)
     cout << "void init()" << endl;
 }
 
-CommMsg msgFromString(std::string str)
+    // glöm inte att destroyya dessa då den njuuuazz här
+void convertAndSendMsgFromString(string str)
 {
-
+    cout << "\tmsgFromString:" << endl;
+    int pos = str.find(',', 0);
+    cout << "pos: " << pos << endl;
+    int msgType = atoi(str.c_str());
+    str = str.substr(pos + 1);
+    cout << "msgType: " << msgType << endl;
+    switch(msgType) {
+    case COMM_MSGTYP_UPDATE_VERTEX: 
+    case COMM_MSGTYP_UPDATE_EDGE:
+    case COMM_MSGTYP_UPDATE_FACE: {
+        //  CommMsg(int fromId_, int toId_, int msgTyp_, int time_, int dataSiz_, const char *data_)
+        
+        cout << "Meddelande som skrivs: " << str << endl;
+        CommMsg msg(COMM_THREAD_GLUT, COMM_THREAD_MAIN, msgType, 0, str.size(), str.c_str());
+        commSendMsg(&msg);
+        break;
+    }
+    default:
+        cout << "default?" << endl;
+        break;
+    }
 }
 
 void checkThreads()
@@ -180,8 +201,10 @@ void mouseFunc(int button, int state, int x, int y)
                 list<string> stringsToMain = mouseClick(x, y);
                 cout << "glutThread: it will sendas " << stringsToMain.size() << " strings till main" << endl;
                 int i=0;
-                for (list<string>::iterator itStr = stringsToMain.begin(); itStr != stringsToMain.end(); itStr++)
+                for (list<string>::iterator itStr = stringsToMain.begin(); itStr != stringsToMain.end(); itStr++) {
                 	cout << i++ << ":\t" << *itStr << endl;
+                    convertAndSendMsgFromString(*itStr);
+                }
             }
             cout << "Left button \t";
             break;

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <pthread.h>
 #include <time.h>
+//#include <Winuser.h>
 #include "comm/comm.h"
 #include "glutThread.h"
 #include "gui/gui.h"
@@ -149,14 +150,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         case WM_NOTIFY:
             //cout << "NOFITFY: " << "msg: " << msg << "\twParam: " << wParam << "\tlParam: " << lParam <<  endl;
             break;
-
-        /*case WM_TIMER: {
-            //cout << "|" << endl;
-
-            //SetTimer(hwnd, 0, UI_UPDATE_TIME, 0);
-            }
-            break;*/
-
         case WM_CLOSE:
             DestroyWindow(hwnd);
             break;
@@ -173,6 +166,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
+    UINT timeToHandleNextThreadEvent = UI_UPDATE_TIME;
     //cout << "|" << endl;
     bool quitAfter = false;
     static CommMsg msg;
@@ -200,20 +194,21 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
                     SendDlgItemMessage(hwnd, IDC_LISTBOX, LB_SETCURSEL, *index_, 0);
                     msg.destroy();
                     break;}
-                case COMM_MSGTYP_ADD_VERTEX: {
+                case COMM_MSGTYP_ADD_VERTEX: 
+                case COMM_MSGTYP_UPDATE_VERTEX: {
                     list<string> returned = stringSplit((const char*) msg.data, msg.dataSiz, ',');
                     
                     list<string>::iterator firstIt = returned.begin();
                     int vertexId = atoi(firstIt->c_str());
                     switch(vertexId)
                     {
-                        case -2:
+                        case VERTEX_CENTERED:
                             *firstIt = "VC";
                             break;
-                        case -3:
+                        case EDGE_CENTERED:
                             *firstIt = "EC";
                             break;
-                        case -4:
+                        case FACE_CENTERED:
                             *firstIt = "FC";
                             break;
                     }
@@ -230,6 +225,34 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
 
                 case COMM_MSGTYP_UPDATE_FACE:{
                     list<string> returned = stringSplit((const char*) msg.data, msg.dataSiz, ',');
+                    
+                    cout << "\tREAD HEEEERRE MAIN.cpp" << endl;
+
+                    list<string>::iterator firstIt = returned.begin();
+                    firstIt++;
+                    firstIt++;
+                    firstIt++;
+
+                    int faceType = atoi(firstIt->c_str());
+                    switch(faceType)
+                    {
+                        case NOT_CENTERED:
+                            *firstIt = "";
+                            break;
+                        case VERTEX_CENTERED:
+                            *firstIt = "VC";
+                            break;
+                        case EDGE_CENTERED:
+                            *firstIt = "EC";
+                            break;
+                        case FACE_CENTERED:
+                            *firstIt = "FC";
+                            break;
+                    }
+
+
+                    for (list<string>::iterator itStr = returned.begin(); itStr != returned.end(); itStr++)
+                        cout << "\t" << *itStr << endl;
                     setItemInListView(IDC_FACE_LISTVIEW, returned);
                     msg.destroy();
                     break;}
@@ -250,16 +273,16 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
 
                     switch(*val)
                     {
-                        case -2:
+                        case VERTEX_CENTERED:
                             cout << " * blev en vertex-centered vertex" << endl;
                             CheckDlgButton(hwnd, IDC_CHECK_BOX_1, BST_CHECKED);
                             //BST_UNCHECKED
                             break;
-                        case -3:
+                        case EDGE_CENTERED:
                             cout << " * blev en edge-centered vertex" << endl;
                             CheckDlgButton(hwnd, IDC_CHECK_BOX_2, BST_CHECKED);
                             break;
-                        case -4:
+                        case FACE_CENTERED:
                             cout << " * blev en face-centered vertex" << endl;
                             CheckDlgButton(hwnd, IDC_CHECK_BOX_3, BST_CHECKED);
                             break;
@@ -274,11 +297,13 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
                     cout << "MAIN - nu ska mainThreaden gÃ¶ra nÃ¥got annat" << endl;
                     break;
             }
+            // omedelbart efteråt ska det hämtas ytterligare ett meddelande.
+            timeToHandleNextThreadEvent = 0;//USER_TIMER_MINIMUM;
             break;
+
         }
         case COMM_RET_ID_MISSING:
             // om det inte finns nÃ¥gra inkomna meddelanden
-            //cout << "MAIN - *" << endl;
             break;
         default:
             cout << "ERR: MAIN - det blev no annat: " << val << endl;
@@ -286,10 +311,11 @@ void CALLBACK checkMainThreads(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwT
             msg.destroy();
             break;
     }
-    if (quitAfter) 
+    if (quitAfter) {
         cout << "kommer man hit?" << endl;
-    else 
-        SetTimer(hwnd, 0, UI_UPDATE_TIME, checkMainThreads);
+    } else {
+        SetTimer(hwnd, 0, timeToHandleNextThreadEvent, checkMainThreads);
+    }
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
