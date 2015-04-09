@@ -12,6 +12,7 @@
 #include <Winuser.h>
 #include <winuser.h>
 #include <Windowsx.h>
+#include "../publicDefines.h"
 
 
 

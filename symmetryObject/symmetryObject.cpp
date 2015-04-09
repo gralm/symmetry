@@ -9,17 +9,17 @@ vector<edge> SymmetryObject::E_ToBe;
 
 SymmetryObject::SymmetryObject()
 {
-	/*facePointActive = false;
+	facePointActive = false;
 	edgePointActive = false;
-	vertexPointActive = false;*/
+	vertexPointActive = false;
 
 
 	// test
-	facePointActive = true;
+	/*facePointActive = true;
 	edgePointActive = true;
 	vertexPointActive = true;
 
-	V.push_back(VEC(.3, .14));
+	V.push_back(VEC(.3, .14));*/
 
 }
 
@@ -430,114 +430,6 @@ int SymmetryObject::getEnclosedPoints(VEC *A, list<Point> &PntList)
 }
 
 
-// gör om den här funktionen och få bort jävla r2 o trams
-/*Point SymmetryObject::getClosestPoint(VEC co_)
-{
-		
-	Point P_;
-	Prefix startPrefix = getPrefix(co_);
-	VEC co2_ = getRootpoint(co_);
-	P_.index = -1;// mouseOverIndex(co2_);
-	double smallestDistanceSquare = 100.0;
-
-
-	bool coLeftSide = (co2_.y > TAN30*co2_.x);
-
-	// om det är på right side jämför med alla coords på VP och FN, annars jämför med VN och FP
-	TYP rot1 = coLeftSide? VP: VN;
-	TYP rot2 = coLeftSide? FN: FP;
-
-	Orientation ori1;
-	VEC co21_ = ori1.getOCFromWC(co2_);
-	ori1.rotate(rot1);
-	co21_ = ori1.getWCFromOC(co21_);
- 	
- 	Orientation ori2;
-	VEC co22_ = ori2.getOCFromWC(co2_);
-	ori2.rotate(rot2);
-	co22_ = ori2.getWCFromOC(co22_);
-
-	double newDistance;
-
-	if (facePointActive) {
-		newDistance = (faceCenteredPoint - co2_) * (faceCenteredPoint - co2_);
-		if (newDistance < smallestDistanceSquare) {
-			smallestDistanceSquare = newDistance;
-			P_.index = FACE_CENTERED;
-			P_.Pfx = startPrefix;
-		}
-	}
-
-	if (edgePointActive)
-	{
-		if (coLeftSide)
-			newDistance = (edgeCenteredPoint - co2_) * (edgeCenteredPoint - co2_);
-		else
-			newDistance = (VEC(.5, 0) - co2_) * (VEC(.5, 0) - co2_);
-
-		if (newDistance < smallestDistanceSquare) {
-			smallestDistanceSquare = newDistance;
-			P_.index = FACE_CENTERED;
-			P_.Pfx = startPrefix;
-			if (!coLeftSide)
-				P_.Pfx.rotate(VN);
-		}
-	}
-
-	if (vertexPointActive)
-	{
-		newDistance = co2_*co2_;
-		if (newDistance < smallestDistanceSquare)
-		{
-			smallestDistanceSquare = newDistance;
-			P_.index = VERTEX_CENTERED;
-			P_.Pfx = startPrefix;
-		}
-	}
-
-	for (unsigned int v=0; v<V.size(); v++)
-	{
-		newDistance = (V[v] - co2_) * (V[v] - co2_);
-		if (newDistance < smallestDistanceSquare)
-		{
-			smallestDistanceSquare = newDistance;
-			P_.index = v;
-			P_.Pfx = startPrefix;
-		}
-	}
-
-		// här är alla V vridna med rot1
-	for (unsigned int v=0; v<V.size(); v++)
-	{
-		newDistance = (V[v] - co21_) * (V[v] - co21_);
-		if (newDistance < smallestDistanceSquare)
-		{
-			smallestDistanceSquare = newDistance;
-			P_.index = v;
-			P_.Pfx = startPrefix;
-			P_.Pfx.rotate(rot1);
-		}
-	}
-
-		// här är alla V vridna med rot2;
-	for (unsigned int v=0; v<V.size(); v++)
-	{
-		newDistance = (V[v] - co22_) * (V[v] - co22_);
-		if (newDistance < smallestDistanceSquare)
-		{
-			smallestDistanceSquare = newDistance;
-			P_.index = v;
-			P_.Pfx = startPrefix;
-			P_.Pfx.rotate(rot2);
-		}
-	}
-
-	P_.Pfx.simplify();
-
-	return P_;
-}*/
-
-
 Point SymmetryObject::getClosestPoint(VEC co_)
 {
 	Point P_;
@@ -667,52 +559,62 @@ bool SymmetryObject::addFaceToBe(int sluten)
 
 		Prefix PfxNext;
 		Prefix PfxPrev;
-		if (sluten == NOT_CENTERED) {
-			edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
-			edgeToPushBack.prev = Edge(PfxPrev, (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
-		} else if (sluten == VERTEX_CENTERED) {
 
-			if (i==0)
-				PfxPrev.rotate(VN);
-			if (i==E_ToBe.size()-2)
-				PfxNext.rotate(VP);
-			edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
-			edgeToPushBack.prev = Edge(PfxPrev, i==0? sizE + E_ToBe.size() - 2: sizE + i - 1);
-			//edgeToPushBack.next = (i==E_ToBe.size()-2? Edge(Pfx, sizE): Edge(Prefix(), sizE + i + 1));
-			
-		} else if (sluten == EDGE_CENTERED) {
-			//PfxNext;
-			//PfxPrev;
-			Prefix cpPrefixHelvete;
-
-			cpPrefixHelvete = E_ToBe[E_ToBe.size()-1].fr.Pfx;			
-			cpPrefixHelvete.rotate(draBortPfxInv);
-
-			cout << "when it is done, it becomasar: ";
-			cpPrefixHelvete.print();
-			cout << endl;
-
-			if (i==0) {
-				PfxPrev = cpPrefixHelvete;
+		switch (sluten) {
+			case NOT_CENTERED: {
+				edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
+				edgeToPushBack.prev = Edge(PfxPrev, (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
+				break;
 			}
+			case VERTEX_CENTERED: {
 
-
-			if (i==E_ToBe.size()-2) {
-				PfxNext = cpPrefixHelvete;
+				if (i==0)
+					PfxPrev.rotate(VN);
+				if (i==E_ToBe.size()-2)
+					PfxNext.rotate(VP);
+				edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
+				edgeToPushBack.prev = Edge(PfxPrev, i==0? sizE + E_ToBe.size() - 2: sizE + i - 1);
+				//edgeToPushBack.next = (i==E_ToBe.size()-2? Edge(Pfx, sizE): Edge(Prefix(), sizE + i + 1));
+				break;
 			}
+			case EDGE_CENTERED: {
+				Prefix cpPrefixHelvete;
 
-			edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
-			edgeToPushBack.prev = Edge(PfxPrev, (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
-		} else if (sluten == FACE_CENTERED) {
-			Prefix PfxNext;
-			Prefix PfxPrev;
+				cpPrefixHelvete = E_ToBe[E_ToBe.size()-1].fr.Pfx;			
+				cpPrefixHelvete.rotate(draBortPfxInv);
 
-			if (i==0)
-				PfxPrev.rotate(FN);
-			if (i==E_ToBe.size()-2)
-				PfxNext.rotate(FP);
-			edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
-			edgeToPushBack.prev = Edge(PfxPrev, (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
+				cout << "when it is done, it becomasar: ";
+				cpPrefixHelvete.print();
+				cout << endl;
+
+				if (i==0) {
+					PfxPrev = cpPrefixHelvete;
+				}
+
+
+				if (i==E_ToBe.size()-2) {
+					PfxNext = cpPrefixHelvete;
+				}
+
+				edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
+				edgeToPushBack.prev = Edge(PfxPrev, (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
+				break;
+			}
+			case FACE_CENTERED: {
+				Prefix PfxNext;
+				Prefix PfxPrev;
+
+				if (i==0)
+					PfxPrev.rotate(FN);
+				if (i==E_ToBe.size()-2)
+					PfxNext.rotate(FP);
+				edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
+				edgeToPushBack.prev = Edge(PfxPrev, (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
+				break;
+			}
+			default:
+				cout << "symmetryObject.cpp\tHIT SKA DEN INTE KOMMA!!!!!!!!!!!" << endl;
+				break;
 		}
 
 			// kolla genom om man kan hitta någon opposite
@@ -761,35 +663,6 @@ bool SymmetryObject::addFaceToBe(int sluten)
 		// id, first edge, num of edges, type, görasigplatt-styrka
 	snprintf(strToSend, 200, "%d,%d,%d,%d", F.size()-1, sizE, E.size() - sizE, sluten);
 	cout << "detta skickas when face skapas: " << strToSend << endl;
-
-	//COMM_MSGTYP_UPDATE_EDGE
-
-
-		// lägg över det här någon annanstasn.
-/*
-	CommMsg nyttFace(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_UPDATE_FACE, 0, strlen(strToSend), strToSend);
-	commSendMsg(&nyttFace);
-	nyttFace.destroy();
-
-
-	int fNum = F.size()-1;
-	int e = 0;
-	for (int f=0; f<F.size(); f++)
-	{
-		for (int e=F[f].fr; e<F[f].fr + F[f].edges; e++)
-		{
-				// id, fr, to, next, prev, oppo, face, len, k, d, len0, theta
-			snprintf(strToSend, 200, "%d, %s, %s, %s, %s, %s, %d", e, E[e].fr.toString().c_str(), 
-				E[e].to.toString().c_str(), E[e].next.toString().c_str(),
-				E[e].prev.toString().c_str(), E[e].oppo.toString().c_str(), 
-				f);
-			cout << strToSend << endl;
-
-			CommMsg nyttEdge(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_UPDATE_EDGE, 0, strlen(strToSend), strToSend);
-			commSendMsg(&nyttEdge);
-			nyttEdge.destroy();
-		}
-	}*/
 
 	E_ToBe.clear();
 	printAll();
