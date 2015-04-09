@@ -31,7 +31,7 @@ void init(void)
     cout << "void init()" << endl;
 }
 
-CommMsg msgFromString(std::string str)
+CommMsg msgFromString(string str)
 {
 
 }
