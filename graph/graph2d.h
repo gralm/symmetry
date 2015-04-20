@@ -3,6 +3,7 @@
 
 
 #include "../publicDefines.h"
+#include "../tm/tm.h"
 #include "../symmetryObject/objs.h"
 
 #include <cmath>
@@ -32,13 +33,65 @@ public:
 	void drawFaces();
 	void setColorOfVertex(int vert_, double str_);
 	void display();
-
 };
 
 
+
+
+
+class Camera {
+private:
+	VEC pos;
+	MAT ori;	// ori.X pekar är höger på skärmen,
+				// ori.Y pekar uppåt på skärmen
+				// ori.Z pekar mot kameran, kameranlinsen pekar i negativ ori.Z-riktning
+
+	VEC pos2;
+	MAT ori2;
+
+	double xMin;
+	double xMax;
+	double yMin;
+	double yMax;
+
+
+    int scrWidth;
+    int scrHeight;
+
+    void setPositionAndOrientationFromProjectionMatrix();
+    //VEC
+
+
+
+public:
+	Camera();
+	void updateCamera();
+	void setPosition(VEC newPos);
+
+	void rotateWC(VEC rot, double angle);
+	void rotateSC(VEC rot, double angle);
+	void translateWC(VEC tra);
+	void translateSC(VEC tra);
+
+	void setScreenSize(int x, int y);
+	VEC fromABtoXY(int x, int y);
+	void fromXYtoAB(VEC XY, int *ABx, int *ABy);
+
+	MAT getOrientation();
+	VEC getPosition();
+
+	void setPositionAndOrientation(const VEC &newPos, const MAT &newOri, double timeLapse);
+};
+
+
+
+
+
 //extern Graph2D symmetryObject;
-extern SymmetryDrawable symmetryObject;
-//SymmetryDrawable
+extern SymmetryObject symmetryObject;
+extern SymmetryDrawable *symmetryDrawable;
+extern Camera *camera;
+
 
 
 extern int scrWidth;
@@ -77,6 +130,7 @@ VEC fromABtoXY(int x, int y);
 	//XY är transformerade koordinater, edgelängden = 1.0
 void fromXYtoAB(VEC XY, int *ABx, int *ABy);
 void graphDisplay();
+void initGraph();
 
 std::list<std::string> mouseClick(int x, int y);
 
@@ -99,6 +153,4 @@ orientation/		symmetryObject/symmetryBaseClasses/
 class.Graph2D			symmetricObject.cpp
 						symmetricGraphicalObject.cpp
 						symmetricSimulationObject.cpp
-
-
 */

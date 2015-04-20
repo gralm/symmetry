@@ -8,6 +8,13 @@
 #define UPD_THREAD      100
 
 
+	// Grafik
+#define GLUT_WINDOW_POSITION_X			600
+#define GLUT_WINDOW_POSITION_Y			100
+#define GLUT_WINDOW_WIDTH			600
+#define GLUT_WINDOW_HEIGHT			600
+#define WIN32_WINDOW_POSITION_X
+#define WIN32_WINDOW_POSITION_Y
 
 	// Matematik
 #define COS30			0.86602540378444
@@ -22,6 +29,7 @@
 
 #define VEC0(S)   	(tmath::vectorn<S, 3>(0,0,0))
 #define VEC 		tmath::vectorn<double, 3>
+#define MAT			tmath::matrix<double,3,3>
 
 #define TYP		unsigned char
 #define INV_ROTATION(r)		(r^1)

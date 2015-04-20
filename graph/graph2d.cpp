@@ -5,16 +5,12 @@ using namespace std;
 
 
 // Graph2D symmetryObject;
-SymmetryDrawable symmetryObject;
+SymmetryObject symmetryObject;
+SymmetryDrawable *symmetryDrawable = 0;
+Camera *camera;
 
 int mode = 0;
 
-double xMin = 0;
-double xMax = 0;
-double yMin = 0;
-double yMax = 0;
-int scrWidth = 0;
-int scrHeight = 0;
 
 
 const unsigned char 	SP = 2;		// positiv rotation i triangeln
@@ -35,14 +31,24 @@ double minimumDistanceForMouseOverSquare = 0.0003;
 
 void graphDisplay()
 {
-	symmetryObject.display();
+	if (symmetryDrawable)
+		symmetryDrawable->display();
+}
+
+void initGraph()
+{
+		// initiera först med en lite halvful olaglig c, dynamic_cast<>() funkar inte ens för att bryta mot lagarna, men jag vet vad jag gör så håll käft!!!
+	symmetryDrawable = (SymmetryDrawable*) &symmetryObject;
+	camera = new Camera();
+
+	//camera->updateCamera();
 }
 
 void setMousePosition(int x, int y)
 {
 	mouseX = x;
 	mouseY = y;
-	VEC coords = fromABtoXY(x, y);
+	VEC coords = camera->fromABtoXY(x, y);
 	Point p = symmetryObject.getClosestPoint(coords);
 	if (p.isDefined()) {
 		VEC closestVertex = symmetryObject.getVec(p);
@@ -67,33 +73,25 @@ void setMousePosition(int x, int y)
 
 
 	// AB är koordinater på skärmen, pixelposition
-VEC fromABtoXY(int x, int y)
-{
-	return VEC(
-		xMin + x*(xMax - xMin)/scrWidth,
-		yMax - y*(yMax - yMin)/scrHeight);
-	
-}
+
 
 	//XY är transformerade koordinater, edgelängden = 1.0
-void fromXYtoAB(VEC XY, int *ABx, int *ABy)
+/*void fromXYtoAB(VEC XY, int *ABx, int *ABy)
 {
 	*ABx = scrWidth*(XY.x + 0.5)*2.0/3.0;
 	*ABy = scrHeight*(XY.y + 1.0)*COS30;
-}
-
-
+}*/
 
 
 
 list<string> mouseClick(int x, int y)
 {
 	list<string> commMsgList;
-	cout << "here klickas it: " << fromABtoXY(x, y) << endl;
+	cout << "here klickas it: " << camera->fromABtoXY(x, y) << endl;
 
 	static char strMess[200];
 
-	VEC realCoord(fromABtoXY(x, y));
+	VEC realCoord(camera->fromABtoXY(x, y));
 	VEC rootCoord = getRootpoint(realCoord);
 
 
@@ -338,14 +336,18 @@ SymmetryDrawable::SymmetryDrawable()
 void SymmetryDrawable::drawPoint(VEC _P)
 {
 	int siz_ = 10;	// 10 pixlar hög och 10 pixlar bred punkt
-	double delta_ = siz_ *(xMax - xMin)*0.5/scrWidth;
 	
+	// skriv om den här jävla raden så den inte ser så jävla ful ut.
+	double delta_ = (camera->fromABtoXY(siz_, 0).x - camera->fromABtoXY(0, 0).x) / (2.);
+	//double delta_ = siz_ *(xMax - xMin)*0.5/scrWidth;
+
 	glBegin(GL_LINES);
 		glVertex3f(_P.x-delta_, _P.y, 0.0);
 		glVertex3f(_P.x+delta_, _P.y, 0.0);
 	glEnd();
 
-	delta_ = siz_ *(yMax - yMin)*0.5/scrHeight;
+	delta_ = (camera->fromABtoXY(0, 0).y - camera->fromABtoXY(0, siz_).y) / (2.);
+		//delta_ = siz_ *(yMax - yMin)*0.5/scrHeight;
 	
 	glBegin(GL_LINES);
 		glVertex3f(_P.x, _P.y-delta_, 0.0);
@@ -356,7 +358,10 @@ void SymmetryDrawable::drawPoint(VEC _P)
 void SymmetryDrawable::drawCircle(VEC _P, bool filled)	// egentligen en hexagon
 {
 	int siz_ = 10;	// 10 pixlar hög och 10 pixlar bred punkt
-	double delta_ = siz_ *(xMax - xMin)*0.5/scrWidth;
+
+		// skriv om den här jävla raden så den inte ser så jävla ful ut.
+	double delta_ = (camera->fromABtoXY(siz_, 0).x - camera->fromABtoXY(0, 0).x) / (2.);
+	//double delta_ = siz_ *(xMax - xMin)*0.5/scrWidth;
 
 	glBegin(filled? GL_POLYGON: GL_LINE_STRIP);
 		for (int i=0; i<2; i++)
@@ -549,7 +554,7 @@ void SymmetryDrawable::display()
 
 
     	// rita musem p, om inte mouseOver
-	VEC coords_ = fromABtoXY(mouseX, mouseY);
+	VEC coords_ = camera->fromABtoXY(mouseX, mouseY);
 	//cout << "coords of mouse: ";
 	//coords_.print();
 	if (mode == 0) {

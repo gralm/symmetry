@@ -8,27 +8,12 @@ using namespace std;
     Sleep(500);
 */
 
+extern Camera *camera;
+
 
 void init(void)
 {
-    /* select clearing (background) color */
-    glClearColor (0.0, 0.0, 0.0, 0.0);
-
-    /* initialize viewing values */
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    //void glOrtho(left,right,bottom,top,nearVal,farVal);
-
-    xMin = -.5;
-    xMax = 1.0;
-    yMin = -.5;
-    yMax = 1.;
-
-    //Graph2D::test();
-
-    glOrtho(xMin, xMax, yMin, yMax, -1.0, 1.0);
-
-    cout << "void init()" << endl;
+    initGraph();
 }
 
 
@@ -79,6 +64,7 @@ void checkThreads()
     {
         case COMM_MSGTYP_EXIT:
             cout << "nu ska glutThreaden dödas" << endl;
+            delete camera;
             glutLeaveMainLoop();
             break;
         case COMM_MSGTYP_PAUSE:
@@ -260,15 +246,12 @@ void keyboardFunc(unsigned char key, int x, int y)
 
 void reshapeFunc(int width, int height)
 {
-    scrWidth = width;
-    scrHeight = height;
-    glViewport(0,0,width,height);
+	camera->setScreenSize(width, height);
 }
 
 void display()
 {
     graphDisplay();
-    //symmetryObject.display();
 }
 
 void *glutThreadFunc(void *threadid)
@@ -281,12 +264,12 @@ void *glutThreadFunc(void *threadid)
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(600, 600);
-    scrWidth = 300;
-    scrHeight = 300;
 
-    glutInitWindowPosition(600, 100);
+
+    glutInitWindowPosition(GLUT_WINDOW_POSITION_X, GLUT_WINDOW_POSITION_Y);
     glutCreateWindow("Hej");
-
+    init();
+    camera->setScreenSize(300, 300);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
     //glutCloseFunc(closeGlut);
     glutKeyboardFunc(keyboardFunc);
@@ -298,14 +281,13 @@ void *glutThreadFunc(void *threadid)
     glutMotionFunc(mouseMotionFunc);
     glutPassiveMotionFunc(mousePassiveMotionFunc);
 
-    init();
+
     glutIdleFunc(idleFunc);
     //glutDisplayFunc(display);
     glutDisplayFunc(display);
     cout << "before main loop" << endl;
     glutMainLoop();
     cout << "den lyckades avsluta glutMainLoop()" << endl;
-
     CommMsg msg(COMM_THREAD_GLUT, COMM_THREAD_MAIN, COMM_MSGTYP_EXIT, 0, 0, 0);
     commSendMsg(&msg);
     

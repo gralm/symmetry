@@ -20,6 +20,7 @@ bygg:
 	make -s $(OBJPATH)glutThread.o
 	make -s $(OBJPATH)others.o
 	make -s $(OBJPATH)symmetryRelaxation.o
+	make -s $(OBJPATH)camera.o
 	$(CC) -o $(EXEFILE).exe $(OBJPATH)*.o -L "C:\MinGW\freeglut\lib" -l freeglut -lgdi32 -lopengl32 -lglu32 -lpthreadGC2
 
 $(OBJPATH)main.o: main.cpp
@@ -57,6 +58,9 @@ $(OBJPATH)others.o: symmetryObject/others.cpp
 
 $(OBJPATH)symmetryRelaxation.o: symmetryObject/symmetryRelaxation/symmetryRelaxation.cpp
 	$(CC) $(OBJFLAGS) $(OBJPATH)symmetryRelaxation.o symmetryObject/symmetryRelaxation/symmetryRelaxation.cpp -I $(INC_DIR)
+
+$(OBJPATH)camera.o: graph/camera.cpp
+	$(CC) $(OBJFLAGS) $(OBJPATH)camera.o graph/camera.cpp -I $(INC_DIR)
 
 
 onlyglut:

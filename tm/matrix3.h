@@ -177,7 +177,7 @@ public:
 	inline const vectorn<T,3> column(int idx) {
 		return vectorn<T,3>(*(&xx + idx),*(&xx + idx+ 3),*(&xx + idx + 6));
 	}
-	inline void normalize_column() {
+	/*inline void normalize_column() {
 		vectorn<T,3> v0,v1,v2, u0, u1, u2;
 		v0 = vectorn<T,3>(xx, yx,zx);
 		v1 = vectorn<T,3>(xy, yy,zy);
@@ -191,7 +191,7 @@ public:
 		column(0, u0);
 		column(1, u0);
 		column(2, u0);
-	}
+	}*/
 	// cast operations
 	operator T*() {
 		return &xx;
