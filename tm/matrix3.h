@@ -89,11 +89,24 @@ public:
 		zx *= num; zy *= num; zz *= num;
 		return *this;
 	}
+	inline matrix<T,3,3> operator*=(const matrix<T,3,3> &m) {
+		*this = *this * m;
+		return *this;
+	}
 	inline matrix<T,3,3> operator/=(const T& num) {
 		xx /= num; xy /= num; xz /= num;
 		yx /= num; yy /= num; yz /= num;
 		zx /= num; zy /= num; zz /= num;
 		return *this;
+	}
+	inline matrix<T,3,3> operator/=(const matrix<T,3,3>& m) {
+		/*matrix<T,3,3> inve = m.inv();
+		*this = *this * inve;*/
+		*this *= m.inv();
+		return *this;
+	}
+	inline matrix<T,3,3> operator/(const matrix<T,3,3>& m) const {
+		return *this * m.inv();;
 	}
 	// stream operations
 	friend std::ostream& operator<<(std::ostream& out, const matrix<T,3,3>& m) {
@@ -317,7 +330,7 @@ public:
         zx = x;     zy = y;
     }
 
-    matrix<T,3,3> inv()
+    matrix<T,3,3> inv() const
     {
     	T _d = xx*yy*zz + yx*zy*xz + zx*xy*yz - xx*zy*yz - yx*xy*zz - zx*yy*xz;
     	if (_d == 0)

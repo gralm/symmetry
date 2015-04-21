@@ -33,6 +33,9 @@ void graphDisplay()
 {
 	if (symmetryDrawable)
 		symmetryDrawable->display();
+
+	if (camera)
+		camera->updateCamera();
 }
 
 void initGraph()
@@ -40,6 +43,20 @@ void initGraph()
 		// initiera först med en lite halvful olaglig c, dynamic_cast<>() funkar inte ens för att bryta mot lagarna, men jag vet vad jag gör så håll käft!!!
 	symmetryDrawable = (SymmetryDrawable*) &symmetryObject;
 	camera = new Camera();
+
+
+	double c = cos(-1);
+	double s = sin(-1);
+
+	cout << "fixar kamera rotation nu" << endl;;
+	camera->setPositionAndOrientation(
+			VEC(0, 0, .5),
+			MAT(	c, s, 0,
+					-s,c, 0,
+					0, 0, 1),
+			1000);
+	cout << "done" << endl;
+
 
 	//camera->updateCamera();
 }

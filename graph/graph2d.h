@@ -46,8 +46,8 @@ private:
 				// ori.Y pekar uppåt på skärmen
 				// ori.Z pekar mot kameran, kameranlinsen pekar i negativ ori.Z-riktning
 
-	VEC pos2;
-	MAT ori2;
+	VEC oldPos;
+	MAT oldOri;
 
 	double xMin;
 	double xMax;
@@ -58,14 +58,23 @@ private:
     int scrWidth;
     int scrHeight;
 
+    	// För förändring av kameran
     void setPositionAndOrientationFromProjectionMatrix();
-    //VEC
+    VEC rotationVector;
+    VEC translationVector;
+    double thetaFull;
+    double theta;
+    int timeUntilChanged;
+    int timeWhenChange;
 
 
+    MAT createRotationalMatrix(VEC v, double c, double s);
+    void updateOpenGLCamera();
 
 public:
 	Camera();
 	void updateCamera();
+
 	void setPosition(VEC newPos);
 
 	void rotateWC(VEC rot, double angle);
@@ -77,10 +86,11 @@ public:
 	VEC fromABtoXY(int x, int y);
 	void fromXYtoAB(VEC XY, int *ABx, int *ABy);
 
-	MAT getOrientation();
-	VEC getPosition();
+	MAT getOrientation() const;
+	VEC getPosition() const;
 
-	void setPositionAndOrientation(const VEC &newPos, const MAT &newOri, double timeLapse);
+
+	void setPositionAndOrientation(const VEC &newPos, const MAT &newOri, int msTimeLapse_);
 };
 
 

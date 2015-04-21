@@ -13,7 +13,7 @@ int commSendMsg(const CommMsg *msg)
 
     int ret = pthread_mutex_lock(&mtxThread);
     if (ret != 0) {
-        cout << "error" << endl;
+        cout << "error 0" << endl;
         pthread_mutex_unlock(&mtxThread);
         return COMM_RET_ERROR;
     }
@@ -44,7 +44,7 @@ int commGetMsg(int toThreadId, CommMsg *msg)
 {
     int ret = pthread_mutex_lock(&mtxThread);
     if (ret != 0) {
-        cout << "error" << endl;
+        cout << "error 1" << endl;
         pthread_mutex_unlock(&mtxThread);
         return COMM_RET_ERROR;
     }
@@ -76,7 +76,7 @@ int commPrintMsg()
 {
     int ret = pthread_mutex_lock(&mtxThread);
     if (ret != 0) {
-        cout << "error" << endl;
+        cout << "error 2" << endl;
         pthread_mutex_unlock(&mtxThread);
         return COMM_RET_ERROR;
     }
