@@ -54,6 +54,8 @@ private:
 	double yMin;
 	double yMax;
 
+	double near_;
+	double far_;
 
     int scrWidth;
     int scrHeight;
@@ -108,10 +110,10 @@ extern int scrWidth;
 extern int scrHeight;
 
 
-extern double xMin;
+/*extern double xMin;
 extern double xMax;
 extern double yMin;
-extern double yMax;
+extern double yMax;*/
 
 extern int mouseX;
 extern int mouseY;

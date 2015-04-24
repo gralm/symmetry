@@ -378,6 +378,11 @@ public:
 	    return Vret;
 	}
 
+	double determinant() const
+	{
+		return xx*yy*zz + xy*yz*zx + xz*yx*zy - xx*yz*zy - xy*yx*zz - xz*yy*zx;
+	}
+
 };
 
 

@@ -44,16 +44,16 @@ void initGraph()
 	symmetryDrawable = (SymmetryDrawable*) &symmetryObject;
 	camera = new Camera();
 
-
-	double c = cos(-1);
-	double s = sin(-1);
+	double angle = -0.001;
+	double c = cos(angle);
+	double s = sin(angle);
 
 	cout << "fixar kamera rotation nu" << endl;;
 	camera->setPositionAndOrientation(
-			VEC(0, 0, .5),
-			MAT(	c, s, 0,
-					-s,c, 0,
-					0, 0, 1),
+			VEC(.005, .0005, 1.010),
+			MAT(	c, 0, s,
+					0, 1, 0,
+					-s,0, c),
 			1000);
 	cout << "done" << endl;
 
@@ -397,16 +397,28 @@ void SymmetryDrawable::drawCircle(VEC _P, bool filled)	// egentligen en hexagon
 
 void SymmetryDrawable::drawBrade()
 {
+	glColor3f(.7,.2,.2);
+	glBegin(GL_LINES);
+		glVertex3f(0., 0., 0.);
+		glVertex3f(0., 0., 1.);
+	glEnd();
+
+	glColor3f(.2,.7,.2);
+	glBegin(GL_LINES);
+		glVertex3f(0., 0., 0.);
+		glVertex3f(0., 0., -1.);
+	glEnd();
+
 	glColor3f(.2,.2,.2);
 	glBegin(GL_LINE_STRIP);
-		glVertex3f(0., 0., 0.0);
+		glVertex3f(0., 0., 0.1);
 		glVertex3f(-SIN30, COS30, 0.0);
 		glVertex3f(SIN30, COS30, 0.0);
 
-		glVertex3f(0., 0., 0.0);
+		glVertex3f(0., 0., 0.1);
 		glVertex3f(SIN30, COS30, 0.0);
 		glVertex3f(1.0, 0.0, 0.0);
-		glVertex3f(0., 0., 0.0);
+		glVertex3f(0., 0., 0.1);
 
 		glVertex3f(SIN30,- COS30, 0.0);
 		glVertex3f(1.0, 0., 0.0);
@@ -567,7 +579,6 @@ void SymmetryDrawable::display()
 	if (facePointActive || indexMouseOver == FACE_CENTERED)
     	for (int i=1; i<9; i++)
     		drawCircle(vAll_[i], facePointActive);
-
 
 
     	// rita musem p, om inte mouseOver
