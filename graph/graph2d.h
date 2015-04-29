@@ -57,6 +57,9 @@ private:
 	double near_;
 	double far_;
 
+	double aspect;
+	double fovy;
+
     int scrWidth;
     int scrHeight;
 

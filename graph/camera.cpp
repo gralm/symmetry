@@ -9,6 +9,9 @@ Camera::Camera() {
 	near_ = 0.5;
 	far_ = 3.0;
 
+	aspect = 112.;
+	fovy = 1.0;
+
 	pos = VEC(0, 0, 1);
     rotationVector = VEC(0,0,0);
     scrHeight = scrWidth = timeWhenChange = timeUntilChanged = theta = thetaFull = 0;
@@ -26,15 +29,36 @@ Camera::Camera() {
     yMax = 1;
 
 
-    gluLookAt(	0, 0, 1,	// position
+    gluLookAt(	0, 0, 2,	// position
     			0, 0, -1,	// en punkt jag tittar på
 				0, 1, 0);	// uppåt på skärmen
 
     ori = MAT(1, 0, 0, 0, 1, 0, 0, 0, 1);
 
-    glFrustum(xMin, xMax, yMin, yMax, near_, far_);
+
+    //glFrustum(xMin, xMax, yMin, yMax, near_, far_);
     cout << "kom genom camera-konstruktor" << endl;
+    gluPerspective(aspect, fovy, near_, far_);
+
     //glOrtho(xMin, xMax, yMin, yMax, -1.0, 1.);
+    /*gluPerspective(	GLdouble  	fovy,
+         	GLdouble  	aspect,
+         	GLdouble  	zNear,
+         	GLdouble  	zFar);
+
+fovy
+Specifies the field of view angle, in degrees, in the y direction.
+
+aspect
+Specifies the aspect ratio that determines the field of view in the x direction. The aspect ratio is the ratio of x (width) to y (height).
+
+zNear
+Specifies the distance from the viewer to the near clipping plane (always positive).
+
+zFar
+Specifies the distance from the viewer to the far clipping plane (always positive).
+         	*/
+
 
     setPositionAndOrientationFromProjectionMatrix();
 }
@@ -208,7 +232,7 @@ void Camera::updateCamera()
 
 	static int a = 0;
 	a++;
-	if ((a%5) == 0)
+	if ((a%5) == -1)
 	{
 		cout << "V: " << rotationVector << endl;
 		cout << "c: " << c << "\ts: " << s << endl;
@@ -240,14 +264,17 @@ MAT Camera::createRotationalMatrix(VEC v, double c, double s)
 
 void Camera::updateOpenGLCamera()
 {
+    glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	double p = 2;
+    //glFrustum(xMin, xMax, yMin, yMax, near_, far_);
+	//gluPerspective(112, 1.0, near_, far_);
+	gluPerspective(aspect, fovy, near_, far_);
     gluLookAt(	pos.x, pos.y, pos.z,	// position
     			pos.x - ori.zx*p, pos.y - ori.zy*p, pos.z - ori.zz*p,	// en punkt jag tittar på
 				ori.yx, ori.yy, ori.yz);	// uppåt på skärmen
 
     //glOrtho(xMin, xMax, yMin, yMax, -1.0, .5);
-    glFrustum(xMin, xMax, yMin, yMax, near_, far_);
     //glOrtho(xMin, xMax, yMin, yMax, 0, 2.0);
 
     // glOrtho(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble near, GLdouble far);

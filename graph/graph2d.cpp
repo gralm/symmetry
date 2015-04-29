@@ -44,17 +44,17 @@ void initGraph()
 	symmetryDrawable = (SymmetryDrawable*) &symmetryObject;
 	camera = new Camera();
 
-	double angle = -0.001;
+	double angle = -0.31;
 	double c = cos(angle);
 	double s = sin(angle);
 
 	cout << "fixar kamera rotation nu" << endl;;
 	camera->setPositionAndOrientation(
-			VEC(.005, .0005, 1.010),
+			VEC(.5, .0005, 1.0),
 			MAT(	c, 0, s,
 					0, 1, 0,
 					-s,0, c),
-			1000);
+			5000);
 	cout << "done" << endl;
 
 
