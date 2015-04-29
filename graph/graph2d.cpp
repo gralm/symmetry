@@ -257,8 +257,8 @@ list<string> mouseClick(int x, int y)
 				symmetryObject.addFaceToBe(sluten==2? NOT_CENTERED: sluten);
 
 						// Addera alla edges
-				int fNum = symmetryObject.F.size()-1;
-				int e = 0;
+				//int fNum = symmetryObject.F.size()-1;
+				//int e = 0;
 				for (int f=0; f<symmetryObject.F.size(); f++)
 				{
 					for (int e=symmetryObject.F[f].fr; e<symmetryObject.F[f].fr + symmetryObject.F[f].edges; e++)
@@ -352,19 +352,12 @@ SymmetryDrawable::SymmetryDrawable()
 
 void SymmetryDrawable::drawPoint(VEC _P)
 {
-	int siz_ = 10;	// 10 pixlar hög och 10 pixlar bred punkt
+	double delta_ = 0.02;
 	
-	// skriv om den här jävla raden så den inte ser så jävla ful ut.
-	double delta_ = (camera->fromABtoXY(siz_, 0).x - camera->fromABtoXY(0, 0).x) / (2.);
-	//double delta_ = siz_ *(xMax - xMin)*0.5/scrWidth;
-
 	glBegin(GL_LINES);
 		glVertex3f(_P.x-delta_, _P.y, 0.0);
 		glVertex3f(_P.x+delta_, _P.y, 0.0);
 	glEnd();
-
-	delta_ = (camera->fromABtoXY(0, 0).y - camera->fromABtoXY(0, siz_).y) / (2.);
-		//delta_ = siz_ *(yMax - yMin)*0.5/scrHeight;
 	
 	glBegin(GL_LINES);
 		glVertex3f(_P.x, _P.y-delta_, 0.0);
@@ -374,11 +367,7 @@ void SymmetryDrawable::drawPoint(VEC _P)
 
 void SymmetryDrawable::drawCircle(VEC _P, bool filled)	// egentligen en hexagon
 {
-	int siz_ = 10;	// 10 pixlar hög och 10 pixlar bred punkt
-
-		// skriv om den här jävla raden så den inte ser så jävla ful ut.
-	double delta_ = (camera->fromABtoXY(siz_, 0).x - camera->fromABtoXY(0, 0).x) / (2.);
-	//double delta_ = siz_ *(xMax - xMin)*0.5/scrWidth;
+	double delta_ = 0.02;
 
 	glBegin(filled? GL_POLYGON: GL_LINE_STRIP);
 		for (int i=0; i<2; i++)
@@ -397,28 +386,16 @@ void SymmetryDrawable::drawCircle(VEC _P, bool filled)	// egentligen en hexagon
 
 void SymmetryDrawable::drawBrade()
 {
-	glColor3f(.7,.2,.2);
-	glBegin(GL_LINES);
-		glVertex3f(0., 0., 0.);
-		glVertex3f(0., 0., 1.);
-	glEnd();
-
-	glColor3f(.2,.7,.2);
-	glBegin(GL_LINES);
-		glVertex3f(0., 0., 0.);
-		glVertex3f(0., 0., -1.);
-	glEnd();
-
 	glColor3f(.2,.2,.2);
 	glBegin(GL_LINE_STRIP);
-		glVertex3f(0., 0., 0.1);
+		glVertex3f(0., 0., 0.0);
 		glVertex3f(-SIN30, COS30, 0.0);
 		glVertex3f(SIN30, COS30, 0.0);
 
-		glVertex3f(0., 0., 0.1);
+		glVertex3f(0., 0., 0.0);
 		glVertex3f(SIN30, COS30, 0.0);
 		glVertex3f(1.0, 0.0, 0.0);
-		glVertex3f(0., 0., 0.1);
+		glVertex3f(0., 0., 0.);
 
 		glVertex3f(SIN30,- COS30, 0.0);
 		glVertex3f(1.0, 0., 0.0);

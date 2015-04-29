@@ -49,22 +49,18 @@ private:
 	VEC oldPos;
 	MAT oldOri;
 
-	double xMin;
-	double xMax;
-	double yMin;
-	double yMax;
-
 	double near_;
 	double far_;
 
-	double aspect;
 	double fovy;
-
+	double tfovy;	// tan(fovy)
+	double aspect;
+//fovy
     int scrWidth;
     int scrHeight;
 
     	// För förändring av kameran
-    void setPositionAndOrientationFromProjectionMatrix();
+    //void setPositionAndOrientationFromProjectionMatrix();
     VEC rotationVector;
     VEC translationVector;
     double thetaFull;
@@ -89,7 +85,6 @@ public:
 
 	void setScreenSize(int x, int y);
 	VEC fromABtoXY(int x, int y);
-	void fromXYtoAB(VEC XY, int *ABx, int *ABy);
 
 	MAT getOrientation() const;
 	VEC getPosition() const;
@@ -108,15 +103,6 @@ extern SymmetryDrawable *symmetryDrawable;
 extern Camera *camera;
 
 
-
-extern int scrWidth;
-extern int scrHeight;
-
-
-/*extern double xMin;
-extern double xMax;
-extern double yMin;
-extern double yMax;*/
 
 extern int mouseX;
 extern int mouseY;
@@ -140,10 +126,8 @@ extern int symmetryType;
 
 int setMode(int newModeVal);
 void setMousePosition(int x, int y);
-//VEC getRootpoint(VEC coord);
-VEC fromABtoXY(int x, int y);
-	//XY är transformerade koordinater, edgelängden = 1.0
-void fromXYtoAB(VEC XY, int *ABx, int *ABy);
+
+
 void graphDisplay();
 void initGraph();
 
