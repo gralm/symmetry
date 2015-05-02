@@ -12,7 +12,7 @@ SymmetryObject::SymmetryObject()
 	facePointActive = false;
 	edgePointActive = false;
 	vertexPointActive = false;
-
+	pat = SYMMETRY_HEXAGONAL;
 
 	// test
 	/*facePointActive = true;
@@ -181,7 +181,7 @@ int SymmetryObject::checkE_ToBe()
 			if (vertexPointActive)
 				return 1;
 
-			Orientation ori;
+			Orientation ori(pat);
 			ori.rotate(E_ToBe[0].fr.Pfx);
 			VEC A[3];
 			A[0] = getVec(E_ToBe[0].fr);
@@ -238,7 +238,7 @@ int SymmetryObject::checkE_ToBe()
 				return 1;
 
 			VEC A[3];
-			Orientation ori;
+			Orientation ori(pat);
 			A[2] = ori.getOCFromWC(faceCenteredPoint);
 
 			ori.rotate(E_ToBe[0].fr.Pfx);
@@ -305,7 +305,7 @@ int SymmetryObject::checkE_ToBe()
 
 
 			VEC A[3];
-			Orientation ori;
+			Orientation ori(pat);
 			ori.rotate(E_ToBe[0].fr.Pfx);
 
 			switch(pfxDiff[0])
@@ -371,7 +371,7 @@ int SymmetryObject::getEnclosedPoints(VEC *A, list<Point> &PntList)
 {
 	Prefix pfx[3];
 	vector<Prefix> relPfxToControl;
-	Orientation ori;
+	Orientation ori(pat);
 	Point PointToAdd;
 	double dh = 0.00000001;
 
@@ -445,12 +445,12 @@ Point SymmetryObject::getClosestPoint(VEC co_)
 	TYP rot1 = coLeftSide? VP: VN;
 	TYP rot2 = coLeftSide? FN: FP;
 
-	Orientation ori1;
+	Orientation ori1(pat);
 	VEC co21_ = ori1.getOCFromWC(co2_);
 	ori1.rotate(rot1);
 	co21_ = ori1.getWCFromOC(co21_);
 
- 	Orientation ori2;
+ 	Orientation ori2(pat);
 	VEC co22_ = ori2.getOCFromWC(co2_);
 	ori2.rotate(rot2);
 	co22_ = ori2.getWCFromOC(co22_);
@@ -713,7 +713,7 @@ void SymmetryObject::getAllFromRoots(VEC vRoot_, VEC *vAll_)
 
 	for (int i=0; i<3; i++)
 	{
-		Orientation ori;
+		Orientation ori(pat);
 		VEC OCcoord = ori.getOCFromWC(vRoot_);
 		if (i)
 			ori.rotate(i==1? VP: VN);
@@ -798,7 +798,7 @@ VEC SymmetryObject::getVec(Point P_)
 		rootpoint_ = V[P_.index];
 	}
 
-	Orientation ori_;
+	Orientation ori_(pat);
 	VEC rotatedpoint_ = ori_.getOCFromWC(rootpoint_);
 	ori_.rotate(P_.Pfx);
 	rotatedpoint_ = ori_.getWCFromOC(rotatedpoint_);
@@ -808,7 +808,23 @@ VEC SymmetryObject::getVec(Point P_)
 bool SymmetryObject::fullTest()
 {
 	cout << "make full test" << endl;
-	return false;
+
+	if (E.size() == 0)
+	{
+		cout << "Mode cannot be 2, no edges exist." << endl;
+		return false;
+	}
+
+	for (int e=0; e<E.size(); e++)
+	{
+		if (!E[e].oppo.isDefined())
+		{
+			cout << "edge[" << e << "].oppo is not yet defined" << endl;
+			return false;
+		}
+	}
+
+	return true;
 }
 
 // non symmetryObjectFunctions
@@ -816,7 +832,7 @@ bool SymmetryObject::fullTest()
 Prefix getPrefix(VEC coord)
 {
 	Prefix pfx;
-	Orientation ori;
+	Orientation ori(SYMMETRY_HEXAGONAL);
 
 	if (coord.y > 0)
 	{
@@ -855,10 +871,10 @@ Prefix getPrefix(VEC coord)
 }
 
 
-VEC getRootpoint(VEC coord)
+VEC getRootpoint(VEC coord)	// använder enbart hexagonal symmetry
 {
 	Prefix pfx = getPrefix(coord);
-	Orientation ori;
+	Orientation ori(SYMMETRY_HEXAGONAL);
 	ori.rotate(pfx);
 	VEC OCcoords(ori.getOCFromWC(coord));
 	return VEC(

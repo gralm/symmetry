@@ -7,6 +7,7 @@
 #include <cstring>
 #include <sstream>
 #include <stdio.h>
+#include "../tm/tm.h"
 #include "./../tm/vector3.h"
 #include "../publicDefines.h"
 
@@ -130,6 +131,9 @@ public:
 	std::vector<edge> E;
 	std::vector<face> F;
 
+
+	SymmetryPattern pat;
+
 	SymmetryObject();
 	SymmetryObject(const SymmetryObject *gammal);
 
@@ -169,11 +173,20 @@ public:
 
 
 class Orientation {
-public:
-	VEC V;
-	VEC F;
+private:
+	
+	static MAT VPT;
+	static MAT VPO;
+	static MAT VPI;
 
-	Orientation();
+	SymmetryPattern pat;
+
+public:
+
+	VEC V;
+	VEC F; // flytta dessa till private
+
+	Orientation(SymmetryPattern createWithPattern);
 
 	void rotate(const Prefix &p_);
 	void rotate(TYP);
@@ -181,6 +194,7 @@ public:
 	VEC getWCFromOC(VEC A);		// get world coordinates from orientation coordinates
 	VEC getWCRootFromOC(VEC A);
 	void print();
+	static void test();
 
 	static VEC getWCFromRootOC(VEC A);
 };

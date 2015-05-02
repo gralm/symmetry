@@ -44,17 +44,19 @@ void initGraph()
 	symmetryDrawable = (SymmetryDrawable*) &symmetryObject;
 	camera = new Camera();
 
+
+	cout << "fixar kamera rotation nu" << endl;;
+	/*
+
 	double angle = -0.31;
 	double c = cos(angle);
 	double s = sin(angle);
-
-	cout << "fixar kamera rotation nu" << endl;;
 	camera->setPositionAndOrientation(
 			VEC(.5, .0005, 1.0),
 			MAT(	c, 0, s,
 					0, 1, 0,
 					-s,0, c),
-			5000);
+			5000);*/
 	cout << "done" << endl;
 
 
@@ -309,20 +311,23 @@ int setMode(int newModeVal)		// returnerar det satta värdet
 		case 2: {
 
 			cout << "Här måste tester göras för att det ska gå o släppa vidare till step 2.";
-			/*if (E.size() == 0)
+			if (!symmetryObject.fullTest())
 			{
-				cout << "Mode cannot be 2, no edges exist." << endl;
+				cout << "Graph2D:	failed fullTest()" << endl;
 				return mode;
 			}
 
-			for (int e=0; e<E.size(); e++)
-			{
-				if (!E[e].oppo.isDefined())
-				{
-					cout << "edge[" << e << "].oppo is not yet defined" << endl;
-					return mode;
-				}
-			}*/
+
+			double angle = -0.31;
+			double c = cos(angle);
+			double s = sin(angle);
+
+			camera->setPositionAndOrientation(
+				VEC(.5, .0005, 1.0),
+				MAT(	c, 0, s,
+						0, 1, 0,
+						-s,0, c),
+				5000);
 
 			cout << "Mode = 2, choose symmetry" << endl;
 			break;

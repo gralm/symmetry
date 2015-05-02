@@ -54,8 +54,14 @@
 #define IS_DEFINED(X)		(((X)-UNDEFINED_VEC) * ((X)-UNDEFINED_VEC) > 0.001)
 #define IS_DEFINED2(X)		(((X)*(X) - 200*((X).x + (X).y) + 20000) > 0.001)
 
-
-
+	// Symmetry: http://en.wikipedia.org/wiki/Polyhedral_group	
+enum SymmetryPattern {
+		// Hexagonal tiling: http://en.wikipedia.org/wiki/Hexagonal_tiling 
+	SYMMETRY_HEXAGONAL,
+	SYMMETRY_TETRAHEDRAL,
+	SYMMETRY_OCTAHEDRAL,
+	SYMMETRY_ICOSAHEDRAL
+};
 
 
 

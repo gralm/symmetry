@@ -9,11 +9,23 @@ Camera::Camera() {
 	near_ = 0.5;
 	far_ = 3.0;
 
-	fovy = 112.;
+	fovy = 90.;
 	tfovy = tan(fovy*.5 * (M_PI/180.));
 	aspect = 1.0;
+	cout << "fovy: " << tfovy << endl;
 
-	pos = VEC(0, 0, 1);
+    ori = MAT(	1, 0, 0, 
+    			0, 1, 0, 
+    			0, 0, 1);
+
+	pos = VEC(.25, .11, .8);
+
+	// ymax = pos.y + (pos.z*tfovy) = 1.0
+	// xmax = pos.x + (pos.z*tfovy*aspect) = 1.0 
+	// pos.z = (1.0 - pos.x) / (tfovy*aspect)
+	//SIN60 - (.75*1.0) = pos.y
+
+
     rotationVector = VEC(0,0,0);
     scrHeight = scrWidth = timeWhenChange = timeUntilChanged = theta = thetaFull = 0;
 
@@ -24,13 +36,12 @@ Camera::Camera() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    gluLookAt(	0, 0, 2,	// position
-    			0, 0, -1,	// en punkt jag tittar på
-				0, 1, 0);	// uppåt på skärmen
-
-    ori = MAT(1, 0, 0, 0, 1, 0, 0, 0, 1);
 
     gluPerspective(fovy, aspect, near_, far_);
+
+    Orientation::test();
+
+	updateOpenGLCamera();
 }
 
 VEC Camera::fromABtoXY(int x, int y)
