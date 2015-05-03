@@ -174,29 +174,34 @@ public:
 
 class Orientation {
 private:
+
+	static MAT FP120, FN120;
+	static MAT FP60, FN60;
 	
-	static MAT VPT;
-	static MAT VPO;
-	static MAT VPI;
+	static MAT VPT, VNT;	// Rotational Matrix for vertice-rotation on Tetrahedral symmetry
+	static MAT VPO, VNO;	// -||- 	Octahedral symmetry
+	static MAT VPI, VNI;	// -||- 	Icosahedral symmetry
+
+	VEC pos;
+	MAT ori; // flytta dessa till private
 
 	SymmetryPattern pat;
 
 public:
 
-	VEC V;
-	VEC F; // flytta dessa till private
 
 	Orientation(SymmetryPattern createWithPattern);
 
 	void rotate(const Prefix &p_);
 	void rotate(TYP);
-	VEC getOCFromWC(VEC A);		// get orientation coordinates from world coordinates
-	VEC getWCFromOC(VEC A);		// get world coordinates from orientation coordinates
-	VEC getWCRootFromOC(VEC A);
-	void print();
+	VEC getOCFromWC(VEC A) const;		// get orientation coordinates from world coordinates
+	VEC getWCFromOC(VEC A) const;		// get world coordinates from orientation coordinates
+	SymmetryPattern getPattern() const;
+	//VEC getWCRootFromOC(VEC A) const;
+	void print() const;
 	static void test();
 
-	static VEC getWCFromRootOC(VEC A);
+	//static VEC getWCFromRootOC(VEC A);
 };
 
 void rotationPrint(TYP);

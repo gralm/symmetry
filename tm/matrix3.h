@@ -370,6 +370,13 @@ public:
         zz = xx*yy - xy*yx;
     }
 
+    matrix<T,3,3> transpose() const
+    {
+    	return matrix<T,3,3>(	xx, yx, zx,
+    							xy, yy, zy,
+    							xz, yz, zz);
+    }
+
 	inline friend vectorn<T,3> operator* (const vectorn<T,3>& V, const matrix<T,3,3>& M)
 	{
 	    vectorn<T,3> Vret(  V.x*M.xx + V.y*M.yx + V.z*M.zx,
