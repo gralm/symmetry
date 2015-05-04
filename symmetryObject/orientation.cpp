@@ -2,39 +2,36 @@
 
 using namespace std;
 
-//MAT Orientation::VPHexa = MAT(
 
-	// fixa denna
-MAT Orientation::VPT = MAT(1, 0, 0, 0, 1, 0, 0, 0, 1);
-MAT Orientation::VNT = MAT(1, 0, 0, 0, 1, 0, 0, 0, 1);
-
-MAT Orientation::VPO = 
-	MAT(2./3,			-1./sqrt(3),	-sqrt(2)/3.,
-	1./sqrt(3),			0.,				sqrt(2./3),
-	-sqrt(2) / 3.,		-sqrt(2./3),	1./3);
-
-MAT Orientation::VPI = 	
-	MAT(.5,				sqrt(3.)/2,			0.,
-		-sqrt(5./12), 	sqrt(5.)/6,			-2./3,
-		-sqrt(1./3),	1./3,				sqrt(5.)/3);
-
-MAT Orientation::VNO = VPO.transpose();
-
-MAT Orientation::VNI = VPI.transpose();
+double s5 = sqrt(5.0);
+MAT Orientation::VPT = MAT(
+		5./6., 			sqrt(1./12.), 		-sqrt(2.)/3.,
+		-sqrt(1./12.), 	-1./2., 			-sqrt(2./3.),
+		-sqrt(2.)/3., 	sqrt(2./3.), 		-1./3.);
+MAT Orientation::VPO =
+		MAT(2./3,			1./sqrt(3),		-sqrt(2.)/3.,
+		-1./sqrt(3),			0.,			-sqrt(2./3),
+		-sqrt(2) / 3.,		sqrt(2./3),		1./3);
+MAT Orientation::VPI =
+		MAT(	(9.-s5)/12.,				(3+s5)/(4*sqrt(3)),		-1./3.,
+				-(3.+s5)/(4.*sqrt(3.)),	(s5-1.)/4.,				-1./sqrt(3.),
+				-1./3.,					1./sqrt(3.),				s5/3.);
 
 
 MAT Orientation::FP120 = 
 	MAT(	COS120,	SIN120,	0,
 			-SIN120,COS120, 0,
 			0,		0,		1);
-
-MAT Orientation::FN120 = FP120.transpose();
-
 MAT Orientation::FP60 = 
 	MAT(	COS60,	SIN60,	0,
 			-SIN60,COS60, 	0,
 			0,		0,		1);
 
+
+MAT Orientation::VNO = VPO.transpose();
+MAT Orientation::VNI = VPI.transpose();
+MAT Orientation::VNT = VNT.transpose();
+MAT Orientation::FN120 = FP120.transpose();
 MAT Orientation::FN60 = FP60.transpose();
 	
 
@@ -54,37 +51,6 @@ void Orientation::rotate(const Prefix &p_)
 	for (list<TYP>::const_iterator it = p_.R.begin(); (it != p_.R.end()); it++) 
 		rotate(*it);
 }
-
-
-/*void Orientation::rotate(TYP r_)
-{
-	//rotate(r_, SYMMETRY_HEXAGONAL);
-	switch (r_) {
-		case FP: {
-			double Vx_ = F.x + (V.x-F.x)*COS120 - (V.y-F.y)*SIN120;
-			V.y = F.y + (V.x-F.x)*SIN120 + (V.y-F.y)*COS120;
-			V.x = Vx_;
-			break;}
-		case FN: {
-			double Vx_ = F.x + (V.x-F.x)*COS120 + (V.y-F.y)*SIN120;
-			V.y = F.y - (V.x-F.x)*SIN120 + (V.y-F.y)*COS120;
-			V.x = Vx_;
-			break;}
-		case VP: {
-			double Fx_ = V.x + (F.x-V.x)*COS60 - (F.y-V.y)*SIN60;
-			F.y = V.y + (F.x-V.x)*SIN60 + (F.y-V.y)*COS60;
-			F.x = Fx_;
-			break;}
-		case VN: {
-			double Fx_ = V.x + (F.x-V.x)*COS60 + (F.y-V.y)*SIN60;
-			F.y = V.y - (F.x-V.x)*SIN60 + (F.y-V.y)*COS60;
-			F.x = Fx_;
-			break;}
-		default:
-			cout << "illegal orientation.rotation" << endl;
-			break;
-	}
-}*/
 
 void Orientation::rotate(TYP r_)
 {
@@ -154,21 +120,16 @@ void Orientation::rotate(TYP r_)
 
 VEC Orientation::getOCFromWC(VEC A) const
 {
-	//return VEC((A-V) * (F-V), (A-V) * ~(F-V))*TAN60;
-	return (A-pos) * ori;
+	return (A-pos) * ori.transpose();
 }
 
 VEC Orientation::getWCFromOC(VEC A) const
 {
-	//return V + ((F-V)*A.x + ~(F-V)*A.y)*TAN60;
-	//return (A*ori) + pos;
-	return (A*ori.transpose()) + pos;
+	return (A*ori) + pos;
 }
 
 void Orientation::print() const
 {
-	//cout << "V: " << V << endl;
-	//cout << "F: " << F << endl;
 	cout << "Position: " << pos << endl;
 	cout << "Orientation: " << endl;
 	cout << ori << endl;
@@ -202,57 +163,17 @@ void Orientation::test()
 	cout << "MI = I: " << endl;
 	cout << mi << endl;
 
+	cout << "FP120*VPT*FP120*VPT = I: " << endl;
+	cout << FP120*VPT*FP120*VPT << endl;
+	cout << "FP120*VPO*FP120*VPO = I: " << endl;
+	cout << FP120*VPO*FP120*VPO << endl;
+	cout << "FP120*VPI*FP120*VPI = I: " << endl;
+	cout << FP120*VPI*FP120*VPI << endl;
+
 	cout << " ***************** " << endl;
-	//Orientation nyOri(SYMMETRY_HEXAGONAL);
 	Orientation nyOri(SYMMETRY_OCTAHEDRAL);
-	//Orientation nyOri(SYMMETRY_ICOSAHEDRAL);
-	double realX0X1val = 0;
-	switch(nyOri.getPattern())
-	{
-		case SYMMETRY_HEXAGONAL:
-			realX0X1val = 0.5;
-			break;
-		case SYMMETRY_TETRAHEDRAL:
-			realX0X1val = 5./6;
-			break;
-		case SYMMETRY_OCTAHEDRAL:
-			realX0X1val = 2./3;
-			break;
-		case SYMMETRY_ICOSAHEDRAL:
-			realX0X1val = 0.5;
-			break;
-		default:
-			realX0X1val = -1000;
-			break;
-	}
-	VEC X0 = nyOri.ori[0];
-	nyOri.print();	// 0
 
-	nyOri.rotate(VP);
-	VEC X1 = nyOri.ori[0];
-	nyOri.print();	// 1
-	cout << "X0*X1 = " << realX0X1val << " = " << X0*X1 << endl;
-	// 0.5 för icosahedral
-	// 2/3 för octahedral
-	// 0.5 för hexagonal
-
-	nyOri.rotate(FP);
-	VEC X2 = nyOri.ori[0];
-	nyOri.print();	// 2
-	cout << "X1*X2 = -0.5 = " << X1*X2 << endl;
-
-	nyOri.rotate(VP);
-	VEC X3 = nyOri.ori[0];
-	nyOri.print();	// 3
-	cout << "X2*X3 = " << realX0X1val << " = " << X2*X3 << endl;
 }
-
-
-/*VEC Orientation::getWCFromRootOC(VEC A)
-{
-	//return point(A * point(COS30, SIN30),  A*point(-SIN30, COS30));
-	//return VEC(A.x*COS30 + A.y*SIN30,  -A.x*SIN30 + A.y*COS30);
-}*/
 
 void rotationPrint(TYP a_)
 {
@@ -272,30 +193,4 @@ void rotationPrint(TYP a_)
 			break;
 	}
 }
-
-
-/*
-Icosaedral symmetri:
-VP X0 = X1
-
-VP = 	[.5,			sqrt(3.)/2,			0]
-		[-sqrt(5./12), 	sqrt(5.)/6,			-2./3]
-		[-sqrt(1./3),	1./3				sqrt(5.)/3]
-
-VP VP VP VP = VN
-
-VN = VP^-1
-
-
-
-	Octahedral Rotationsvktor: VP
-
-0.6666667  - 0.5773503  - 0.4714045  
-0.5773503  - 3.205D-17    0.8164966  
-- 0.4714045  - 0.8164966    0.3333333 
-
-[2/3 				-1/sqrt(3)		-sqrt(2)/3]
-[1/sqrt(3)		0 				sqrt(2/3)]
-[-sqrt(2) / 3 	-sqrt(2/3)		1/3]
-*/
 
