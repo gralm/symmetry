@@ -6,6 +6,17 @@ Camera::Camera() {
 	//	VEC position;
 	//	MAT orientation;
 
+	cout << "**********" << endl;
+	VEC hej(COS30*0.2, SIN30*0.2 + 0.01);
+	VEC vAll[9];
+	symmetryObject.getAllFromRoots(hej, vAll);
+	//SymmetryObject::getAllFromRoots(VEC vRoot_, VEC *vAll_)
+	for (int i=0; i<9; i++)
+		cout << i << ": " << vAll[i] << endl;
+	cout << "**********" << endl;
+
+
+
 	near_ = 0.5;
 	far_ = 3.0;
 

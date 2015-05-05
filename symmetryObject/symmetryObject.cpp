@@ -697,7 +697,7 @@ int SymmetryObject::insertVertex(VEC coord_)
 	return index_;
 }
 
-
+	// hämtar alla speglingar i WC från OC
 void SymmetryObject::getAllFromRoots(VEC vRoot_, VEC *vAll_)
 {
 	//if (vRoot_.y <= -100)
@@ -714,7 +714,8 @@ void SymmetryObject::getAllFromRoots(VEC vRoot_, VEC *vAll_)
 	for (int i=0; i<3; i++)
 	{
 		Orientation ori(pat);
-		VEC OCcoord = ori.getOCFromWC(vRoot_);
+		//VEC OCcoord = ori.getOCFromWC(vRoot_);
+		VEC OCcoord = vRoot_;//ori.getOCFromWC(vRoot_);
 		if (i)
 			ori.rotate(i==1? VP: VN);
 		
@@ -877,9 +878,10 @@ VEC getRootpoint(VEC coord)	// använder enbart hexagonal symmetry
 	Orientation ori(SYMMETRY_HEXAGONAL);
 	ori.rotate(pfx);
 	VEC OCcoords(ori.getOCFromWC(coord));
-	return VEC(
+	return OCcoords;
+	/*return VEC(
 		OCcoords.x*COS30 - OCcoords.y*SIN30, 
-		OCcoords.x*SIN30 + OCcoords.y*COS30);
+		OCcoords.x*SIN30 + OCcoords.y*COS30);*/
 }
 
 

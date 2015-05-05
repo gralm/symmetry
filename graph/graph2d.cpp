@@ -91,18 +91,6 @@ void setMousePosition(int x, int y)
 }
 
 
-	// AB är koordinater på skärmen, pixelposition
-
-
-	//XY är transformerade koordinater, edgelängden = 1.0
-/*void fromXYtoAB(VEC XY, int *ABx, int *ABy)
-{
-	*ABx = scrWidth*(XY.x + 0.5)*2.0/3.0;
-	*ABy = scrHeight*(XY.y + 1.0)*COS30;
-}*/
-
-
-
 list<string> mouseClick(int x, int y)
 {
 	list<string> commMsgList;
@@ -113,6 +101,8 @@ list<string> mouseClick(int x, int y)
 	VEC realCoord(camera->fromABtoXY(x, y));
 	VEC rootCoord = getRootpoint(realCoord);
 
+	cout << "realCoords: " << realCoord << endl;
+	cout << "rootCoords: " << rootCoord << endl;
 
 	if (mode == 0)
 	{
@@ -579,7 +569,7 @@ void SymmetryDrawable::display()
 	    		drawPoint(vAll_[i]);
 
 	    	glColor3f(1, 1, 1);
-	    	drawPoint(coords_);
+	    	drawPoint(vAll_[0]);
   	  	} else {
   	  		//cout << "mouse over: " << indexMouseOver << endl;
   	  	}

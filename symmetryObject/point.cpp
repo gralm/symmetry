@@ -2,17 +2,33 @@
 
 using namespace std;
 
+/*
 const VEC SymmetryObject::vertexCenteredPoint = VEC(.0, .0);
 const VEC SymmetryObject::edgeCenteredPoint = VEC(.25, SIN60*.5);
 const VEC SymmetryObject::faceCenteredPoint = VEC(.5, .25/COS30);
+*/
 
+const VEC SymmetryObject::vertexCenteredPoint = VEC(.0, .0);
+const VEC SymmetryObject::edgeCenteredPoint = VEC(sqrt(3.)/4, 1./4.);
+const VEC SymmetryObject::faceCenteredPoint = VEC(sqrt(1./3.), 0);
+
+
+Point::Point() {
+	index = -1;
+}
+
+Point::Point(Prefix Pfx_, int index_)
+{
+	Pfx = Pfx_;
+	index = index_;
+}
 
 void Point::print() const
 {
 	cout << "index (";
 	switch(index)
 	{
-		case -1:
+		case NOT_CENTERED:
 			cout << "undef.";
 			break;
 		case VERTEX_CENTERED:
@@ -65,15 +81,6 @@ string Point::toString() const
 	//Point
 }
 
-Point::Point() {
-	index = -1;
-}
-
-Point::Point(Prefix Pfx_, int index_)
-{
-	Pfx = Pfx_;
-	index = index_;
-}
 
 
 bool Point::equalTo(Point &A) {
