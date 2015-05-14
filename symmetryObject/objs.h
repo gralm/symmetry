@@ -29,6 +29,7 @@ public:
 	void rotate(const Prefix &r);
 	int getSize() const;
 	Prefix getInverse() const;
+	bool equalTo(Prefix &A);
 
 	TYP operator[](int i);
 	Prefix operator*(const Prefix &A) const;
@@ -156,7 +157,7 @@ public:
 
 
 	// returns -1 if over none, radius = pixel-radius
-	Point getClosestPoint(VEC co_);
+	Point getClosestPointFromWC(VEC co_);
 	void insertCenteredVertex(int index_);
 	int insertVertex(VEC coord_);	//vertex, vector, point, position, coordinate-> använd vettiga beteckningar 
 	void getAllFromRoots(VEC vRoot_, VEC *vAll_);
@@ -205,8 +206,8 @@ public:
 };
 
 void rotationPrint(TYP);
-Prefix getPrefix(VEC coord);
+Prefix getPrefixFromWC(VEC coord);
 VEC getRootpoint(VEC coord);
-Point getClosestCenteredPoint(VEC coord, double *distanceSquared);
+Point getClosestCenteredPointFromWC(VEC coord, double *distanceSquared);
 
 #endif

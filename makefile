@@ -5,7 +5,7 @@ VPATH = object/ bitmap/ graphic/ tm/
 OBJPATH = obj/
 OBJFLAGS = -c -pthread -o
 EXEFILE = symmetry
-TESTFILE = testfile.exe
+TESTFILE = testfile
 
 
 bygg: 
@@ -63,26 +63,23 @@ $(OBJPATH)camera.o: graph/camera.cpp
 	$(CC) $(OBJFLAGS) $(OBJPATH)camera.o graph/camera.cpp -I $(INC_DIR)
 
 
-onlyglut:
-	make -s $(OBJPATH)glutThread2.o
-	$(CC) -DONLYGLUT -o onlyglut2.exe $(OBJPATH)glutThread2.o -L "C:\MinGW\freeglut\lib" -l freeglut -lopengl32 -lglu32
 
-
-
-
-
-testing:
-	make -s $(OBJPATH)testOrientation.o
-	make -s $(OBJPATH)graph2d.o
+tests: 
+	make -s $(OBJPATH)prefix.o
 	make -s $(OBJPATH)orientation.o
 	make -s $(OBJPATH)point.o
-	make -s $(OBJPATH)prefix.o
-	make -s $(OBJPATH)comm.o
-	$(CC) -o $(TESTFILE) $(OBJPATH)*.o -l freeglut -lgdi32 -lopengl32 -lglu32 -lpthreadGC2
+	make -s $(OBJPATH)symmetryObject.o
+	make -s $(OBJPATH)others.o
+	make -s $(OBJPATH)test.o
+	make -s $(OBJPATH)testSymmetryObject.o
+	$(CC) -o $(TESTFILE).exe $(OBJPATH)*.o 
 
-$(OBJPATH)testOrientation.o: test/orientation/testOrientation.cpp
-	$(CC) $(OBJFLAGS) $(OBJPATH)testOrientation.o test/orientation/testOrientation.cpp -I $(INC_DIR)
 
+$(OBJPATH)testSymmetryObject.o: test/testSymmetryObject.cpp
+	$(CC) $(OBJFLAGS) $(OBJPATH)testSymmetryObject.o test/testSymmetryObject.cpp -I $(INC_DIR)
+
+$(OBJPATH)test.o: test/test.cpp
+	$(CC) $(OBJFLAGS) $(OBJPATH)tests.o test/test.cpp -I $(INC_DIR)
 
 
 

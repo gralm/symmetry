@@ -267,6 +267,15 @@ string Prefix::toString() const
 	return returnString.str();
 }
 
+bool Prefix::equalTo(Prefix &A)
+{
+	Prefix nytt;
+	nytt.rotate(*this);
+	nytt.rotate(A.getInverse());
+	nytt.simplify();
+	return nytt.getSize() == 0;
+}
+
 			// omvandla alla:	summa = 1023
 		// VP, VN = 1 			0001 	0
 		// VP, FP, VP = FN		0002 	1

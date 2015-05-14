@@ -377,7 +377,7 @@ int SymmetryObject::getEnclosedPoints(VEC *A, list<Point> &PntList)
 
 
 	for (int j=0; j<3; j++)
-		pfx[j] = getPrefix(A[j]);
+		pfx[j] = getPrefixFromWC(A[j]);
 
 
 		// radda upp alla unika prefix i pfx och stega genom dem.
@@ -430,38 +430,38 @@ int SymmetryObject::getEnclosedPoints(VEC *A, list<Point> &PntList)
 }
 
 
-Point SymmetryObject::getClosestPoint(VEC co_)
+Point SymmetryObject::getClosestPointFromWC(VEC coordWC)
 {
 	Point P_;
-	Prefix startPrefix = getPrefix(co_);
-	VEC co2_ = getRootpoint(co_);
-	P_.index = -1;// mouseOverIndex(co2_);
+	Prefix startPrefix = getPrefixFromWC(coordWC);
+	VEC rootCoord = getRootpoint(coordWC);
+	P_.index = -1;// mouseOverIndex(rootCoord);
 	double smallestDistanceSquare;
 
 
-	bool coLeftSide = (co2_.y > TAN30*co2_.x);
+	bool coLeftSide = (rootCoord.y > TAN30*rootCoord.x);
 
 	// om det är på right side jämför med alla coords på VP och FN, annars jämför med VN och FP
 	TYP rot1 = coLeftSide? VP: VN;
 	TYP rot2 = coLeftSide? FN: FP;
 
 	Orientation ori1(pat);
-	VEC co21_ = ori1.getOCFromWC(co2_);
+	VEC co21_ = ori1.getOCFromWC(rootCoord);
 	ori1.rotate(rot1);
 	co21_ = ori1.getWCFromOC(co21_);
 
  	Orientation ori2(pat);
-	VEC co22_ = ori2.getOCFromWC(co2_);
+	VEC co22_ = ori2.getOCFromWC(rootCoord);
 	ori2.rotate(rot2);
 	co22_ = ori2.getWCFromOC(co22_);
 
 	double newDistance;
 
-	P_ = getClosestCenteredPoint(co_, &smallestDistanceSquare);
+	P_ = getClosestCenteredPointFromWC(coordWC, &smallestDistanceSquare);
 
 	for (unsigned int v=0; v<V.size(); v++)
 	{
-		newDistance = (V[v] - co2_) * (V[v] - co2_);
+		newDistance = (V[v] - rootCoord) * (V[v] - rootCoord);
 		if (newDistance < smallestDistanceSquare)
 		{
 			smallestDistanceSquare = newDistance;
@@ -830,7 +830,7 @@ bool SymmetryObject::fullTest()
 
 // non symmetryObjectFunctions
 
-Prefix getPrefix(VEC coord)
+Prefix getPrefixFromWC(VEC coord)
 {
 	Prefix pfx;
 	Orientation ori(SYMMETRY_HEXAGONAL);
@@ -874,7 +874,7 @@ Prefix getPrefix(VEC coord)
 
 VEC getRootpoint(VEC coord)	// använder enbart hexagonal symmetry
 {
-	Prefix pfx = getPrefix(coord);
+	Prefix pfx = getPrefixFromWC(coord);
 	Orientation ori(SYMMETRY_HEXAGONAL);
 	ori.rotate(pfx);
 	VEC OCcoords(ori.getOCFromWC(coord));
@@ -888,7 +888,7 @@ VEC getRootpoint(VEC coord)	// använder enbart hexagonal symmetry
 
 
 // returnerar närmsta Centered-point
-Point getClosestCenteredPoint(VEC coord, double *distanceSquared)
+Point getClosestCenteredPointFromWC(VEC coord, double *distanceSquared)
 {
 
 	double distanceSquared_ = UNDEFINED_VEC*UNDEFINED_VEC;
@@ -896,7 +896,7 @@ Point getClosestCenteredPoint(VEC coord, double *distanceSquared)
 	int index = -1;
 	Point P;
 	VEC x = VEC(0.5, 0.0);
-	VEC y = SymmetryObject::edgeCenteredPoint;
+	VEC y = VEC(0.25, sqrt(3.)/4.); //SymmetryObject::edgeCenteredPoint;
 
 	VEC cv[15];
 

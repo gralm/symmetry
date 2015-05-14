@@ -51,12 +51,12 @@ void Point::print() const
 
 bool Point::isDefined() const
 {
-	return index != -1;
+	return index != NOT_CENTERED;
 }
 
 string Point::toString() const 
 {		
-	if (index == -1)
+	if (index == NOT_CENTERED)
 		return "undef.";
 	stringstream ss;
 	switch(index)
@@ -88,9 +88,9 @@ bool Point::equalTo(Point &A) {
 	bool keepTrying = (index<-1);
 	subPfx.simplify();
 
-	cout << endl << "subPfx before: ";
-	subPfx.print();
-	cout << endl;
+	//cout << endl << "subPfx before: ";
+	//subPfx.print();
+	//cout << endl;
 
 
 	//for (list<TYP>::reverse_iterator rit = R.rbegin(); rit != R.rend(); rit++)
@@ -103,27 +103,27 @@ bool Point::equalTo(Point &A) {
 	for (list<TYP>::reverse_iterator ritR = subPfx.R.rbegin(); keepTrying && ritR != subPfx.R.rend();)
 	{
 		k++;
-		cout << "now is ritR = ";
-		rotationPrint(*ritR);
-		cout << endl;
+		//cout << "now is ritR = ";
+		//rotationPrint(*ritR);
+		//cout << endl;
 
 		if (index == VERTEX_CENTERED && (*ritR == VN || *ritR == VP)) {
-			cout << "VC" << endl;
+			//cout << "VC" << endl;
 			/*subPfx.R.erase(--(ritR.base()));
 			ritR = subPfx.R.rbegin();*/
 			ritR = list<TYP>::reverse_iterator(subPfx.R.erase(--(ritR.base())));
-			cout << "ritR efter erase: ";
-			rotationPrint(*ritR);
-			cout << endl;
+			//cout << "ritR efter erase: ";
+			//rotationPrint(*ritR);
+			//cout << endl;
 		} else if (index == FACE_CENTERED && (*ritR == FN || *ritR == FP)) {
-			cout << "FC" << endl;
+			//cout << "FC" << endl;
 			ritR = list<TYP>::reverse_iterator(subPfx.R.erase(--(ritR.base())));
-			cout << "ritR efter erase: ";
-			rotationPrint(*ritR);
+			//cout << "ritR efter erase: ";
+			//rotationPrint(*ritR);
 		} else if (index == EDGE_CENTERED) {
 			//TYP ritRold = *ritR;
 			if ((previousEcTYP == FP && *ritR == VP) || (previousEcTYP == VN && *ritR == FN)) {
-				cout << "ECa" << endl;
+				//cout << "ECa" << endl;
 				subPfx.R.pop_back();
 				subPfx.R.pop_back();
 				ritR = subPfx.R.rbegin();
@@ -131,29 +131,29 @@ bool Point::equalTo(Point &A) {
 				//ritR = list<TYP>::reverse_iterator(subPfx.R.erase(--(ritR.base())));
 				previousEcTYP = 0;
 			} else if ((previousEcTYP == VN && *ritR == FP) || (previousEcTYP == VN && *ritR == FP)){
-				cout << "ECd" << endl;
+				//cout << "ECd" << endl;
 				subPfx.R.pop_back();
 				subPfx.R.pop_back();
 				subPfx.R.push_back(FN);
 				ritR = subPfx.R.rbegin();
 				subPfx.print();
-				cout << endl;
+				//cout << endl;
 				subPfx.simplify();
 				subPfx.print();
-				cout << endl;
+				//cout << endl;
 				previousEcTYP = 0;
-				cout << endl;
+				//cout << endl;
 			} else if (previousEcTYP == 0 && (*ritR == FP || *ritR == VN)) {
-				cout << "ECb" << endl;
+				//cout << "ECb" << endl;
 				previousEcTYP = *ritR;
 				ritR++;
 			} else {
-				cout << "ECc" << endl;
+				//cout << "ECc" << endl;
 				keepTrying = false;
 			}
 		} else {
 
-			cout << "0" << endl;
+			//cout << "0" << endl;
 			keepTrying = false;
 		}
 		if (k > 10)
@@ -161,9 +161,9 @@ bool Point::equalTo(Point &A) {
 	}
 
 
-	cout << endl << "subPfx efter: ";
-	subPfx.print();
-	cout << endl;
+	//cout << endl << "subPfx efter: ";
+	//subPfx.print();
+	//cout << endl;
 
 	return (subPfx.getSize() == 0);
 }

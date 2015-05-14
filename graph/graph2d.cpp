@@ -67,13 +67,19 @@ void setMousePosition(int x, int y)
 {
 	mouseX = x;
 	mouseY = y;
-	VEC coords = camera->fromABtoXY(x, y);
-	Point p = symmetryObject.getClosestPoint(coords);
+	//VEC coords = camera->fromABtoXY(x, y);
+	VEC realCoord = camera->fromABtoXY(x, y);
+	VEC rootCoord = getRootpoint(realCoord);
+	//cout << "coords in setMousePosition: " << realCoord << ", " << rootCoord << endl;
+
+	Point p = symmetryObject.getClosestPointFromWC(realCoord);
 	if (p.isDefined()) {
 		VEC closestVertex = symmetryObject.getVec(p);
 		
-		if ((closestVertex-coords)*(closestVertex-coords) < minimumDistanceForMouseOverSquare)
+		if ((closestVertex-realCoord)*(closestVertex-realCoord) < minimumDistanceForMouseOverSquare){
 			indexMouseOver = p.index;
+			cout << "indexMouseOver = " << indexMouseOver << endl;
+		}
 		else
 			indexMouseOver = -1;
 	} else 
@@ -83,10 +89,11 @@ void setMousePosition(int x, int y)
 		return;
 
 	double distanceToCenteredSquare = 0;
-	p = getClosestCenteredPoint(coords, &distanceToCenteredSquare);
+	p = getClosestCenteredPointFromWC(realCoord, &distanceToCenteredSquare);
 	if (distanceToCenteredSquare < minimumDistanceForMouseOverSquare)
 	{
 		indexMouseOver = p.index;
+		cout << "indexMouseOver = " << indexMouseOver << endl;
 	}
 }
 
@@ -112,7 +119,7 @@ list<string> mouseClick(int x, int y)
     		indexChosen = indexMouseOver;
     		if (indexMouseOver == NOT_CENTERED) {
     			double distanceToCenteredVertex;
-    			Point P = getClosestCenteredPoint(realCoord, &distanceToCenteredVertex);
+    			Point P = getClosestCenteredPointFromWC(realCoord, &distanceToCenteredVertex);
 
     			if (distanceToCenteredVertex < minimumDistanceForMouseOverSquare) {
     				symmetryObject.insertCenteredVertex(P.index);
@@ -162,7 +169,7 @@ list<string> mouseClick(int x, int y)
 		}
 	} else if (mode == 1 && indexMouseOver != -1) {
 
-		Point nyPunkt = symmetryObject.getClosestPoint(realCoord);
+		Point nyPunkt = symmetryObject.getClosestPointFromWC(realCoord);
 
 
 		cout << "mode = 1, mouseklick: [";
