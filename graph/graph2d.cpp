@@ -74,7 +74,8 @@ void setMousePosition(int x, int y)
 
 	Point p = symmetryObject.getClosestPointFromWC(realCoord);
 	if (p.isDefined()) {
-		VEC closestVertex = symmetryObject.getVec(p);
+		VEC closestVertex = symmetryObject.getWcFromPoint(p);
+		VEC diff = closestVertex-realCoord;
 		
 		if ((closestVertex-realCoord)*(closestVertex-realCoord) < minimumDistanceForMouseOverSquare){
 			indexMouseOver = p.index;
@@ -102,7 +103,7 @@ list<string> mouseClick(int x, int y)
 {
 	list<string> commMsgList;
 	cout << "here klickas it: " << camera->fromABtoXY(x, y) << endl;
-
+	cout << "indexMouseOver: " << indexMouseOver << endl;
 	static char strMess[200];
 
 	VEC realCoord(camera->fromABtoXY(x, y));
@@ -409,11 +410,12 @@ void SymmetryDrawable::drawedge(edge &e)
 	VEC fr[9];
 	VEC to[9];
 
-	getAllFromRoots(getVec(e.fr), fr);
-	getAllFromRoots(getVec(e.to), to);
+	//getAllFromRoots(getWcFromPoint(e.fr), fr);
+	//getAllFromRoots(getWcFromPoint(e.to), to);
+	getAllFromRoots(V[e.fr.index], fr);
+	getAllFromRoots(V[e.to.index], to);
 
 	glBegin(GL_LINES);
-
 	for (int i=0; i<9; i++)
 	{
 		VEC sidan = VEC(-(to[i].y-fr[i].y), to[i].x-fr[i].x) * (.01/sqrt((to[i]-fr[i])*(to[i]-fr[i])));
@@ -437,9 +439,9 @@ void SymmetryDrawable::drawFace(face &F_)
 	int numOfCopies = 9;
 
 	for (int v=0; v<fVertices; v++)
-		V_[numOfCopies*v] = getVec(E[F_.fr + v].fr);
+		V_[numOfCopies*v] = getWcFromPoint(E[F_.fr + v].fr);
 	
-	V_[numOfCopies*fVertices] = getVec(E[F_.fr + fVertices - 1].to);
+	V_[numOfCopies*fVertices] = getWcFromPoint(E[F_.fr + fVertices - 1].to);
 	fVertices++;
 	
 	switch(F_.type) {
@@ -589,7 +591,7 @@ void SymmetryDrawable::display()
 		glBegin(GL_LINE_STRIP);
 		for (int i=0; i<len; i++)
 		{
-			VEC p_ = getVec(E_ToBe[i].fr);
+			VEC p_ = getWcFromPoint(E_ToBe[i].fr);
 			glVertex3f(p_.x, p_.y, 0.0);
 		}
 		glVertex3f(coords_.x, coords_.y, 0.0);

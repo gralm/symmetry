@@ -48,7 +48,16 @@ bool TestSymmetryObject::testaGetClosestPointFromWC()
 		if (!individualTest)
 			allTestsPassed = false;
 		cout << (individualTest == true? "\tTest Passed": "\tTest Failed") << endl;
+		cout << "difference: " << getWcFromPoint(testAnswer[i]) - wc[i] << endl;
 	}
+
+
+	cout << "Tjena print: ";
+	Prefix Tjena(4, VN,FN,FP,VN);
+	Tjena.print();
+	cout << endl;
+
+
 	return allTestsPassed;
 
 }

@@ -74,15 +74,15 @@ int SymmetryObject::checkE_ToBe()
 
 
 		// kolla om den roterar i positiv z-riktning
-	VEC fr_ = getVec(E_ToBe[0].fr);
+	VEC fr_ = getWcFromPoint(E_ToBe[0].fr);
 	//VEC fr_ = E_ToBe[0].fr.getpoint();
-	VEC to_ = getVec(E_ToBe[0].to);
+	VEC to_ = getWcFromPoint(E_ToBe[0].to);
 	VEC edge0_ = to_ - fr_;
 	VEC edge1_;
 	for (int i=1; i<siz-1; i++)
 	{
 		fr_ = to_;
-		to_ = getVec(E_ToBe[i].to);
+		to_ = getWcFromPoint(E_ToBe[i].to);
 		edge1_ = to_ - fr_;
 
 		if ((~edge0_ * edge1_) < 0.0)
@@ -104,10 +104,10 @@ int SymmetryObject::checkE_ToBe()
 	{
 		for (int j=0; j<i-1; j++)
 		{
-			VEC Afr_ = getVec(E_ToBe[j].fr);
-			VEC Ato_ = getVec(E_ToBe[j].to);
-			VEC Bfr_ = getVec(E_ToBe[i].fr);
-			VEC Bto_ = getVec(E_ToBe[i].to);
+			VEC Afr_ = getWcFromPoint(E_ToBe[j].fr);
+			VEC Ato_ = getWcFromPoint(E_ToBe[j].to);
+			VEC Bfr_ = getWcFromPoint(E_ToBe[i].fr);
+			VEC Bto_ = getWcFromPoint(E_ToBe[i].to);
 			
 			VEC P_ = ~(Afr_ - Bfr_);
 			VEC Q_ = Ato_ - Afr_;
@@ -131,11 +131,11 @@ int SymmetryObject::checkE_ToBe()
 		// kontrollera att inga Points är inkapslade av markeringen.
 	list<Point> enclosedPoints;
 	VEC A[3];
-	A[0] = getVec(E_ToBe[0].fr);
+	A[0] = getWcFromPoint(E_ToBe[0].fr);
 	for (int i=2; i<siz; i++)
 	{
-		A[1] = getVec(E_ToBe[i-1].fr);
-		A[2] = getVec(E_ToBe[i].fr);
+		A[1] = getWcFromPoint(E_ToBe[i-1].fr);
+		A[2] = getWcFromPoint(E_ToBe[i].fr);
 		getEnclosedPoints(A, enclosedPoints);
 	}
 	
@@ -184,8 +184,8 @@ int SymmetryObject::checkE_ToBe()
 			Orientation ori(pat);
 			ori.rotate(E_ToBe[0].fr.Pfx);
 			VEC A[3];
-			A[0] = getVec(E_ToBe[0].fr);
-			A[1] = getVec(E_ToBe[siz-1].fr);
+			A[0] = getWcFromPoint(E_ToBe[0].fr);
+			A[1] = getWcFromPoint(E_ToBe[siz-1].fr);
 			A[2] = ori.getWCFromOC(VEC(0,0));
 			list<Point> enclosedPoints;
 			getEnclosedPoints(A, enclosedPoints);
@@ -213,7 +213,7 @@ int SymmetryObject::checkE_ToBe()
 				// man exempelvis INTE bygger 10 edgeiga faces
 				// i ikosaeder-symmetri, utan istället bygger
 				// snorspetsiga fula trianglar. Men skyll dig själv!
-			A[0] = getVec(E_ToBe[1].fr);
+			A[0] = getWcFromPoint(E_ToBe[1].fr);
 			A[2] = ori.getOCFromWC(A[0]);
 			ori.rotate(VP);
 			A[2] = ori.getWCFromOC(A[2]);
@@ -242,8 +242,8 @@ int SymmetryObject::checkE_ToBe()
 			A[2] = ori.getOCFromWC(faceCenteredPoint);
 
 			ori.rotate(E_ToBe[0].fr.Pfx);
-			A[0] = getVec(E_ToBe[0].fr);
-			A[1] = getVec(E_ToBe[siz-1].fr);
+			A[0] = getWcFromPoint(E_ToBe[0].fr);
+			A[1] = getWcFromPoint(E_ToBe[siz-1].fr);
 			A[2] = ori.getWCFromOC(A[2]);
 
 			list<Point> enclosedPoints;
@@ -275,7 +275,7 @@ int SymmetryObject::checkE_ToBe()
 				// man exempelvis INTE bygger 10 edgeiga faces
 				// i ikosaeder-symmetri, utan istället bygger
 				// snorspetsiga fula trianglar. Men skyll dig själv!
-			A[0] = getVec(E_ToBe[1].fr);
+			A[0] = getWcFromPoint(E_ToBe[1].fr);
 			A[2] = ori.getOCFromWC(A[0]);
 			ori.rotate(FP);
 			A[2] = ori.getWCFromOC(A[2]);
@@ -327,8 +327,8 @@ int SymmetryObject::checkE_ToBe()
 
 			for (int k=0; k<siz-1; k++)
 			{
-				A[1] = getVec(E_ToBe[k].fr);
-				A[2] = getVec(E_ToBe[k+1].fr);
+				A[1] = getWcFromPoint(E_ToBe[k].fr);
+				A[2] = getWcFromPoint(E_ToBe[k+1].fr);
 				getEnclosedPoints(A, enclosedPoints);
 			}
 
@@ -346,7 +346,7 @@ int SymmetryObject::checkE_ToBe()
 			}
 
 				// nästa punkt i serien kommer bli A[]
-			A[0] = A[0]*2.0 - getVec(E_ToBe[1].fr);
+			A[0] = A[0]*2.0 - getWcFromPoint(E_ToBe[1].fr);
 
 
 			cout << "kille0: " << A[0] << endl;
@@ -771,7 +771,7 @@ void SymmetryObject::test()
 }
 
 
-VEC SymmetryObject::getVec(Point P_)
+VEC SymmetryObject::getWcFromPoint(Point P_)
 {
 	//VEC Point::getpoint() const {
 	VEC rootpoint_;
@@ -788,22 +788,19 @@ VEC SymmetryObject::getVec(Point P_)
 				rootpoint_ = faceCenteredPoint;
 				break;
 			default:
-				cout << "SymmetryObject::getVec(Point) it became default o det ska det inte" << endl;
-				rootpoint_ = VEC(-100, -100);
+				cout << "SymmetryObject::getWcFromPoint(Point) it became default o det ska det inte" << endl;
+				return UNDEFINED_VEC;
 				break;
 		}
 	} else if (P_.index >= (int)V.size()) {
-		//cout << "hit skulle den ju inte komma ju ju ju " << endl;
-		return VEC(-100, -100);
+		return UNDEFINED_VEC;
 	} else {
 		rootpoint_ = V[P_.index];
 	}
 
 	Orientation ori_(pat);
-	VEC rotatedpoint_ = ori_.getOCFromWC(rootpoint_);
 	ori_.rotate(P_.Pfx);
-	rotatedpoint_ = ori_.getWCFromOC(rotatedpoint_);
-	return rotatedpoint_;	
+	return ori_.getWCFromOC(rootpoint_);
 }
 
 bool SymmetryObject::fullTest()

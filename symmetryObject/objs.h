@@ -10,6 +10,7 @@
 #include "../tm/tm.h"
 #include "./../tm/vector3.h"
 #include "../publicDefines.h"
+#include <cstdarg>
 
 
 //namespace Graph2D {
@@ -20,6 +21,7 @@ public:
 	std::list<TYP> R;
 	
 	Prefix();
+	Prefix(int n_args, ...);	// c-style funktion, tufft som fan med allt som härstammar från c
 
 	int findInList();
 	void simplify();
@@ -165,7 +167,7 @@ public:
 	void display();
 	void printAll();
 	bool fullTest();
-	VEC getVec(Point P_);
+	VEC getWcFromPoint(Point P_);
 		// ta bort detta och skapa en hel ärvd klass
 		// som testar allt senare
 	static void test();

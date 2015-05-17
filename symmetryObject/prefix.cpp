@@ -16,6 +16,18 @@ Prefix::Prefix()
 
 }
 
+Prefix::Prefix(int n_args, ...)
+{
+    va_list ap;
+    va_start(ap, n_args);
+    //TYP nextRot = static_cast<TYP>(va_arg(ap, int));
+    for(int i = 0; i < n_args; i++) {
+        //nextRot = static_cast<TYP>(va_arg(ap, int));
+        //rotate(nextRot);
+        rotate(static_cast<TYP>(va_arg(ap, int)));
+    }
+    va_end(ap);
+}
 
 void Prefix::simplify()
 {
