@@ -55,27 +55,18 @@ SymmetryObject::SymmetryObject(const SymmetryObject *gammal)
 	// 0 om det är felaktigt
 	// 1 om det är ok men icke sluten
 	// 2 om face är ok.
+	//#define NOT_CENTERED		(-1)
+	//#define VERTEX_CENTERED	(-2)
+	//#define EDGE_CENTERED		(-3)
+	//#define FACE_CENTERED		(-4)
 int SymmetryObject::checkE_ToBe()
 {
-
 	int siz = E_ToBe.size();
 	if (siz <= 1)
 		return 1;
-	/*switch(siz)
-	{
-		case 1:
-			return 1;
-			break;
-		case 2:
-
-	}
-	if (siz < 3 && )
-		return 1;*/
-
 
 		// kolla om den roterar i positiv z-riktning
 	VEC fr_ = getWcFromPoint(E_ToBe[0].fr);
-	//VEC fr_ = E_ToBe[0].fr.getpoint();
 	VEC to_ = getWcFromPoint(E_ToBe[0].to);
 	VEC edge0_ = to_ - fr_;
 	VEC edge1_;
@@ -136,10 +127,12 @@ int SymmetryObject::checkE_ToBe()
 	{
 		A[1] = getWcFromPoint(E_ToBe[i-1].fr);
 		A[2] = getWcFromPoint(E_ToBe[i].fr);
+
 		getEnclosedPoints(A, enclosedPoints);
 	}
 	
 	cout << " ************* " << endl;
+
 	cout << "Enclosed Points: " << endl;
 	for (list<Point>::iterator itP = enclosedPoints.begin(); itP != enclosedPoints.end(); itP++){
 		itP->print();
@@ -148,8 +141,10 @@ int SymmetryObject::checkE_ToBe()
 	cout << " ************* " << endl;
 
 
-	if (enclosedPoints.size() > 0)
+	if (enclosedPoints.size() > 0) {
+		cout << "enclosedPoints.size != 0, exit" << endl;
 		return 0;
+	}
 
 
 
@@ -168,7 +163,7 @@ int SymmetryObject::checkE_ToBe()
 		if (pfxDiff.getSize() == 0)
 		{
 			cout << "startar och slutar i samma punkt :) " << endl;
-			return 2;
+			return NOT_CENTERED;
 		}
 
 			// om pfxDiff = [VP] så kan det vara en Vertex-Centered Face.
@@ -265,7 +260,6 @@ int SymmetryObject::checkE_ToBe()
 				return FACE_CENTERED;
 
 			cout << "kom hit" << endl;
-			//return 1;
 
 
 			// Kontrollera så att polygonen är konvex om 
@@ -366,18 +360,24 @@ int SymmetryObject::checkE_ToBe()
 	return 1;
 }
 
+	// metoden använder sig enbart av hexagonal symmetri
 	// A måste vara en array med tre element. I PntList appendas alla inneslutna Points
-int SymmetryObject::getEnclosedPoints(VEC *A, list<Point> &PntList)
+int SymmetryObject::getEnclosedPoints(VEC *arrayWC, list<Point> &PntList)
 {
 	Prefix pfx[3];
 	vector<Prefix> relPfxToControl;
-	Orientation ori(pat);
+	//Orientation ori(pat);
+	Orientation ori(SYMMETRY_HEXAGONAL);
 	Point PointToAdd;
 	double dh = 0.00000001;
 
+	cout << "I getEnclosedPoints" << endl;
+	for (int i=0; i<3; i++)
+		cout << i << ":\t" << arrayWC[i] << endl;
+
 
 	for (int j=0; j<3; j++)
-		pfx[j] = getPrefixFromWC(A[j]);
+		pfx[j] = getPrefixFromWC(arrayWC[j]);
 
 
 		// radda upp alla unika prefix i pfx och stega genom dem.
@@ -412,7 +412,7 @@ int SymmetryObject::getEnclosedPoints(VEC *A, list<Point> &PntList)
 			bool enclosed = true;
 			for (int j=0; j<3 && enclosed; j++)
 			{
-				if (~(A[j==2? 0: j+1] - A[j]) * (V_WC - A[j]) < dh)
+				if (~(arrayWC[j==2? 0: j+1] - arrayWC[j]) * (V_WC - arrayWC[j]) < dh)
 					enclosed = false;
 			}
 
@@ -698,33 +698,28 @@ int SymmetryObject::insertVertex(VEC coord_)
 }
 
 	// hämtar alla speglingar i WC från OC
-void SymmetryObject::getAllFromRoots(VEC vRoot_, VEC *vAll_)
+void SymmetryObject::getAllFromRoots(VEC rootOC, VEC *arrayWc)
 {
-	//if (vRoot_.y <= -100)
-	//if (!vRoot_.defined())
-
-	//if (!definedVec(vRoot_))
-	if (!IS_DEFINED(vRoot_))
+	if (!IS_DEFINED(rootOC))
 	{
 		for (int i=0; i<9; i++)
-			vAll_[i] = vRoot_;
+			arrayWc[i] = rootOC;
 		return;
 	}
 
 	for (int i=0; i<3; i++)
 	{
 		Orientation ori(pat);
-		//VEC OCcoord = ori.getOCFromWC(vRoot_);
-		VEC OCcoord = vRoot_;//ori.getOCFromWC(vRoot_);
+		VEC OCcoord = rootOC;
 		if (i)
 			ori.rotate(i==1? VP: VN);
 		
 		for (int j=0; j<2; j++)
 		{
-			vAll_[i*3+j] = ori.getWCFromOC(OCcoord);
+			arrayWc[i*3+j] = ori.getWCFromOC(OCcoord);
 			ori.rotate(FP);
 		}
-		vAll_[i*3+2] = ori.getWCFromOC(OCcoord);
+		arrayWc[i*3+2] = ori.getWCFromOC(OCcoord);
 	}
 }	
 

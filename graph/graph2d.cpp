@@ -234,7 +234,6 @@ list<string> mouseClick(int x, int y)
 			case 1:
 				cout << "Den is icke fardig just nu men on god way" << endl;
 				break;
-			case 2:
 			case VERTEX_CENTERED:
 			case EDGE_CENTERED:
 			case FACE_CENTERED:{
@@ -410,10 +409,10 @@ void SymmetryDrawable::drawedge(edge &e)
 	VEC fr[9];
 	VEC to[9];
 
-	//getAllFromRoots(getWcFromPoint(e.fr), fr);
-	//getAllFromRoots(getWcFromPoint(e.to), to);
-	getAllFromRoots(V[e.fr.index], fr);
-	getAllFromRoots(V[e.to.index], to);
+	VEC frOc = Orientation::getRootOCFromWC(getWcFromPoint(e.fr));
+	VEC toOc = Orientation::getRootOCFromWC(getWcFromPoint(e.to));
+	getAllFromRoots(frOc, fr);
+	getAllFromRoots(toOc, to);
 
 	glBegin(GL_LINES);
 	for (int i=0; i<9; i++)
@@ -432,6 +431,17 @@ void SymmetryDrawable::drawedge(edge &e)
 
 void SymmetryDrawable::drawFace(face &F_)
 {
+	glColor3f(.9, .2, .2);
+	for (int f=0; f<F_.edges; f++)
+	{
+		this->drawedge(E[F_.fr]);
+	}
+
+	return;
+
+	// ta dän allt nedan
+
+
 	static VEC V_[200];
 	int fVertices = F_.edges;
 	double edgeGap = 0.1;
@@ -491,7 +501,6 @@ void SymmetryDrawable::drawFace(face &F_)
 		V_[numOfCopies*v] = V_[numOfCopies*v]*(1.0 - edgeGap) + faceCenter*edgeGap;
 		getAllFromRoots(V_[numOfCopies*v], V_ + numOfCopies*v);
 	}
-
 
 	glBegin(GL_LINES);
 	for (int copies = 0; copies < numOfCopies; copies++)

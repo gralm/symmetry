@@ -32,6 +32,7 @@ public:
 	int getSize() const;
 	Prefix getInverse() const;
 	bool equalTo(Prefix &A);
+	void gotoRoot() const;
 
 	TYP operator[](int i);
 	Prefix operator*(const Prefix &A) const;
@@ -199,6 +200,8 @@ public:
 	void rotate(TYP);
 	VEC getOCFromWC(VEC A) const;		// get orientation coordinates from world coordinates
 	VEC getWCFromOC(VEC A) const;		// get world coordinates from orientation coordinates
+	static VEC getRootOCFromWC(VEC A);
+	static VEC getRootWCFromOC(VEC A);
 	SymmetryPattern getPattern() const;
 	//VEC getWCRootFromOC(VEC A) const;
 	void print() const;

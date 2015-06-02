@@ -128,6 +128,17 @@ VEC Orientation::getWCFromOC(VEC A) const
 	return (A*ori) + pos;
 }
 
+VEC Orientation::getRootOCFromWC(VEC coordWC)
+{
+	return VEC(coordWC.x*COS30 + coordWC.y*SIN30, -coordWC.x*SIN30 + coordWC.y*COS30, coordWC.z);
+}
+
+VEC Orientation::getRootWCFromOC(VEC coordOC)
+{
+	return VEC(coordOC.x*COS30 - coordOC.y*SIN30, coordOC.x*SIN30 + coordOC.y*COS30, coordOC.z);
+}
+
+
 void Orientation::print() const
 {
 	cout << "Position: " << pos << endl;

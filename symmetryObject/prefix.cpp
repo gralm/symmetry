@@ -235,6 +235,10 @@ Prefix Prefix::difference(Prefix A)
 	return toReturn;
 }
 
+void Prefix::gotoRoot() const
+{
+	R.empty();
+}
 
 int Prefix::getSize() const
 {

@@ -57,7 +57,70 @@ bool TestSymmetryObject::testaGetClosestPointFromWC()
 	Tjena.print();
 	cout << endl;
 
-
 	return allTestsPassed;
-
 }
+
+bool TestSymmetryObject::testGetAllFromRoots(){
+	VEC jox(1./sqrt(3), 0);
+	VEC nio[9];
+	VEC dist;
+	double h2 = 0.000001;
+	this->getAllFromRoots(jox, nio);
+	for (int i=0; i<9; i++)
+	{
+		dist = nio[i] - nio[((i+1)%3) + 3*(i/3)];
+		if (dist*dist > h2)
+			return false;
+	}
+
+
+	jox = VEC(sqrt(3.)/4, 1./4);
+	this->getAllFromRoots(jox, nio);
+	dist = nio[0]-nio[4];
+	if (dist*dist > h2)
+		return false;
+	dist = nio[1]-nio[6];
+	if (dist*dist > h2)
+		return false;
+
+	return true;
+}
+
+
+
+
+bool TestSymmetryObject::testGetEnclosedPoints()
+{
+	list<Point> PointList;
+	Orientation ori(SYMMETRY_HEXAGONAL);
+	Prefix pfx;
+	pfx.rotate(FN);
+	Point A[3];
+	VEC arrayWC[3];
+	A[0] = Prefix(pfx, 0);
+	pfx.gotoRoot();
+	pfx.rotate(VP);
+	pfx.rotate(FP);
+	A[1] = Prefix(pfx, 0);
+	pfx.gotoRoot();
+	A[2] = Prefix(pfx, 0);
+	for (int i=0; i<3; i++)
+		arrayWC[i] = this->getWcFromPoint(A[i]);
+
+
+	getEnclosedPoints(arrayWC, PointList);
+
+	cout << "Enclosed Points: " << endl;
+	int i = 0;
+	for (list<Point>::iterator itP = PointList.begin(); itP != PointList.end(); itP++)
+		cout << i++ << ":\t" << itP->toString() << endl;
+
+
+	return PointList.size() == 0;
+}
+
+
+
+
+
+
