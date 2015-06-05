@@ -119,7 +119,7 @@ public:
 	}
 
 	inline const vectorn<T,3> operator~() const {
-		return vectorn<T,3>(-y, x, z);
+		return vectorn<T,3>(-y, x, 0);
 	}
 
 	//  eget:

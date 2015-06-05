@@ -235,9 +235,9 @@ Prefix Prefix::difference(Prefix A)
 	return toReturn;
 }
 
-void Prefix::gotoRoot() const
+void Prefix::returnToRoot()
 {
-	R.empty();
+	R.clear();
 }
 
 int Prefix::getSize() const
@@ -279,7 +279,7 @@ string Prefix::toString() const
 				break;
 		}
 	}
-	returnString << "]";// << endl;
+	returnString << "]";
 	return returnString.str();
 }
 

@@ -376,14 +376,95 @@ int SymmetryObject::getEnclosedPoints(VEC *arrayWC, list<Point> &PntList)
 		cout << i << ":\t" << arrayWC[i] << endl;
 
 
-	for (int j=0; j<3; j++)
-		pfx[j] = getPrefixFromWC(arrayWC[j]);
+
+		// testa vanliga vertices i alla orienteringsområden
+	bool dir = (~(arrayWC[1] - arrayWC[0]) * (arrayWC[2] - arrayWC[0])) > 0;
+
+	Orientation oris[9];
+	Prefix pfxs[9];
+	VEC X[3];
+	double x[3];
+
+	for (int i=0; i<3; i++)
+	{
+		oris[i].rotate(VN);
+		pfxs[i].rotate(VN);
+		oris[i+6].rotate(VP);
+		pfxs[i+6].rotate(VP);
+		X[i] = ~(arrayWC[(i+1)%3]-arrayWC[i]);
+		x[i] = ~arrayWC[(i+1)%3] * arrayWC[i];
+	}
+
+	for (int i=0; i<9; i += 3)
+	{
+		oris[i].rotate(FN);
+		pfxs[i].rotate(FN);
+		oris[i+2].rotate(FP);
+		pfxs[i+2].rotate(FP);
+	}
+
+
+	for (int v=0; v<V.size(); v++)
+	{
+		for (int o=0; o<9; o++)
+		{
+			VEC P = oris[o].getWCFromOC(V[v]);
+			if ((P*X[0] > x[0] == dir) && (P*X[1] > x[1] == dir) && (P*X[2] > x[2] == dir)) {
+				PntList.push_back(Point(pfxs[o], v));
+			}
+		}
+	}
+
+
+	// inkludera edgecentered vertices
+	if (edgePointActive) {
+		list<int> edgeOris;
+		edgeOris.push_back(3);
+		edgeOris.push_back(5);
+		//for (int o : edgeOris)
+		for (list<int>::iterator iti = edgeOris.begin(); iti != edgeOris.end(); iti++)
+		{
+			VEC P = oris[*iti].getWCFromOC(edgeCenteredPoint);
+			if ((P*X[0] > x[0] == dir) && (P*X[1] > x[1] == dir) && (P*X[2] > x[2] == dir))
+				PntList.push_back(Point(pfxs[*iti], EDGE_CENTERED));
+		}
+	}
+
+	// inkludera edgecentered vertices
+	if (facePointActive) {
+		list<int> faceOris;
+		faceOris.push_back(1);
+		faceOris.push_back(4);
+		faceOris.push_back(7);
+		for (list<int>::iterator iti = faceOris.begin(); iti != faceOris.end(); iti++)
+		{
+			VEC P = oris[*iti].getWCFromOC(faceCenteredPoint);
+			if ((P*X[0] > x[0] == dir) && (P*X[1] > x[1] == dir) && (P*X[2] > x[2] == dir))
+				PntList.push_back(Point(pfxs[*iti], FACE_CENTERED));
+		}
+	}
+
+	/*int j=0;
+	for (list<Point>::iterator itP = PntList.begin(); itP != PntList.end(); itP++)
+	{
+		cout << j++ << ":" << endl;
+		itP->print();
+		cout << endl << "coords: " << this->getWcFromPoint(*itP) << endl;
+	}*/
+
+
+	return 0;
 
 
 		// radda upp alla unika prefix i pfx och stega genom dem.
 		// detta är en ful-lösning som måste analyseras noggrannare
 		// Vid rotation [VP FP] måste ju även punkter i området 
 		// [VP], [FN] kontrolleras, inte bara [VP FP]. Det görs icke ännu.
+
+
+	for (int j=0; j<3; j++)
+		pfx[j] = getPrefixFromWC(arrayWC[j]);
+
 
 	relPfxToControl.push_back(pfx[0]);
 	Prefix pfx_tf = pfx[0].difference(pfx[1]);
@@ -420,6 +501,7 @@ int SymmetryObject::getEnclosedPoints(VEC *arrayWC, list<Point> &PntList)
 			{
 				PointToAdd.index = i;
 				PntList.push_back(PointToAdd);
+				cout << "k:" << k << "index = " << i << endl;
 			}
 		}
 	}

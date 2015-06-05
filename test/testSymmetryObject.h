@@ -6,11 +6,16 @@
 
 
 class TestSymmetryObject: public SymmetryObject {
+private:
+	std::list<bool(*)()> testFunks;
+
 public:
 	TestSymmetryObject();
 	bool testaGetClosestPointFromWC();
 	bool testGetAllFromRoots();
 	bool testGetEnclosedPoints();
+
+	void testAll();
 };
 
 #endif

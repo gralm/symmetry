@@ -93,17 +93,31 @@ bool TestSymmetryObject::testGetEnclosedPoints()
 {
 	list<Point> PointList;
 	Orientation ori(SYMMETRY_HEXAGONAL);
-	Prefix pfx;
-	pfx.rotate(FN);
 	Point A[3];
 	VEC arrayWC[3];
-	A[0] = Prefix(pfx, 0);
-	pfx.gotoRoot();
+	V.push_back(VEC(0.389, 0.072));	// 1
+
+	Prefix pfx;
+	pfx.rotate(FN);
+	A[0] = Point(pfx, 0);
+	cout << endl << getWcFromPoint(A[0]) << endl;
+	A[0].print();
+
+
+	pfx.returnToRoot();
 	pfx.rotate(VP);
 	pfx.rotate(FP);
-	A[1] = Prefix(pfx, 0);
-	pfx.gotoRoot();
-	A[2] = Prefix(pfx, 0);
+	A[1] = Point(pfx, 0);
+	cout << endl << getWcFromPoint(A[1]) << endl;
+	A[1].print();
+
+	pfx.returnToRoot();
+	A[2] = Point(pfx, 0);
+	cout << endl << getWcFromPoint(A[2]) << endl;
+	A[2].print();
+
+
+
 	for (int i=0; i<3; i++)
 		arrayWC[i] = this->getWcFromPoint(A[i]);
 
@@ -116,11 +130,21 @@ bool TestSymmetryObject::testGetEnclosedPoints()
 		cout << i++ << ":\t" << itP->toString() << endl;
 
 
-	return PointList.size() == 0;
+	return PointList.size() == 1;
 }
 
 
+void TestSymmetryObject::testAll()
+{
 
+	//testFunks.push_back(&this->testGetEnclosedPoints);
+	//list<(bool*)()> tjena;
+	//tjena.push_back(testGetEnclosedPoints);
+	//bool (*hej)(void);
+	//hej = &testGetEnclosedPoints;
+
+	//testFunks.push_back(testGetEnclosedPoints);
+}
 
 
 

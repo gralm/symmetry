@@ -32,7 +32,7 @@ public:
 	int getSize() const;
 	Prefix getInverse() const;
 	bool equalTo(Prefix &A);
-	void gotoRoot() const;
+	void returnToRoot();
 
 	TYP operator[](int i);
 	Prefix operator*(const Prefix &A) const;
@@ -44,14 +44,12 @@ public:
 
 
 
-//struct Point;
 struct Point {
 	Prefix Pfx;
 	int index;
 
 	Point();
 	Point(Prefix Pfx_, int index_);
-	//VEC getpoint() const;
 	bool isDefined() const;
 	void print() const;
 	void simplify();
@@ -191,9 +189,11 @@ private:
 
 	SymmetryPattern pat;
 
+	void initalize(SymmetryPattern createWithPattern);
+
 public:
 
-
+	Orientation();
 	Orientation(SymmetryPattern createWithPattern);
 
 	void rotate(const Prefix &p_);

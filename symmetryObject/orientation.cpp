@@ -35,8 +35,17 @@ MAT Orientation::FN120 = FP120.transpose();
 MAT Orientation::FN60 = FP60.transpose();
 	
 
+Orientation::Orientation() {
+	initalize(SYMMETRY_HEXAGONAL);
+}
+
 	// Root orientation
 Orientation::Orientation(SymmetryPattern createWithPattern) {
+	initalize(createWithPattern);
+}
+
+void Orientation::initalize(SymmetryPattern createWithPattern)
+{
 	pos = VEC(0, 0, 0);
 
 	ori = MAT(	COS30,	SIN30,	0,
