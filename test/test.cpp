@@ -26,6 +26,8 @@ int main()
 	bool getRootFrom = asdf.testGetAllFromRoots();
 	bool getEclosedPoints = asdf.testGetEnclosedPoints();
 
+	bool getEnclosedPoints = asdf.testGetEnclosedPoints2();
+
 
 	return 0;
 }

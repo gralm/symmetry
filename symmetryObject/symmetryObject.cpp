@@ -61,6 +61,12 @@ SymmetryObject::SymmetryObject(const SymmetryObject *gammal)
 	//#define FACE_CENTERED		(-4)
 int SymmetryObject::checkE_ToBe()
 {
+	/*VEC AA[3];
+	AA[0] = VEC(0.154, 0.07);
+	AA[1] = VEC(3.738, 2.) / 9.;
+	AA[2] = VEC(0.622, 7.7) /3.;*/
+
+
 	int siz = E_ToBe.size();
 	if (siz <= 1)
 		return 1;
@@ -123,20 +129,27 @@ int SymmetryObject::checkE_ToBe()
 	list<Point> enclosedPoints;
 	VEC A[3];
 	A[0] = getWcFromPoint(E_ToBe[0].fr);
-	for (int i=2; i<siz; i++)
+	cout << "nu is siz = " << siz << endl;
+	for (int i=1; i<siz-2; i++)
 	{
-		A[1] = getWcFromPoint(E_ToBe[i-1].fr);
-		A[2] = getWcFromPoint(E_ToBe[i].fr);
+		A[1] = getWcFromPoint(E_ToBe[i].fr);
+		A[2] = getWcFromPoint(E_ToBe[i+1].fr);
 
-		getEnclosedPoints(A, enclosedPoints);
+		int extraPoints = getEnclosedPoints(A, enclosedPoints);
+		if (extraPoints)
+		{
+			cout << "extraPoints > 0 when i = " << i << endl;
+			for (int j=0; j<3; j++)
+				cout << "A[" << j << "]: " << A[j] << endl;
+		}
 	}
 	
 	cout << " ************* " << endl;
 
-	cout << "Enclosed Points: " << endl;
+	cout << "Enclosed Points: " << enclosedPoints.size() << " st." << endl;
 	for (list<Point>::iterator itP = enclosedPoints.begin(); itP != enclosedPoints.end(); itP++){
 		itP->print();
-		cout << endl;
+		cout << "\t" << getWcFromPoint(*itP) << endl;
 	}
 	cout << " ************* " << endl;
 
@@ -286,13 +299,17 @@ int SymmetryObject::checkE_ToBe()
 		if (pfxDiff.getSize() == 2 && ((pfxDiff[0]^pfxDiff[1]) == 6))
 		{
 			cout << "   *******    \n Det is en FN rotation detta :) " << endl;
+			cout << "   *******    \n Det is en edge-centered kille om inga i vägen :) " << endl;
 			
 			
 				//kontrollera så att inga punkter existerar i det området
-			if (edgePointActive)
+			if (edgePointActive) {
+				cout << "exit, edge-point is active" << endl;
 				return 1;
+			}
 
-				// om det är ett rakt streck 
+
+				// om det är ett rakt streck ?
 			if (siz == 2)
 				return 1;
 
@@ -306,11 +323,13 @@ int SymmetryObject::checkE_ToBe()
 			{
 				case FP:
 				case VN:
-					A[0] = ori.getWCFromOC(VEC(COS30, -SIN30)*.5);
+					//A[0] = ori.getWCFromOC(VEC(COS30, -SIN30)*.5);
+					A[0] = getWcFromPoint(E_ToBe[0].fr);
 					break;
 				case FN:
 				case VP:
-					A[0] = ori.getWCFromOC(VEC(COS30, SIN30)*.5);
+					//A[0] = ori.getWCFromOC(VEC(COS30, SIN30)*.5);
+					A[0] = getWcFromPoint(E_ToBe[0].fr);
 					break;
 				default:
 					cout << "hit ska jag typ icke kommmmma" << endl;
@@ -319,10 +338,16 @@ int SymmetryObject::checkE_ToBe()
 
 			list<Point> enclosedPoints;
 
-			for (int k=0; k<siz-1; k++)
+			for (int k=1; k<siz-1; k++)
 			{
 				A[1] = getWcFromPoint(E_ToBe[k].fr);
 				A[2] = getWcFromPoint(E_ToBe[k+1].fr);
+				cout << "\t ************ k=" << k << endl;
+
+				cout << "E_tobe[" << 0 << "] = " << A[0] << endl;
+				cout << "E_tobe[" << k << "] = " << A[1] << endl;
+				cout << "E_tobe[" << (k+1) << "] = " << A[2] << endl;
+
 				getEnclosedPoints(A, enclosedPoints);
 			}
 
@@ -364,6 +389,7 @@ int SymmetryObject::checkE_ToBe()
 	// A måste vara en array med tre element. I PntList appendas alla inneslutna Points
 int SymmetryObject::getEnclosedPoints(VEC *arrayWC, list<Point> &PntList)
 {
+	int numOfPoints = 0;
 	Prefix pfx[3];
 	vector<Prefix> relPfxToControl;
 	//Orientation ori(pat);
@@ -411,6 +437,7 @@ int SymmetryObject::getEnclosedPoints(VEC *arrayWC, list<Point> &PntList)
 			VEC P = oris[o].getWCFromOC(V[v]);
 			if ((P*X[0] > x[0] == dir) && (P*X[1] > x[1] == dir) && (P*X[2] > x[2] == dir)) {
 				PntList.push_back(Point(pfxs[o], v));
+				numOfPoints++;
 			}
 		}
 	}
@@ -425,8 +452,10 @@ int SymmetryObject::getEnclosedPoints(VEC *arrayWC, list<Point> &PntList)
 		for (list<int>::iterator iti = edgeOris.begin(); iti != edgeOris.end(); iti++)
 		{
 			VEC P = oris[*iti].getWCFromOC(edgeCenteredPoint);
-			if ((P*X[0] > x[0] == dir) && (P*X[1] > x[1] == dir) && (P*X[2] > x[2] == dir))
+			if ((P*X[0] > x[0] == dir) && (P*X[1] > x[1] == dir) && (P*X[2] > x[2] == dir)) {
 				PntList.push_back(Point(pfxs[*iti], EDGE_CENTERED));
+				numOfPoints++;
+			}
 		}
 	}
 
@@ -439,8 +468,10 @@ int SymmetryObject::getEnclosedPoints(VEC *arrayWC, list<Point> &PntList)
 		for (list<int>::iterator iti = faceOris.begin(); iti != faceOris.end(); iti++)
 		{
 			VEC P = oris[*iti].getWCFromOC(faceCenteredPoint);
-			if ((P*X[0] > x[0] == dir) && (P*X[1] > x[1] == dir) && (P*X[2] > x[2] == dir))
+			if ((P*X[0] > x[0] == dir) && (P*X[1] > x[1] == dir) && (P*X[2] > x[2] == dir)) {
 				PntList.push_back(Point(pfxs[*iti], FACE_CENTERED));
+				numOfPoints++;
+			}
 		}
 	}
 
@@ -453,7 +484,7 @@ int SymmetryObject::getEnclosedPoints(VEC *arrayWC, list<Point> &PntList)
 	}*/
 
 
-	return 0;
+	return numOfPoints;
 
 
 		// radda upp alla unika prefix i pfx och stega genom dem.

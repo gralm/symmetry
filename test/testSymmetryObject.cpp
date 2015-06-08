@@ -133,6 +133,31 @@ bool TestSymmetryObject::testGetEnclosedPoints()
 	return PointList.size() == 1;
 }
 
+bool TestSymmetryObject::testGetEnclosedPoints2()
+{
+
+	V.clear();
+
+	VEC A[3];
+	A[0] = VEC(0.33, .03);
+	A[1] = VEC(.402, .722/3.);
+	A[2] = VEC(.178, .578/3.);
+
+	for (int i=0; i<3; i++)
+		V.push_back(A[i]);
+
+	list<Point> PntList;
+
+	int antalFunna = SymmetryObject::getEnclosedPoints(A, PntList);
+	cout << "antalFunna: " << antalFunna << "och det is: " << endl;
+
+	for (list<Point>::iterator itP = PntList.begin(); itP != PntList.end(); itP++) {
+		cout << itP->toString() << endl;
+		//cout << *itP << endl;
+	}
+
+	return false;
+}
 
 void TestSymmetryObject::testAll()
 {

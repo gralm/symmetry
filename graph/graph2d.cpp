@@ -203,7 +203,8 @@ list<string> mouseClick(int x, int y)
 
 		switch(sluten)
 		{
-			case 2:
+			//case 2:
+			case NOT_CENTERED:
 				hurSluten = NOT_CENTERED;
 				cout << "DET blev ett vanligt FACE" << endl;
 				break;
@@ -236,6 +237,7 @@ list<string> mouseClick(int x, int y)
 				break;
 			case VERTEX_CENTERED:
 			case EDGE_CENTERED:
+			case NOT_CENTERED:
 			case FACE_CENTERED:{
 
 					// Addera facet
@@ -243,8 +245,7 @@ list<string> mouseClick(int x, int y)
 				//snprintf(strMess, 200, "%d, %d, %d", COMM_MSGTYP_UPDATE_FACE, symmetryObject.F.size(), sluten);
 				snprintf(strMess, 200, "%d, %d, %d, %d, %d, 0.000", 
 					COMM_MSGTYP_UPDATE_FACE, symmetryObject.F.size(), 
-					symmetryObject.E.size(), SymmetryObject::E_ToBe.size(), 
-					sluten==2? NOT_CENTERED: sluten);
+					symmetryObject.E.size(), SymmetryObject::E_ToBe.size(), sluten);
 
 
 				//snprintf(strToSend, 200, "%d,%d,%d,%d", 

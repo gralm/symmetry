@@ -14,6 +14,7 @@ public:
 	bool testaGetClosestPointFromWC();
 	bool testGetAllFromRoots();
 	bool testGetEnclosedPoints();
+	bool testGetEnclosedPoints2();
 
 	void testAll();
 };
