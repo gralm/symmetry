@@ -218,6 +218,13 @@ Prefix Prefix::operator*(const Prefix &A) const
 }
 
 
+Prefix Prefix::operator/(const Prefix &A) const
+{
+	Prefix toReturn;
+	Prefix invA = A.getInverse();
+	return *this * invA;
+}
+
 Prefix Prefix::difference(Prefix A)
 {
 	Prefix toReturn;
@@ -234,6 +241,8 @@ Prefix Prefix::difference(Prefix A)
 	toReturn.simplify();
 	return toReturn;
 }
+
+
 
 void Prefix::returnToRoot()
 {

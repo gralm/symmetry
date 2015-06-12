@@ -198,6 +198,11 @@ list<string> mouseClick(int x, int y)
 		}
 
 		int sluten = symmetryObject.checkE_ToBe();
+
+		cout << endl << endl << " ********** Testa checkE_To_be *********** " << endl;
+		cout << "svar blev = " << symmetryObject.checkE_ToBe2() << endl;
+		cout << " ********** Testa checkE_To_be *********** " << endl << endl << endl;
+
 		cout << "sluten: " << sluten << endl;
 		int hurSluten;
 

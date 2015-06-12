@@ -385,6 +385,240 @@ int SymmetryObject::checkE_ToBe()
 	return 1;
 }
 
+
+
+int SymmetryObject::checkE_ToBe2()
+{
+	int siz = E_ToBe.size();	// antal vertices i kedja
+	vector<VEC> wc;
+
+	cout << "skriver ut ala E_ToBe: " << endl;
+	for (int i=0; i<siz; i++) {
+		wc.push_back(getWcFromPoint(E_ToBe[i].fr));
+		cout << endl << i << ":\t" << wc[i] << endl;
+		E_ToBe[i].print();
+	}
+
+
+	if (siz <= 1) {
+		cout << "return 1: siz <= 1" << endl;
+		return 1;
+	}
+
+
+		// gå genom alla och se om någon om två vertices sträcker sig för långt
+	Prefix pfxDiff;
+	for (int i=siz-2; i>=0; i--)
+	{
+		pfxDiff = (E_ToBe[i].fr.Pfx / E_ToBe[siz-1].fr.Pfx);
+		pfxDiff.simplify();
+
+		switch(pfxDiff.getSize())
+		{
+		case 1:
+			break;
+		case 2:
+			if (pfxDiff[i]^pfxDiff[siz-1] != 6){
+				cout << "return 0: pfxDiff[i]^pfxDiff[siz-1] = " << (pfxDiff[i]^pfxDiff[siz-1]) << " != 6" << endl;
+				return 0;
+			}
+			break;
+		default:
+			cout << "return 0: pfxDiff[0].size() > 2" << endl;
+			return 0;
+		}
+	}
+
+		// om det bara är 2 vertices
+	if (siz <= 2) {
+		cout << "return 1: siz <= 1" << endl;
+		return 1;
+	}
+
+	cout << "pfxDiff: " << pfxDiff.toString() << endl;
+	int pfxDiffSiz = pfxDiff.getSize();
+
+
+		// kontrollera att den inte är bend åt fel håll
+	if (~(wc[siz-1]-wc[siz-2]) * (wc[siz-3]-wc[siz-2]) < 0)
+	{
+		cout << "Bend towards vrong hool" << endl;
+		return 0;
+	}
+
+		//kontrollera så ingen är ansluten A -> B
+
+		//kontrollera att inga korsningar existerar
+
+
+		// finns det enclosed Points:
+	VEC A[3];
+	A[0] = wc[0];
+	A[1] = wc[siz-2];
+	A[2] = wc[siz-1];
+	list<Point> enclosedPoints;
+	int extraPoints = getEnclosedPoints(A, enclosedPoints);
+
+	cout << "enclosed Points: " << extraPoints << endl;
+	for (list<Point>::iterator itP = enclosedPoints.begin(); itP != enclosedPoints.end(); itP++)
+		cout << "\t" << itP->toString() << endl;
+
+	if (extraPoints > 0) {
+		cout << "det fanns enclosed punkter" << endl;
+		return 0;
+	}
+
+		// kontrollera om den återvänder till samma index
+	if (E_ToBe[siz-1].fr.index != E_ToBe[0].fr.index) {
+		cout << "index[siz-1] != index[0] so returna 1" << endl;
+		return 1;
+	}
+
+
+		// bestäm vad det är för typ av face
+	switch(pfxDiffSiz) {
+	case 0:
+		cout << "Not centered" << endl;
+		return NOT_CENTERED;
+	case 1: {
+		if (pfxDiff[0] == VP) {
+			if (vertexPointActive) {
+				cout << "kan inte skapa VCF för VP är aktiv, därför return 1" << endl;
+				return 1;
+			}
+
+				// gör koll om det finns enclosed Vertieces i [wc[0], wc[siz-1], getWcFromPoint(Point(E_ToBe[0].fr.Pfx))]
+			A[0] = wc[0];
+			A[1] = wc[siz-1];
+			A[2] = getWcFromPoint(Point(E_ToBe[0].fr.Pfx, VERTEX_CENTERED));
+			this->getEnclosedPoints(A, enclosedPoints);
+			if (enclosedPoints.size() > 0)
+			{
+				cout << "kan inte skapa VCF för att man enclosar Points, därför return 1";
+				return 1;
+			}
+
+				// kontrollera att sista och påföljande edge inte buktar åt fel håll., då returneras 1
+
+			cout << "lyckades skapa VCF, return VERTEX_CENTERED" << endl;
+			return VERTEX_CENTERED;
+
+		} else if (pfxDiff[0] == FP) {
+			if (facePointActive) {
+				cout << "kan inte skapa FCF för VP är aktiv, därför return 1" << endl;
+				return 1;
+			}
+
+				// gör koll om det finns enclosed Vertieces i [wc[0], wc[siz-1], getWcFromPoint(Point(E_ToBe[0].fr.Pfx))]
+			A[0] = wc[0];
+			A[1] = wc[siz-1];
+			A[2] = getWcFromPoint(Point(E_ToBe[0].fr.Pfx, VERTEX_CENTERED));
+			this->getEnclosedPoints(A, enclosedPoints);
+			if (enclosedPoints.size() > 0)
+			{
+				cout << "kan inte skapa VCF för att man enclosar Points, därför return 1";
+				return 1;
+			}
+
+				// kontrollera att sista och påföljande edge inte buktar åt fel håll., då returneras 1
+
+			cout << "lyckades skapa VCF, return VERTEX_CENTERED" << endl;
+			return VERTEX_CENTERED;
+
+		}
+
+	}
+
+	}
+
+	/*
+n[]
+    om e<3                    0
+    annars                    -1
+
+n[VP]    om VCV = true                1
+    om innesluten vertex i A, B, VCP    1
+    annars                     -2
+
+n[VP FP]
+n[FN VN]    om e<2                1
+    om ECV = true                0
+    annars                    -3
+
+n[FP]    om FCV = true                1
+    om innesluten vertex i A, B, FCP    1
+    annars                    -4
+	 */
+
+	cout << "kom hit " << endl;
+	return 1;
+
+
+	/*
+
+Första = A
+Sista  = B
+
+Prefix pfxDiff = (B.Pfx / A.Pfx).simplify();
+switch(pfxDiff.size())
+{
+    case 1:
+        break;
+    case 2:
+        if (pfxDiff[0]^pfxDiff[1]!=6)
+            0
+        break;
+    default:
+            0
+        break;
+}
+
+kontrollera så ingen är ansluten A -> B
+
+Face-centered vertex = FCV
+Face-centered position = FCP
+
+2    Färdig
+1    Fortsätt leta
+0    Förstörd ta bort
+-1    Not centered
+-2    vertex centered
+-3    edge centered
+-4    face centered
+
+
+c = inneslutna hörn
+e = antal edges
+
+c>0                        0
+
+n[]
+    om e<3                    0
+    annars                    -1
+
+n[VP]    om VCV = true                1
+    om innesluten vertex i A, B, VCP    1
+    annars                     -2
+
+n[VP FP]
+n[FN VN]    om e<2                1
+    om ECV = true                0
+    annars                    -3
+
+n[FP]    om FCV = true                1
+    om innesluten vertex i A, B, FCP    1
+    annars                    -4
+
+	 * */
+
+
+}
+
+
+
+
+
+
 	// metoden använder sig enbart av hexagonal symmetri
 	// A måste vara en array med tre element. I PntList appendas alla inneslutna Points
 int SymmetryObject::getEnclosedPoints(VEC *arrayWC, list<Point> &PntList)
@@ -397,14 +631,15 @@ int SymmetryObject::getEnclosedPoints(VEC *arrayWC, list<Point> &PntList)
 	Point PointToAdd;
 	double dh = 0.00000001;
 
+	// testa vanliga vertices i alla orienteringsområden
+	bool dir = (~(arrayWC[1] - arrayWC[0]) * (arrayWC[2] - arrayWC[0])) > 0;
+
 	cout << "I getEnclosedPoints" << endl;
 	for (int i=0; i<3; i++)
 		cout << i << ":\t" << arrayWC[i] << endl;
 
 
 
-		// testa vanliga vertices i alla orienteringsområden
-	bool dir = (~(arrayWC[1] - arrayWC[0]) * (arrayWC[2] - arrayWC[0])) > 0;
 
 	Orientation oris[9];
 	Prefix pfxs[9];
@@ -435,10 +670,17 @@ int SymmetryObject::getEnclosedPoints(VEC *arrayWC, list<Point> &PntList)
 		for (int o=0; o<9; o++)
 		{
 			VEC P = oris[o].getWCFromOC(V[v]);
-			if ((P*X[0] > x[0] == dir) && (P*X[1] > x[1] == dir) && (P*X[2] > x[2] == dir)) {
+			if ((dir == true && (P*X[0] - x[0] > dh) && (P*X[1] - x[1] > dh) && (P*X[2] - x[2] > dh)) ||
+				(dir == false && (P*X[0] - x[0] <-dh) && (P*X[1] - x[1] <-dh) && (P*X[2] - x[2] <-dh)))
+			{
 				PntList.push_back(Point(pfxs[o], v));
 				numOfPoints++;
 			}
+
+			/*if ((P*X[0] > x[0] == dir) && (P*X[1] > x[1] == dir) && (P*X[2] > x[2] == dir)) {
+				PntList.push_back(Point(pfxs[o], v));
+				numOfPoints++;
+			}*/
 		}
 	}
 
@@ -474,15 +716,6 @@ int SymmetryObject::getEnclosedPoints(VEC *arrayWC, list<Point> &PntList)
 			}
 		}
 	}
-
-	/*int j=0;
-	for (list<Point>::iterator itP = PntList.begin(); itP != PntList.end(); itP++)
-	{
-		cout << j++ << ":" << endl;
-		itP->print();
-		cout << endl << "coords: " << this->getWcFromPoint(*itP) << endl;
-	}*/
-
 
 	return numOfPoints;
 

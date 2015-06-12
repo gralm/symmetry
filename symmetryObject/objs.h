@@ -36,6 +36,7 @@ public:
 
 	TYP operator[](int i);
 	Prefix operator*(const Prefix &A) const;
+	Prefix operator/(const Prefix &A) const;
 
 	Prefix difference(Prefix A);
 	std::string toString() const;
@@ -151,6 +152,7 @@ public:
 		// 1 om det är ok men icke sluten
 		// 2 om face är ok.
 	int checkE_ToBe();		// returnerar true om face är slutet.
+	int checkE_ToBe2();		// returnerar true om face är slutet.
 	int getEnclosedPoints(VEC *A, std::list<Point> &PntList);
 	bool addFaceToBe(int sluten);
 	//int vecOverIndex(VEC co_, );
