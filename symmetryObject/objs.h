@@ -29,9 +29,10 @@ public:
 	void print() const;
 	void rotate(TYP r);
 	void rotate(const Prefix &r);
-	int getSize() const;
+	int size() const;
 	Prefix getInverse() const;
 	bool equalTo(Prefix &A);
+	bool isOppositeEdge();
 	void returnToRoot();
 
 	TYP operator[](int i);
@@ -50,6 +51,7 @@ struct Point {
 	int index;
 
 	Point();
+	Point(int index_);
 	Point(Prefix Pfx_, int index_);
 	bool isDefined() const;
 	void print() const;
@@ -122,8 +124,6 @@ protected:
 	bool edgePointActive;
 	bool vertexPointActive;
 
-
-
 public:
 	static const VEC vertexCenteredPoint;//(.0, .0);
 	static const VEC edgeCenteredPoint;//(.25, SIN60*.5);
@@ -141,7 +141,7 @@ public:
 	SymmetryObject(const SymmetryObject *gammal);
 
 	static std::vector<edge> E_ToBe;
-
+	std::vector<Point> newEP;
 
 
 ////////////////////////////////////
@@ -152,9 +152,10 @@ public:
 		// 1 om det är ok men icke sluten
 		// 2 om face är ok.
 	int checkE_ToBe();		// returnerar true om face är slutet.
-	int checkE_ToBe2();		// returnerar true om face är slutet.
+	int checkNewEP();		// returnerar true om face är slutet.
 	int getEnclosedPoints(VEC *A, std::list<Point> &PntList);
 	bool addFaceToBe(int sluten);
+	bool addNewEP(int sluten);
 	//int vecOverIndex(VEC co_, );
 
 
@@ -216,5 +217,6 @@ void rotationPrint(TYP);
 Prefix getPrefixFromWC(VEC coord);
 VEC getRootpoint(VEC coord);
 Point getClosestCenteredPointFromWC(VEC coord, double *distanceSquared);
+Point getClosestCenteredPointFromWC(VEC coord, double *distanceSquared, bool vertexPointActive, bool edgePointActive, bool facePointActive);
 
 #endif

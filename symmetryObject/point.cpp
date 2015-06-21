@@ -17,6 +17,10 @@ Point::Point() {
 	index = -1;
 }
 
+Point::Point(int index_) {
+	index = index_;
+}
+
 Point::Point(Prefix Pfx_, int index_)
 {
 	Pfx = Pfx_;
@@ -165,7 +169,7 @@ bool Point::equalTo(Point &A) {
 	//subPfx.print();
 	//cout << endl;
 
-	return (subPfx.getSize() == 0);
+	return (subPfx.size() == 0);
 }
 
 void Point::simplify()

@@ -86,18 +86,27 @@ git ls-files | grep '.h\|.cpp' | xargs cat | wc
 
 
 make > hi.txt 2>&1
-
-
-
+find . -name \*.cpp 
 
 
 
 			ECLIPSE:
+
+	om man installerar 64-bit eclipse så måste man har 64-bits JRE(java runtime environment). 
+http://www.oracle.com/technetwork/java/javase/downloads/jre7-downloads-1880261.html
+			
+			
 	för att anpassa encodingen på skiten. UTF-8 löste alla problem denna gången.
 http://stackoverflow.com/questions/3751791/how-to-change-default-text-file-encoding-in-eclipse
+Window>Preferences>content types
+select Text>HTML in the tree
+select all file associations, particularily .html
+and input "utf-8" in the text-field "default encoding"
 
 	för att anpassa färgerna:
 Preferences -> General -> Appearance -> Theme -> "Dark"
+Nu förbjuder Eclipse dig nu att se det du har markören över, men man kan kraxxa sig runt det:
+http://www.eclipse.org/forums/index.php/t/262811/
 färgerna kan dras hem härifrån och installeras med 
 http://eclipsecolorthemes.org/?view=theme&id=2069
 import -> general -> preferences -> from preference file

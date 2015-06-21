@@ -102,8 +102,8 @@ void setMousePosition(int x, int y)
 list<string> mouseClick(int x, int y)
 {
 	list<string> commMsgList;
-	cout << "here klickas it: " << camera->fromABtoXY(x, y) << endl;
-	cout << "indexMouseOver: " << indexMouseOver << endl;
+	//cout << "here klickas it: " << camera->fromABtoXY(x, y) << endl;
+	//cout << "indexMouseOver: " << indexMouseOver << endl;
 	static char strMess[200];
 
 	VEC realCoord(camera->fromABtoXY(x, y));
@@ -171,6 +171,7 @@ list<string> mouseClick(int x, int y)
 	} else if (mode == 1 && indexMouseOver != -1) {
 
 		Point nyPunkt = symmetryObject.getClosestPointFromWC(realCoord);
+		symmetryObject.newEP.push_back(nyPunkt);
 
 
 		cout << "mode = 1, mouseklick: [";
@@ -199,9 +200,23 @@ list<string> mouseClick(int x, int y)
 
 		int sluten = symmetryObject.checkE_ToBe();
 
-		cout << endl << endl << " ********** Testa checkE_To_be *********** " << endl;
-		cout << "svar blev = " << symmetryObject.checkE_ToBe2() << endl;
-		cout << " ********** Testa checkE_To_be *********** " << endl << endl << endl;
+		cout << endl << endl << " ********** Testa checkNewEP *********** " << endl;
+		int svarBlev = symmetryObject.checkNewEP();
+		cout << "svar blev = " << svarBlev << endl;
+		switch(svarBlev)
+		{
+		case 0:
+			cout << "error Clear" << endl;
+			symmetryObject.newEP.clear();
+			break
+		case 1:
+			cout << "continue drawing" << endl;
+			break;
+		default:
+			cout << "symmetryObject.add"
+
+		}
+		cout << " ********** Testa checkNewEP *********** " << endl << endl << endl;
 
 		cout << "sluten: " << sluten << endl;
 		int hurSluten;
@@ -210,23 +225,18 @@ list<string> mouseClick(int x, int y)
 		{
 			//case 2:
 			case NOT_CENTERED:
-				hurSluten = NOT_CENTERED;
 				cout << "DET blev ett vanligt FACE" << endl;
 				break;
 			case VERTEX_CENTERED:
-				hurSluten = VERTEX_CENTERED;
 				cout << "DET blev en VERTEX FACE" << endl;
 				break;
 			case EDGE_CENTERED:
-				hurSluten = EDGE_CENTERED;
 				cout << "DET blev en EDGE FACE" << endl;
 				break;
 			case FACE_CENTERED:
-				hurSluten = FACE_CENTERED;
 				cout << "DET blev en FACE FACE" << endl;
 				break;
 			default:
-				hurSluten = -1000;
 				cout << "Det blev jättefel här" << endl;
 				break;
 		}

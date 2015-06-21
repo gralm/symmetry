@@ -173,14 +173,14 @@ int SymmetryObject::checkE_ToBe()
 			// ytan börjar och slutar i samma punkt.
 			// Förutsatt att dne kommit hit ner i funktionen
 			// så är kanterna slutna till en yta. Toppen!
-		if (pfxDiff.getSize() == 0)
+		if (pfxDiff.size() == 0)
 		{
 			cout << "startar och slutar i samma punkt :) " << endl;
 			return NOT_CENTERED;
 		}
 
 			// om pfxDiff = [VP] så kan det vara en Vertex-Centered Face.
-		if (pfxDiff.getSize() == 1 && pfxDiff[0] == VP)
+		if (pfxDiff.size() == 1 && pfxDiff[0] == VP)
 		{
 			cout << "Det is en VP rotation detta :) " << endl;
 			
@@ -236,7 +236,7 @@ int SymmetryObject::checkE_ToBe()
 		}
 			
 			// kolla om det är en face-centered face
-		if (pfxDiff.getSize() == 1 && pfxDiff[0] == FP)
+		if (pfxDiff.size() == 1 && pfxDiff[0] == FP)
 		{
 			cout << "   *******    \n Det is en FP rotation detta :) " << endl;
 			
@@ -296,7 +296,7 @@ int SymmetryObject::checkE_ToBe()
 		}
 
 			// kolla om det är en edge-centered face
-		if (pfxDiff.getSize() == 2 && ((pfxDiff[0]^pfxDiff[1]) == 6))
+		if (pfxDiff.size() == 2 && ((pfxDiff[0]^pfxDiff[1]) == 6))
 		{
 			cout << "   *******    \n Det is en FN rotation detta :) " << endl;
 			cout << "   *******    \n Det is en edge-centered kille om inga i vägen :) " << endl;
@@ -387,21 +387,21 @@ int SymmetryObject::checkE_ToBe()
 
 
 
-int SymmetryObject::checkE_ToBe2()
+int SymmetryObject::checkNewEP()
 {
-	int siz = E_ToBe.size();	// antal vertices i kedja
+	int siz = newEP.size();	// antal vertices i kedja
+	cout << "siz = " << siz << endl;
 	vector<VEC> wc;
 
-	cout << "skriver ut ala E_ToBe: " << endl;
+	cout << "skriver ut ala newEP: " << endl;
 	for (int i=0; i<siz; i++) {
-		wc.push_back(getWcFromPoint(E_ToBe[i].fr));
-		cout << endl << i << ":\t" << wc[i] << endl;
-		E_ToBe[i].print();
+		wc.push_back(getWcFromPoint(newEP[i]));
+		cout << i << ":\t" << wc[i] << "\t" << newEP[i].toString() << endl;
 	}
 
 
 	if (siz <= 1) {
-		cout << "return 1: siz <= 1" << endl;
+		cout << "return 1: siz = " << siz << "<= 1 " << endl;
 		return 1;
 	}
 
@@ -410,16 +410,20 @@ int SymmetryObject::checkE_ToBe2()
 	Prefix pfxDiff;
 	for (int i=siz-2; i>=0; i--)
 	{
-		pfxDiff = (E_ToBe[i].fr.Pfx / E_ToBe[siz-1].fr.Pfx);
+		//pfxDiff = (newEP[siz-1].Pfx / newEP[i].Pfx);
+		pfxDiff = (newEP[i].Pfx.getInverse() * newEP[siz-1].Pfx);
 		pfxDiff.simplify();
 
-		switch(pfxDiff.getSize())
+		switch(pfxDiff.size())
 		{
+		case 0:
 		case 1:
 			break;
 		case 2:
-			if (pfxDiff[i]^pfxDiff[siz-1] != 6){
-				cout << "return 0: pfxDiff[i]^pfxDiff[siz-1] = " << (pfxDiff[i]^pfxDiff[siz-1]) << " != 6" << endl;
+			if ((pfxDiff[0]^pfxDiff[1]) != 6) {
+				cout << "return 0: pfxDiff[0]^pfxDiff[1] = " << (pfxDiff[0]^pfxDiff[1]) << " != 6" << endl;
+				cout << "PfxDiff = ";
+				pfxDiff.print();
 				return 0;
 			}
 			break;
@@ -429,21 +433,18 @@ int SymmetryObject::checkE_ToBe2()
 		}
 	}
 
-		// om det bara är 2 vertices
-	if (siz <= 2) {
-		cout << "return 1: siz <= 1" << endl;
-		return 1;
-	}
 
 	cout << "pfxDiff: " << pfxDiff.toString() << endl;
-	int pfxDiffSiz = pfxDiff.getSize();
+	int pfxDiffSiz = pfxDiff.size();
 
 
 		// kontrollera att den inte är bend åt fel håll
-	if (~(wc[siz-1]-wc[siz-2]) * (wc[siz-3]-wc[siz-2]) < 0)
-	{
-		cout << "Bend towards vrong hool" << endl;
-		return 0;
+	if (siz > 2) {
+		if (~(wc[siz-1]-wc[siz-2]) * (wc[siz-3]-wc[siz-2]) < 0)
+		{
+			cout << "Bend towards vrong hool" << endl;
+			return 0;
+		}
 	}
 
 		//kontrollera så ingen är ansluten A -> B
@@ -453,23 +454,25 @@ int SymmetryObject::checkE_ToBe2()
 
 		// finns det enclosed Points:
 	VEC A[3];
-	A[0] = wc[0];
-	A[1] = wc[siz-2];
-	A[2] = wc[siz-1];
 	list<Point> enclosedPoints;
-	int extraPoints = getEnclosedPoints(A, enclosedPoints);
+	if (siz >= 3) {
+		A[0] = wc[0];
+		A[1] = wc[siz-2];
+		A[2] = wc[siz-1];
+		int extraPoints = getEnclosedPoints(A, enclosedPoints);
 
-	cout << "enclosed Points: " << extraPoints << endl;
-	for (list<Point>::iterator itP = enclosedPoints.begin(); itP != enclosedPoints.end(); itP++)
-		cout << "\t" << itP->toString() << endl;
+		cout << "enclosed Points: " << extraPoints << endl;
+		for (list<Point>::iterator itP = enclosedPoints.begin(); itP != enclosedPoints.end(); itP++)
+			cout << "\t" << itP->toString() << endl;
 
-	if (extraPoints > 0) {
-		cout << "det fanns enclosed punkter" << endl;
-		return 0;
+		if (extraPoints > 0) {
+			cout << "det fanns enclosed punkter" << endl;
+			return 0;
+		}
 	}
 
-		// kontrollera om den återvänder till samma index
-	if (E_ToBe[siz-1].fr.index != E_ToBe[0].fr.index) {
+		// kontrollera om den inte återvänder till samma index
+	if (newEP[siz-1].index != newEP[0].index) {
 		cout << "index[siz-1] != index[0] so returna 1" << endl;
 		return 1;
 	}
@@ -479,9 +482,14 @@ int SymmetryObject::checkE_ToBe2()
 	switch(pfxDiffSiz) {
 	case 0:
 		cout << "Not centered" << endl;
+		if (siz == 2) {
+			cout << "siz = 2 och returnar till samma punkt" << endl;
+			return 0;
+		}
 		return NOT_CENTERED;
 	case 1: {
 		if (pfxDiff[0] == VP) {
+			cout << "pfxDiff[0] = VP" << endl;
 			if (vertexPointActive) {
 				cout << "kan inte skapa VCF för VP är aktiv, därför return 1" << endl;
 				return 1;
@@ -490,7 +498,7 @@ int SymmetryObject::checkE_ToBe2()
 				// gör koll om det finns enclosed Vertieces i [wc[0], wc[siz-1], getWcFromPoint(Point(E_ToBe[0].fr.Pfx))]
 			A[0] = wc[0];
 			A[1] = wc[siz-1];
-			A[2] = getWcFromPoint(Point(E_ToBe[0].fr.Pfx, VERTEX_CENTERED));
+			A[2] = getWcFromPoint(Point(newEP[0].Pfx, VERTEX_CENTERED));
 			this->getEnclosedPoints(A, enclosedPoints);
 			if (enclosedPoints.size() > 0)
 			{
@@ -504,15 +512,16 @@ int SymmetryObject::checkE_ToBe2()
 			return VERTEX_CENTERED;
 
 		} else if (pfxDiff[0] == FP) {
+			cout << "pfxDiff[0] = FP" << endl;
 			if (facePointActive) {
-				cout << "kan inte skapa FCF för VP är aktiv, därför return 1" << endl;
+				cout << "kan inte skapa FCF för FP är aktiv, därför return 1" << endl;
 				return 1;
 			}
 
 				// gör koll om det finns enclosed Vertieces i [wc[0], wc[siz-1], getWcFromPoint(Point(E_ToBe[0].fr.Pfx))]
 			A[0] = wc[0];
 			A[1] = wc[siz-1];
-			A[2] = getWcFromPoint(Point(E_ToBe[0].fr.Pfx, VERTEX_CENTERED));
+			A[2] = getWcFromPoint(Point(newEP[0].Pfx, FACE_CENTERED));
 			this->getEnclosedPoints(A, enclosedPoints);
 			if (enclosedPoints.size() > 0)
 			{
@@ -522,14 +531,36 @@ int SymmetryObject::checkE_ToBe2()
 
 				// kontrollera att sista och påföljande edge inte buktar åt fel håll., då returneras 1
 
-			cout << "lyckades skapa VCF, return VERTEX_CENTERED" << endl;
-			return VERTEX_CENTERED;
+			cout << "lyckades skapa FCF, return FACE_CENTERED" << endl;
+			return FACE_CENTERED;
+		} else {
+			cout << "pfxDiffSiz = 1, men pfxDiff[0] = " << (pfxDiff[0] == VN? "VN": "FN") << ", return 1" << endl;
+			return 1;
+		}
+	}
+	case 2: {
+		cout << "pfxDiff[i]^pfxDiff[siz-1] != 6" << endl;
 
+		if (edgePointActive) {
+			cout << "kan inte meeta edge opposite Point om EP active, return 0" << endl;
+			return 0;
 		}
 
+			// behöver inte leta efter points inom något område för allt är redan avsökt.
+
+
+			// kontrollera att sista och påföljande edge inte buktar åt fel håll., då returneras 0
+
+		cout << "lyckades skapa ECF, return EDGE_CENTERED" << endl;
+		return EDGE_CENTERED;
+		break;
+	}
+	default:
+		cout << "ska inte komma hit till default, return 0" << endl;
+		return 0;
+		break;
 	}
 
-	}
 
 	/*
 n[]
@@ -732,12 +763,12 @@ int SymmetryObject::getEnclosedPoints(VEC *arrayWC, list<Point> &PntList)
 
 	relPfxToControl.push_back(pfx[0]);
 	Prefix pfx_tf = pfx[0].difference(pfx[1]);
-	if (pfx_tf.getSize() > 0)
+	if (pfx_tf.size() > 0)
 		relPfxToControl.push_back(pfx_tf);
-	if (pfx[2].difference(pfx[0]).getSize() > 0)
+	if (pfx[2].difference(pfx[0]).size() > 0)
 	{
 		pfx_tf = pfx[1].difference(pfx[2]);
-		if (pfx_tf.getSize() > 0)
+		if (pfx_tf.size() > 0)
 			relPfxToControl.push_back(pfx_tf);
 	}
 
@@ -803,7 +834,7 @@ Point SymmetryObject::getClosestPointFromWC(VEC coordWC)
 
 	double newDistance;
 
-	P_ = getClosestCenteredPointFromWC(coordWC, &smallestDistanceSquare);
+	P_ = getClosestCenteredPointFromWC(coordWC, &smallestDistanceSquare, vertexPointActive, edgePointActive, facePointActive);
 
 	for (unsigned int v=0; v<V.size(); v++)
 	{
@@ -872,6 +903,150 @@ void SymmetryObject::printAll()
 		cout << endl;
 	}
 }
+
+bool SymmetryObject::addNewEP(int sluten)
+{
+	//cout << "i addfacetobe so is sluten = " << sluten << endl;
+			//vector<edge>::iterator ite = E_ToBe.end();
+	int sizE = E.size();
+
+	//		Fixa:
+	// Rootera tillbaka ytan så att början
+	//och slutet alltid rör  en rootPoint.
+	Prefix draBortPfxInv = E_ToBe[0].fr.Pfx;//.getSize();
+	cout << "The following prefix ska dras away" << endl;
+	draBortPfxInv.print();
+	draBortPfxInv = draBortPfxInv.getInverse();
+
+	for (unsigned int i=0; i<E_ToBe.size()-1; i++)
+	{
+		edge edgeToPushBack;
+
+		Prefix enAnnanPrefixIgen = draBortPfxInv;
+		enAnnanPrefixIgen.rotate(E_ToBe[i].fr.Pfx);
+		enAnnanPrefixIgen.simplify();
+		edgeToPushBack.fr.Pfx = enAnnanPrefixIgen;
+		edgeToPushBack.fr.index = E_ToBe[i].fr.index;
+
+		enAnnanPrefixIgen = draBortPfxInv;
+		enAnnanPrefixIgen.rotate(E_ToBe[i].to.Pfx);
+		enAnnanPrefixIgen.simplify();
+		edgeToPushBack.to.Pfx = enAnnanPrefixIgen;
+		edgeToPushBack.to.index = E_ToBe[i].to.index;
+
+		Prefix PfxNext;
+		Prefix PfxPrev;
+
+		switch (sluten) {
+			case NOT_CENTERED: {
+				edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
+				edgeToPushBack.prev = Edge(PfxPrev, (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
+				break;
+			}
+			case VERTEX_CENTERED: {
+
+				if (i==0)
+					PfxPrev.rotate(VN);
+				if (i==E_ToBe.size()-2)
+					PfxNext.rotate(VP);
+				edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
+				edgeToPushBack.prev = Edge(PfxPrev, i==0? sizE + E_ToBe.size() - 2: sizE + i - 1);
+				//edgeToPushBack.next = (i==E_ToBe.size()-2? Edge(Pfx, sizE): Edge(Prefix(), sizE + i + 1));
+				break;
+			}
+			case EDGE_CENTERED: {
+				Prefix cpPrefixHelvete;
+
+				cpPrefixHelvete = E_ToBe[E_ToBe.size()-1].fr.Pfx;
+				cpPrefixHelvete.rotate(draBortPfxInv);
+
+				cout << "when it is done, it becomasar: ";
+				cpPrefixHelvete.print();
+				cout << endl;
+
+				if (i==0) {
+					PfxPrev = cpPrefixHelvete;
+				}
+
+
+				if (i==E_ToBe.size()-2) {
+					PfxNext = cpPrefixHelvete;
+				}
+
+				edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
+				edgeToPushBack.prev = Edge(PfxPrev, (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
+				break;
+			}
+			case FACE_CENTERED: {
+				Prefix PfxNext;
+				Prefix PfxPrev;
+
+				if (i==0)
+					PfxPrev.rotate(FN);
+				if (i==E_ToBe.size()-2)
+					PfxNext.rotate(FP);
+				edgeToPushBack.next = Edge(PfxNext, (i==E_ToBe.size()-2? sizE: sizE + i + 1));
+				edgeToPushBack.prev = Edge(PfxPrev, (i==0? sizE + E_ToBe.size() - 2: sizE + i - 1));
+				break;
+			}
+			default:
+				cout << "symmetryObject.cpp\tHIT SKA DEN INTE KOMMA!!!!!!!!!!!" << endl;
+				break;
+		}
+
+			// kolla genom om man kan hitta någon opposite
+		cout << endl;
+		//int kortastePrefix = 10000000;
+		edgeToPushBack.oppo.index = -1;
+		//edgeToPushBack.
+
+
+
+
+
+			// kolla genom om man kan hitta någon opposite, IGEN
+		if (edgeToPushBack.oppo.index == -1) {
+			for (unsigned int j=0; j<E.size(); j++)
+			{
+				Prefix oppositeOfPrefix;
+				//if (E[j].isOppositeOf(E_ToBe[i], &oppositeOfPrefix)) {
+				if (E[j].isOppositeOf(edgeToPushBack, &oppositeOfPrefix)) {
+					edgeToPushBack.oppo = Edge(oppositeOfPrefix.getInverse(), j);
+					E[j].oppo = Edge(oppositeOfPrefix, i + sizE);
+
+					break;
+				}
+			}
+		}
+		//cout << "a" << endl;
+
+		Prefix oppositeOfPrefix;
+		if (edgeToPushBack.oppo.index == -1)
+		{
+			//if (E_ToBe[i].isOppositeOf(E_ToBe[i], &oppositeOfPrefix)) {
+			if (E_ToBe[i].isOppositeOf(edgeToPushBack, &oppositeOfPrefix)) {
+				edgeToPushBack.oppo = Edge(oppositeOfPrefix.getInverse(), i + sizE);
+			}
+		}
+
+		E.push_back(edgeToPushBack);
+	}
+
+	F.push_back(face(sizE, E.size() - sizE, sluten));
+	cout << "          *****************************************            " << endl;
+	cout << "tjena nu is jag here" << endl;
+		// uppdatera GUI:et
+	char strToSend[200];
+		// id, first edge, num of edges, type, görasigplatt-styrka
+	snprintf(strToSend, 200, "%d,%d,%d,%d", F.size()-1, sizE, E.size() - sizE, sluten);
+	cout << "detta skickas when face skapas: " << strToSend << endl;
+
+	E_ToBe.clear();
+	printAll();
+	return true;
+}
+
+
 
 bool SymmetryObject::addFaceToBe(int sluten)
 {
@@ -1224,6 +1399,123 @@ VEC getRootpoint(VEC coord)	// använder enbart hexagonal symmetry
 
 
 
+// returnerar närmsta Centered-point
+Point getClosestCenteredPointFromWC(VEC coord, double *distanceSquared, bool VCVActive, bool ECVActive, bool FCVActive)
+{
+
+	double distanceSquared_ = UNDEFINED_VEC*UNDEFINED_VEC;
+	//double distanceSquared_;
+	int index = -1;
+	Point P;
+	VEC x = VEC(0.5, 0.0);
+	VEC y = VEC(0.25, sqrt(3.)/4.); //SymmetryObject::edgeCenteredPoint;
+
+	VEC cv[15];
+
+		//Vector-points
+	if (VCVActive) {
+		cv[0] = VEC(0., 0.);
+		cv[1] = 2*(y - x);
+		cv[2] = 2*y;
+		cv[3] = 2*x;
+		cv[4] = 2*(x - y);
+		for (int i=0; i<5; i++)
+		{
+			double newDistance = (cv[i] - coord) * (cv[i] - coord);
+			if (newDistance < distanceSquared_) {
+				distanceSquared_ = newDistance;
+				index = i;
+			}
+		}
+	}
+
+		// Edge-points
+	if (ECVActive) {
+		cv[5] = y;
+		cv[6] = x;
+		cv[7] = x + y;
+		cv[8] = y - x;
+		cv[9] = 2*y - x;
+		cv[10] = x - y;
+		cv[11] = 2*x - y;
+		for (int i=5; i<12; i++)
+		{
+			double newDistance = (cv[i] - coord) * (cv[i] - coord);
+			if (newDistance < distanceSquared_) {
+				distanceSquared_ = newDistance;
+				index = i;
+			}
+		}
+	}
+
+		// Face-points
+	if (FCVActive) {
+		cv[12] = 2.*(x + y)/3.;
+		cv[13] = 2.*(2*y - x) / 3.;
+		cv[14] = 2*(2*x - y) / 3.;
+		for (int i=12; i<15; i++)
+		{
+			double newDistance = (cv[i] - coord) * (cv[i] - coord);
+			if (newDistance < distanceSquared_) {
+				distanceSquared_ = newDistance;
+				index = i;
+			}
+		}
+	}
+
+	if (index > 11)
+		P.index = FACE_CENTERED;
+	else if (index > 4)
+		P.index  = EDGE_CENTERED;
+	else if (index >= 0)
+		P.index = VERTEX_CENTERED;
+
+
+	switch (index)
+	{
+	case 1:
+	case 9:
+		P.Pfx.rotate(VP);
+		P.Pfx.rotate(FN);
+		break;
+	case 2:
+		P.Pfx.rotate(VP);
+		P.Pfx.rotate(FP);
+		break;
+	case 3:
+	case 6:
+		P.Pfx.rotate(FP);
+		break;
+	case 4:
+	case 10:
+		P.Pfx.rotate(VN);
+		P.Pfx.rotate(FP);
+		break;
+	case 8:
+	case 13:
+		P.Pfx.rotate(VP);
+		break;
+	case 7:
+		P.Pfx.rotate(FN);
+		break;
+	case 11:
+		P.Pfx.rotate(VN);
+		P.Pfx.rotate(FN);
+		break;
+	case 14:
+		P.Pfx.rotate(VN);
+		break;
+	default:
+		index = -1;
+		break;
+	}
+
+	if (distanceSquared != 0)
+		*distanceSquared = distanceSquared_;
+
+	return P;
+}
+
 
 // returnerar närmsta Centered-point
 Point getClosestCenteredPointFromWC(VEC coord, double *distanceSquared)
@@ -1268,7 +1560,7 @@ Point getClosestCenteredPointFromWC(VEC coord, double *distanceSquared)
 		}
 	}
 
-	if (index > 11 )
+	if (index > 11)
 		P.index = FACE_CENTERED;
 	else if (index > 4)
 		P.index  = EDGE_CENTERED;

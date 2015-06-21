@@ -249,7 +249,7 @@ void Prefix::returnToRoot()
 	R.clear();
 }
 
-int Prefix::getSize() const
+int Prefix::size() const
 {
 	return R.size();
 }
@@ -298,7 +298,15 @@ bool Prefix::equalTo(Prefix &A)
 	nytt.rotate(*this);
 	nytt.rotate(A.getInverse());
 	nytt.simplify();
-	return nytt.getSize() == 0;
+	return nytt.size() == 0;
+}
+
+bool Prefix::isOppositeEdge() {
+	if (R.size() == 2) {
+		list<TYP>::iterator itR = R.begin();
+		return *itR ^ *(++itR);
+	} else
+		return false;
 }
 
 			// omvandla alla:	summa = 1023
